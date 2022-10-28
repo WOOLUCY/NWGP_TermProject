@@ -2,6 +2,6 @@
 class Collision
 {
 public:
-	RECT BoundingBox;
+	RECT BoundngBox;
 };
 

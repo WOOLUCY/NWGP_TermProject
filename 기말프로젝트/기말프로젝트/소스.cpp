@@ -79,6 +79,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	static HBITMAP hBitmap;
 	static CImage BackGround, imgGround;
+
+
+	static CImage imgSprite1[4], imgSprite1_runR[4], imgSprite1_runL[4], imgSprite1_jump[4];
+	static CImage imgSprite2[4], imgSprite2_runR[4], imgSprite2_runL[4], imgSprite2_jump[4];
+	static CImage imgSprite3[4], imgSprite3_runR[4], imgSprite3_runL[4], imgSprite3_jump[4];
+
+
 	static CImage Start, Dialog[6], Guide, Block, Heart, Key, Portal, Clear[2], Guide2, GameOver, Monster_L[4], Monster_R[4], Map, Damage[4];
 
 	static RECT rect;

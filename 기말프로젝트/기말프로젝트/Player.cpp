@@ -9,6 +9,10 @@ Player::Player()
 	myImage[1] = nullptr;
 	myImage[2] = nullptr;
 	myImage[3] = nullptr;
+	aabb.bottom = 0;
+	aabb.left = 0;
+	aabb.right = 0;
+	aabb.top = 0;
 
 
 }
@@ -21,23 +25,13 @@ Player::Player(wchar_t id, USHORT sprite, USHORT charnum, POS position, POS Vel,
 	switch (uCharnum)
 	{
 	case 0:
-		myImage[0] = imgSprite1;
-		myImage[1] = imgSprite1_runR;
-		myImage[2] = imgSprite1_runL;
-		myImage[3] = imgSprite1_jump;
+		
+
 		break;
 	case 1:
-		myImage[0] = imgSprite2;
-		myImage[1] = imgSprite2_runR;
-		myImage[2] = imgSprite2_runL;
-		myImage[3] = imgSprite2_jump;
 
 		break;
 	case 2:
-		myImage[0] = imgSprite3;
-		myImage[1] = imgSprite3_runR;
-		myImage[2] = imgSprite3_runL;
-		myImage[3] = imgSprite3_jump;
 
 		break;
 
@@ -60,5 +54,6 @@ void Player::Move()
 
 void Player::Jump()
 {
+	//점프할때 그거 -만약 변수필요하면 static int 로 선언해도 될듯??
 }
 
