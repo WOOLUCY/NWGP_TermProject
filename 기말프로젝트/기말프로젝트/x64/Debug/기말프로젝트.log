@@ -1,0 +1,8 @@
+﻿  Collision.cpp
+C:\Users\gaon7\OneDrive\Desktop\넷겜플\겜플윈플\기말프로젝트\Collision.h(5,7): error C3646: 'BoundingBox': 알 수 없는 재정의 지정자입니다.
+C:\Users\gaon7\OneDrive\Desktop\넷겜플\겜플윈플\기말프로젝트\Collision.h(5,18): error C4430: 형식 지정자가 없습니다. int로 가정합니다. 참고: C++에서는 기본 int를 지원하지 않습니다.
+  global.h
+  Player.cpp
+  소스.cpp
+C:\Users\gaon7\OneDrive\Desktop\넷겜플\겜플윈플\기말프로젝트\소스.cpp(76,11): warning C4101: 'color' :참조되지 않은 지역 변수입니다.
+  코드를 생성하고 있습니다...
