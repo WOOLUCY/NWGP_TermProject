@@ -49,4 +49,4 @@ public:
 	void update();
 
 };
-UINT Monster::iTotal{ 0 };
+UINT Monster::iTotal{ 0 };	// 몬스터 총 개수
