@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player()
-	:wId(0), uSpriteX(0), uSpriteY(0), uCharnum(0), iXpos(640), iYpos(620), pVel(0,0), sHeart(0), uCoin(0), bFind(0), m_vel(0, 0), MaxJump(4), JumpHeight(0)
+	:wId(0), uSpriteX(0), uSpriteY(0), uCharnum(0), iXpos(640), iYpos(620), pVel(0,0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0)
 
 {
 	//일단 걍다 0으로 초기화함 

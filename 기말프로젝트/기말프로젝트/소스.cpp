@@ -216,6 +216,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 
 		break;
+	
 		}
+
 	return DefWindowProc(hWnd, iMsg, wParam, lParam);
 }

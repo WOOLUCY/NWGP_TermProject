@@ -22,7 +22,6 @@ private:
 	bool	bFind;
 	RECT	aabb;
 
-	POS		m_vel;
 		
 public:
 	CImage*	myImage[4]; //이거로 스프라이트 가리키면 될것같은데 
