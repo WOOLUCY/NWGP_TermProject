@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "global.h"
 
 Player::Player()
 	:wId(0), uSpriteX(0), uSpriteY(0), uCharnum(0), iXpos(640), iYpos(620), pVel(0,0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0)
@@ -13,8 +14,13 @@ Player::Player()
 	aabb.left = 0;
 	aabb.right = 0;
 	aabb.top = 0;
+	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.3);		// 플레이어 기본 속도는 이것
 
 
+	bJumpKeyPressed = FALSE;
+	fJumpPower = 3.f;
+	fJumpTime = 0.1;
+	JumpHeight = 0;
 }
 
 Player::Player(wchar_t id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)
@@ -44,26 +50,42 @@ Player::~Player()
 	//일단 만들어놓음 근데 필요없을것같긴한데,,,,
 }
 
-void Player::Move(POS force)
-{
-	//키입력에따른 플레이어의 이동
-	POS acc;
-	acc.x = force.x;
-	acc.y = force.y;
-	iXpos += acc.x;
-	iYpos += acc.y;
 
-	//키입력에 따른 플레이어의 이동에대한 RECT의 이동 
+void Player::Jump(USHORT spriteCnt)
+{
+	if (!bJumpKeyPressed) return;
+	SetSpriteY(2);
+	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 6; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
+	fJumpTime += 0.2f;		//	시간의 흐름을 표현하기 위해서.
+
+	if (fJumpTime > fJumpPower * 2)	//	착지했다면의 의미로, 각 변수 초기화.
+	{
+		SetSpriteY(spriteCnt);
+		fJumpTime = 0;
+		velocity.y = 0;
+		bJumpKeyPressed = FALSE;
+	}
+	if (iYpos > 620) {
+		SetSpriteY(spriteCnt);
+		fJumpTime = 0;
+		velocity.y = 0;
+		bJumpKeyPressed = FALSE;
+		iYpos = 620;
+	}
 }
 
-void Player::Jump()
+void Player::UpdatePlayerLocation()
 {
-	//점프할때 그거 -만약 변수필요하면 static int 로 선언해도 될듯??
+	// dir = std::clamp(-1, (int)velocity.x, 1);
+	iXpos += velocity.x;
+	iYpos += velocity.y;
 }
 
-void Player::ChangeSprite()
+void Player::ChangeSprite(int* count)
 {
-	if (uSpriteX == 3)
-		uSpriteX = 0;
-	else uSpriteX++;
+	if (*count == 3) {
+		uSpriteX = (uSpriteX + 1) % 4;
+		*count = 0;
+	}
+	*count += 1;
 }
