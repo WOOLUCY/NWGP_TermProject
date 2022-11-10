@@ -1,2 +1,16 @@
-﻿  global.h
-  기말프로젝트.vcxproj -> C:\Git Repositeries\NWGP_TermProject\기말프로젝트\x64\Debug\기말프로젝트.exe
+﻿  Background.cpp
+  global.h
+  Player.cpp
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\Player.cpp(21,54): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\Player.cpp(21,73): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\Player.cpp(53,14): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\Player.cpp(54,14): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  소스.cpp
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\Monster.h(1,1): warning C4828: 파일에 0x3b9 오프셋에서 시작하는 문자가 포함되어 있습니다. 이 문자는 현재 원본 문자 집합에서 잘못된 문자입니다(코드 페이지 949).
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\소스.cpp(62,16): warning C4244: 'return': 'WPARAM'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\소스.cpp(154,25): warning C4244: '+=': 'float'에서 'USHORT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\소스.cpp(155,20): warning C4244: '-=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\소스.cpp(156,18): warning C4305: '-=': 'double'에서 'float'(으)로 잘립니다.
+E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\기말프로젝트\소스.cpp(81,11): warning C4101: 'color' :참조되지 않은 지역 변수입니다.
+  코드를 생성하고 있습니다...
+  기말프로젝트.vcxproj -> E:\00.project\01.NetworkProgramming\NWGP_TermProject\기말프로젝트\x64\Debug\기말프로젝트.exe

@@ -7,10 +7,12 @@
 #include "Player.h"
 #include "Monster.h"
 #include "Background.h"
-
-
+#include <time.h>
 
 using namespace std;
+
+
+void UpdatePlayerInput(WPARAM Input, Player player);
 
 LPCTSTR lpszClass = L"Window Class Name";
 LPCTSTR lpszWindowName = L"windows program";
@@ -86,14 +88,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static CImage backgroundImg;
 	static CImage ground;
 	background.Image = &backgroundImg;	// Background 클래스의 Image 는 CImage 를 가르킨다.
-
+	
 	static CImage playerImg;
 	static Player player;
 	player.myImage[0] = &playerImg;		// Player 클래스의 myImage 는 CImage 를 가르킨다.
-	static int cx, cy = 0;
 
-	static float movingForce = 2.f;	// 이동 속도
-	static POS ForceDirection;
+	time_t frame_time{};
+	time_t current_time = time(NULL);
+	time_t frame_rate;
+	static int spriteCnt = 0;
+	static USHORT curSpriteCnt = 0;
 
 	switch (iMsg) {
 	case WM_CREATE:
@@ -108,7 +112,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		// 플레이어의 Width, Height 크기는 170, 148 로 고정이라 구하지 않음
 
 		GetClientRect(hWnd, &rect);
-		SetTimer(hWnd, 1, 50, NULL);
+		SetTimer(hWnd, 1, 30, NULL);
+
 		break;
 
 	case WM_PAINT:
@@ -120,7 +125,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 2560, 1600);
 		ground.Draw(mem1dc, 0, 130, rect.right, rect.bottom, 0, 0, ground.GetWidth(), ground.GetHeight());
 		player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
-
 
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);
 		DeleteObject(hBitmap);
@@ -138,28 +142,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_TIMER:
 		switch (wParam) {
 		case 1:		// Sprite 의 교체 속도(업데이트 속도)를 담당하는 타이머
-			player.ChangeSprite();	
+			player.ChangeSprite(&spriteCnt);
+			player.UpdatePlayerLocation();					// Player 의 Move 함수는 이동을 담당
+			background.Update();
+			player.Jump(curSpriteCnt);
+			frame_time = time(NULL) - current_time;
+			frame_rate = 1.0 / frame_time;
+			current_time += frame_time;
 			break;
 
 		case 2:		// 플레이어의 '이동'을 담당하는 타이머
-			cx = player.iXpos - background.window_left;		// cx, cy 는 스크롤링 도전하려다가 포기한 것... 처리 못 함
-			cy = player.iYpos - background.window_bottom;
-			player.Move(ForceDirection);					// Player 의 Move 함수는 이동을 담당
-			background.Update();							// 이것도 스크롤링의 잔해... 처리 못 함
+					// 이것도 스크롤링의 잔해... 처리 못 함
 			break;
 
 		case 3:		// 플레이어의 '점프'를 담당하는 타이머
-			player.SetSpriteY(2);	// Sprite 의 Y 위치임. 0 - 기본, 1 - 오른쪽 이동, 2 - 점프, 3 - 왼쪽 이동
-			static float gravity = player.GetMaxJump();
-			player.JumpHeight += gravity;
-			player.iYpos -= gravity;
-			gravity -= 0.1;	
-			if (player.JumpHeight <= 0) {		// AABB 로 멈추기 필요함. 지금은 얼렁뚱땅 넣어둠.
-				player.JumpHeight = 0;
-				gravity = 3.f;
-				player.SetSpriteY(0);
-				KillTimer(hWnd, 3);
-			}
 			break;
 		}
 		InvalidateRect(hWnd, NULL, FALSE);
@@ -167,41 +163,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_KEYDOWN:
 		if (wParam == VK_LEFT) {
-			ForceDirection.x = -1;
+			player.velocity.x = -player.GetRunSpeed();
+			curSpriteCnt = 3;
 			player.SetSpriteY(3);
-			SetTimer(hWnd, 2, 5, NULL);
 		}
 		if (wParam == VK_RIGHT) {
-			ForceDirection.x = 1;
+			player.velocity.x = player.GetRunSpeed();
+			curSpriteCnt = 1;
 			player.SetSpriteY(1);
-			SetTimer(hWnd, 2, 5, NULL);
 		}
 		if (wParam == VK_UP) {
 
 		}
 		if (wParam == VK_SPACE) {
-			SetTimer(hWnd, 3, 10, NULL);
+			player.bJumpKeyPressed = TRUE;
+			// player.SetSpriteY(2);	// Sprite 의 Y 위치임. 0 - 기본, 1 - 오른쪽 이동, 2 - 점프, 3 - 왼쪽 이동
+
 		}
-		ForceDirection.x *= movingForce;
-		ForceDirection.y *= movingForce;
 		break;
 
 	case WM_KEYUP:
 		if (wParam == VK_LEFT) {
-			ForceDirection.x = 0.f;
+			player.velocity.x = 0;
+			curSpriteCnt = 0;
 			player.SetSpriteY(0);
-			KillTimer(hWnd, 2);
 		}
 		if (wParam == VK_RIGHT) {
-			ForceDirection.x = 0.f;
+			player.velocity.x = 0;
+			curSpriteCnt = 0;
 			player.SetSpriteY(0);
-			KillTimer(hWnd, 2);
 		}
 		if (wParam == VK_UP) {
 
 		}
-		ForceDirection.x *= movingForce;
-		ForceDirection.y *= movingForce;
 		break;
 
 	case WM_CHAR:
@@ -216,6 +210,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 
 		break;
+	
 		}
+
 	return DefWindowProc(hWnd, iMsg, wParam, lParam);
 }
+
+void UpdatePlayerInput(WPARAM input, Player player) {
+};

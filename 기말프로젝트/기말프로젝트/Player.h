@@ -7,8 +7,6 @@ class Player
 {
 private:
 	wchar_t wId;
-	USHORT	uSpriteX;
-	USHORT	uSpriteY;
 
 	int		iWidth = 170;	// draw 에 필요한 width, height 추가
 	int		iHeight = 148;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
@@ -22,16 +20,25 @@ private:
 	bool	bFind;
 	RECT	aabb;
 
-	POS		m_vel;
+	float	RUN_SPEED_PPS;
+	float	fJumpPower;
+
+
 		
 public:
 	CImage*	myImage[4]; //이거로 스프라이트 가리키면 될것같은데 
 	// 자주 참조할 것 같고 값이 변해도 상관 없는 애들은 public 으로 뺌
 	USHORT	uCharnum;
+	USHORT	uSpriteX;
+	USHORT	uSpriteY;
 	int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음
 	int		iYpos;
-	USHORT	JumpHeight;	// 지금 점프하고 있는 위치로 쓰려고 했는데... AABB 쓰면 필요 없을 것 같음
-	
+	int		dir;
+	POS		velocity = { 0, 0 };
+	bool	bJumpKeyPressed = FALSE;
+	float	fJumpTime;
+	float	JumpHeight;
+
 public:
 	wchar_t GetId() { return wId; }
 	void SetId(wchar_t in) { wId = in; }
@@ -70,16 +77,20 @@ public:
 	wchar_t GetMaxJump() { return MaxJump; }
 	void SetMaxJump(USHORT in) { MaxJump = in; }
 
+	float GetRunSpeed() { return RUN_SPEED_PPS; }
+	void SetRunSpeed(float in) { RUN_SPEED_PPS = in; }
+
+
 public: 
 	//생성자
 	Player();
 	Player(wchar_t id, USHORT sprite,USHORT charnum,POS position, POS Vel, USHORT heart, USHORT coin, bool find);
 	
 	~Player();
-
-	void Move(POS Direction); //무브,rect도 같이 움직는거로 할까??
-	void Jump();
-	void ChangeSprite();
+	
+	void Jump(USHORT spriteCnt);
+	void ChangeSprite(int* count);
+	void UpdatePlayerLocation();
 };
 
 
