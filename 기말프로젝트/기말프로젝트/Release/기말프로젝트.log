@@ -1,7 +1,0 @@
-﻿  소스.cpp
-C:\Users\gaon7\NWGP_TermProject\기말프로젝트\기말프로젝트\소스.cpp(69,11): warning C4101: 'color' :참조되지 않은 지역 변수입니다.
-  코드를 생성하고 있습니다.
-  Previous IPDB was built with incompatible compiler, fall back to full compilation.
-  All 236 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  코드를 생성했습니다.
-  기말프로젝트.vcxproj -> C:\Users\gaon7\NWGP_TermProject\기말프로젝트\Release\기말프로젝트.exe
