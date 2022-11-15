@@ -7,6 +7,8 @@
 #include "Player.h"
 #include "Monster.h"
 #include "Background.h"
+
+#include "Coin.h"
 #include <time.h>
 
 using namespace std;
@@ -87,11 +89,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static Background background;
 	static CImage backgroundImg;
 	static CImage ground;
+
 	background.Image = &backgroundImg;	// Background 클래스의 Image 는 CImage 를 가르킨다.
 	
 	static CImage playerImg;
 	static Player player;
 	player.myImage[0] = &playerImg;		// Player 클래스의 myImage 는 CImage 를 가르킨다.
+
+	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
+	static CImage coinImg;
+	static Coin TestCoin(0, 100);
+	TestCoin.myImage = &coinImg;
+
 
 	time_t frame_time{};
 	time_t current_time = time(NULL);
@@ -106,6 +115,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		backgroundImg.Load(L"Image/BackGround.png");
 		ground.Load(L"Image/ground.png");
 		playerImg.Load(L"Image/Cookies2-1.png");
+
+		//가온 - 코인이미지 로드 일단 하트로 해보겟음
+		coinImg.Load(L"Image/sheart.png");
 
 		background.SetWidth(background.Image->GetWidth());
 		background.setHeight(background.Image->GetHeight());
@@ -125,6 +137,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 2560, 1600);
 		ground.Draw(mem1dc, 0, 130, rect.right, rect.bottom, 0, 0, ground.GetWidth(), ground.GetHeight());
 		player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
+
+		//가온-코인, 왜 안그려지냐 일단???? 
+		TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.iWidth / 2, TestCoin.iHeight / 2, TestCoin.iWidth * TestCoin.uSpriteCount, TestCoin.iHeight, TestCoin.iWidth,TestCoin.iHeight);
 
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);
 		DeleteObject(hBitmap);
