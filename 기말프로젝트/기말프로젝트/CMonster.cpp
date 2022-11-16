@@ -13,10 +13,10 @@ CMonster::CMonster()
 	myImage[1] = nullptr;
 	myImage[2] = nullptr;
 	myImage[3] = nullptr;
-	aabb.bottom = 0;
-	aabb.left = 0;
-	aabb.right = 0;
-	aabb.top = 0;
+	aabb.bottom = iYpos + (iHeight / 2);
+	aabb.left = iXpos;
+	aabb.right = iXpos + (iWidth / 2);
+	aabb.top = iYpos;
 }
 
 CMonster::CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int range)
@@ -61,6 +61,12 @@ void CMonster::UpdateMonsterLocation()
 		dir = -1;
 		SetSpriteY(0);
 	}
+
+	// AABB update
+	aabb.bottom = iYpos + (iHeight / 2);
+	aabb.left = iXpos;
+	aabb.right = iXpos + (iWidth / 2);
+	aabb.top = iYpos;
 }
 
 void CMonster::ChangeSprite(int* count)

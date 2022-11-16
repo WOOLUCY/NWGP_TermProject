@@ -7,13 +7,14 @@
 #include "Player.h"
 #include "CMonster.h"
 #include "Background.h"
+#include "Collision.h"
 
 #include "Coin.h"
 #include <time.h>
 
 using namespace std;
 
-
+bool IsDebugMode = false;
 void UpdatePlayerInput(WPARAM Input, Player player);
 
 LPCTSTR lpszClass = L"Window Class Name";
@@ -147,7 +148,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		// W Monster Draw
 		monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
+		
+		// W Collision Box Test
+		if (IsDebugMode) {
+			TextOut(hdc, 10, 10, L"Debug Mode", strlen("Debug Mode"));
+			RECT playerBox = player.GetAABB();
+			RECT monsterBox = monster.GetAABB();
+			HPEN MyPen, OldPen;
+			HBRUSH MyBrush, OldBrush;
 
+			if (!player.IsCollided(monster))
+			{
+				MyPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
+			}
+			else
+			{
+				MyPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+			}
+			OldPen = (HPEN)SelectObject(hdc, MyPen);
+			MyBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+			OldBrush = (HBRUSH)SelectObject(hdc, MyBrush);
+
+			// Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
+			Rectangle(hdc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
+			Rectangle(hdc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
+
+			SelectObject(hdc, OldPen);
+			DeleteObject(MyPen);
+			SelectObject(hdc, OldBrush);
+			DeleteObject(MyBrush);
+		}
+		
 		//가온-코인, 왜 안그려지냐 일단???? 
 		TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.iWidth / 2, TestCoin.iHeight / 2, TestCoin.iWidth * TestCoin.uSpriteCount, TestCoin.iHeight, TestCoin.iWidth,TestCoin.iHeight);
 
@@ -207,6 +238,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			player.bJumpKeyPressed = TRUE;
 			// player.SetSpriteY(2);	// Sprite 의 Y 위치임. 0 - 기본, 1 - 오른쪽 이동, 2 - 점프, 3 - 왼쪽 이동
 
+		}
+		if (wParam == 0x44) {
+			if (IsDebugMode)	IsDebugMode = false;
+			else IsDebugMode = true;
 		}
 		break;
 

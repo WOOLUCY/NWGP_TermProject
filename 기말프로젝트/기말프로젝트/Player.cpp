@@ -10,10 +10,12 @@ Player::Player()
 	myImage[1] = nullptr;
 	myImage[2] = nullptr;
 	myImage[3] = nullptr;
-	aabb.bottom = 0;
-	aabb.left = 0;
-	aabb.right = 0;
-	aabb.top = 0;
+
+	// W AABB initialization
+	aabb.bottom = iYpos + (iHeight / 2);
+	aabb.left = iXpos;
+	aabb.right = iXpos + (iWidth / 2);
+	aabb.top = iYpos;
 	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.3);		// 플레이어 기본 속도는 이것
 
 
@@ -79,6 +81,12 @@ void Player::UpdatePlayerLocation()
 	// dir = std::clamp(-1, (int)velocity.x, 1);
 	iXpos += velocity.x;
 	iYpos += velocity.y;
+
+	// W update collision box
+	aabb.bottom = iYpos + (iHeight / 2);
+	aabb.left = iXpos;
+	aabb.right = iXpos + (iWidth / 2);
+	aabb.top = iYpos;
 }
 
 void Player::ChangeSprite(int* count)
@@ -88,4 +96,16 @@ void Player::ChangeSprite(int* count)
 		*count = 0;
 	}
 	*count += 1;
+}
+
+bool Player::IsCollided(CMonster monster)
+{
+	RECT A = aabb;
+	RECT B = monster.GetAABB();
+
+	if (A.bottom < B.top) return false;
+	if (A.right < B.left) return false;
+	if (A.left > B.right) return false;
+	if (A.top > B.bottom) return false;
+	return true;
 }

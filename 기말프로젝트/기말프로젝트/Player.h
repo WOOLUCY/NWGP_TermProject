@@ -1,5 +1,6 @@
 #pragma once
 #include "global.h"
+#include "CMonster.h"
 
 #include <atlImage.h>
 
@@ -91,6 +92,9 @@ public:
 	void Jump(USHORT spriteCnt);
 	void ChangeSprite(int* count);
 	void UpdatePlayerLocation();
+
+	// W collsion
+	bool IsCollided(CMonster monster);
 };
 
 
