@@ -5,7 +5,7 @@
 #include <mmsystem.h>
 
 #include "Player.h"
-#include "Monster.h"
+#include "CMonster.h"
 #include "Background.h"
 
 #include "Coin.h"
@@ -17,7 +17,7 @@ using namespace std;
 void UpdatePlayerInput(WPARAM Input, Player player);
 
 LPCTSTR lpszClass = L"Window Class Name";
-LPCTSTR lpszWindowName = L"windows program";
+LPCTSTR lpszWindowName = L"쿠키런 이스케이프";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
@@ -101,6 +101,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static Coin TestCoin(0, 100);
 	TestCoin.myImage = &coinImg;
 
+	// W 몬스터 생성
+	static CImage MonsterImg;
+	static CMonster monster;
+	monster.myImage[0] = &MonsterImg;
 
 	time_t frame_time{};
 	time_t current_time = time(NULL);
@@ -115,6 +119,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		backgroundImg.Load(L"Image/BackGround.png");
 		ground.Load(L"Image/ground.png");
 		playerImg.Load(L"Image/Cookies2-1.png");
+
+		// W 몬스터이미지 로드
+		MonsterImg.Load(L"Image/Monster.png");
 
 		//가온 - 코인이미지 로드 일단 하트로 해보겟음
 		coinImg.Load(L"Image/sheart.png");
@@ -137,6 +144,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 2560, 1600);
 		ground.Draw(mem1dc, 0, 130, rect.right, rect.bottom, 0, 0, ground.GetWidth(), ground.GetHeight());
 		player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
+
+		// W Monster Draw
+		monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
 
 		//가온-코인, 왜 안그려지냐 일단???? 
 		TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.iWidth / 2, TestCoin.iHeight / 2, TestCoin.iWidth * TestCoin.uSpriteCount, TestCoin.iHeight, TestCoin.iWidth,TestCoin.iHeight);
@@ -164,6 +174,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			frame_time = time(NULL) - current_time;
 			frame_rate = 1.0 / frame_time;
 			current_time += frame_time;
+
+			monster.ChangeSprite(&spriteCnt);
+			monster.UpdateMonsterLocation();
 			break;
 
 		case 2:		// 플레이어의 '이동'을 담당하는 타이머
