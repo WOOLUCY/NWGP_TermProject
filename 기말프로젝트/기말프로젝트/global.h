@@ -3,7 +3,6 @@
 #include <atlImage.h>
 
 
-
 struct POS {
 	float x = 0, y = 0;
 
@@ -24,3 +23,5 @@ struct IMAGE {
 //int CLAMP(int minimum, int x, int maximum) {
 //	return max(minimum, min(x, maximum));
 //}
+
+

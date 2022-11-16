@@ -14,6 +14,11 @@
 
 using namespace std;
 
+#define SERVERIP   "127.0.0.1"
+#define SERVERPORT 9000
+#define BUFSIZE    512
+
+
 bool IsDebugMode = false;
 void UpdatePlayerInput(WPARAM Input, Player player);
 
@@ -22,8 +27,18 @@ LPCTSTR lpszWindowName = L"쿠키런 이스케이프";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
+HINSTANCE hInst; // 인스턴스 핸들
+HWND hEdit; // 에디트 컨트롤
+HWND hButtonEdit; // 에디트 컨트롤
+
+
+#define	CHILD_BUTTON	101
+#define	CHILD_ID_EDIT	102
+
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
+	hInst = hInstance;
 	HWND hWnd;
 	MSG Message;
 	WNDCLASSEX WndClass;
@@ -73,7 +88,6 @@ struct BLOCK {
 	int width;
 };
 
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc, mem1dc;
@@ -87,10 +101,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	BLOCK Block_local[25] = { 0 };
 
+	static Background startBackground;
 	static Background background;
+	static CImage startbackgroundImg;
 	static CImage backgroundImg;
 	static CImage ground;
 
+	startBackground.Image = &startbackgroundImg;
 	background.Image = &backgroundImg;	// Background 클래스의 Image 는 CImage 를 가르킨다.
 	
 	static CImage playerImg;
@@ -113,10 +130,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static int spriteCnt = 0;
 	static USHORT curSpriteCnt = 0;
 
+	// ID
+	static LPWSTR id;
+	static bool enterID = FALSE;
+	static WCHAR wID[21] = { NULL };
+
 	switch (iMsg) {
 	case WM_CREATE:
 		// PlaySound(L"start.wav", NULL, SND_ASYNC);	// 듣기 싫어서 사운드 막아둠 ㅎㅎ
-
+		startbackgroundImg.Load(L"Image/ID입력창.png");
 		backgroundImg.Load(L"Image/BackGround.png");
 		ground.Load(L"Image/ground.png");
 		playerImg.Load(L"Image/Cookies2-1.png");
@@ -127,13 +149,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		//가온 - 코인이미지 로드 일단 하트로 해보겟음
 		coinImg.Load(L"Image/sheart.png");
 
+		startBackground.setHeight(startBackground.Image->GetWidth());
+		startBackground.setHeight(startBackground.Image->GetHeight());
 		background.SetWidth(background.Image->GetWidth());
 		background.setHeight(background.Image->GetHeight());
 		// 플레이어의 Width, Height 크기는 170, 148 로 고정이라 구하지 않음
 
 		GetClientRect(hWnd, &rect);
-		SetTimer(hWnd, 1, 30, NULL);
-
 		break;
 
 	case WM_PAINT:
@@ -142,46 +164,58 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		mem1dc = CreateCompatibleDC(hdc);
 		SelectObject(mem1dc, hBitmap);
 
-		background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 2560, 1600);
-		ground.Draw(mem1dc, 0, 130, rect.right, rect.bottom, 0, 0, ground.GetWidth(), ground.GetHeight());
-		player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
+		if (enterID == FALSE) {
+			startBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
 
-		// W Monster Draw
-		monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
-		
-		// W Collision Box Test
-		if (IsDebugMode) {
-			TextOut(hdc, 10, 10, L"Debug Mode", strlen("Debug Mode"));
-			RECT playerBox = player.GetAABB();
-			RECT monsterBox = monster.GetAABB();
-			HPEN MyPen, OldPen;
-			HBRUSH MyBrush, OldBrush;
-
-			if (!player.IsCollided(monster))
-			{
-				MyPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
-			}
-			else
-			{
-				MyPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-			}
-			OldPen = (HPEN)SelectObject(hdc, MyPen);
-			MyBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
-			OldBrush = (HBRUSH)SelectObject(hdc, MyBrush);
-
-			// Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
-			Rectangle(hdc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
-			Rectangle(hdc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
-
-			SelectObject(hdc, OldPen);
-			DeleteObject(MyPen);
-			SelectObject(hdc, OldBrush);
-			DeleteObject(MyBrush);
+			hEdit = CreateWindow(L"edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL | ES_LEFT,
+				895, 385, 130, 30, hWnd, (HMENU)CHILD_ID_EDIT, hInst, NULL);
+			hButtonEdit = CreateWindow(L"button", L"접속", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+				890, 505, 80, 40, hWnd, (HMENU)CHILD_BUTTON, hInst, NULL);
+			// ShowWindow(hButtonEdit, SW_HIDE);
 		}
-		
-		//가온-코인, 왜 안그려지냐 일단???? 
-		TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.iWidth / 2, TestCoin.iHeight / 2, TestCoin.iWidth * TestCoin.uSpriteCount, TestCoin.iHeight, TestCoin.iWidth,TestCoin.iHeight);
 
+		else {
+			TextOut(hdc, player.iXpos + 30 - wcslen(player.GetId()) * 2, player.iYpos - 20, player.GetId(), wcslen(wID));
+			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 2560, 1600);
+			ground.Draw(mem1dc, 0, 130, rect.right, rect.bottom, 0, 0, ground.GetWidth(), ground.GetHeight());
+			player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
+			//TextOut(hdc, player.iXpos - 10, player.iYpos, (LPCWSTR)player.GetId(), wcslen(player.GetId()));
+			// W Monster Draw
+			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
+
+			// W Collision Box Test
+			if (IsDebugMode) {
+				TextOut(hdc, 10, 10, L"Debug Mode", strlen("Debug Mode"));
+				RECT playerBox = player.GetAABB();
+				RECT monsterBox = monster.GetAABB();
+				HPEN MyPen, OldPen;
+				HBRUSH MyBrush, OldBrush;
+
+				if (!player.IsCollided(monster))
+				{
+					MyPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
+				}
+				else
+				{
+					MyPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+				}
+				OldPen = (HPEN)SelectObject(hdc, MyPen);
+				MyBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+				OldBrush = (HBRUSH)SelectObject(hdc, MyBrush);
+
+				// Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
+				Rectangle(hdc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
+				Rectangle(hdc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
+
+				SelectObject(hdc, OldPen);
+				DeleteObject(MyPen);
+				SelectObject(hdc, OldBrush);
+				DeleteObject(MyBrush);
+			}
+
+			//가온-코인, 왜 안그려지냐 일단???? 
+			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.iWidth / 2, TestCoin.iHeight / 2, TestCoin.iWidth * TestCoin.uSpriteCount, TestCoin.iHeight, TestCoin.iWidth, TestCoin.iHeight);
+		}
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);
 		DeleteObject(hBitmap);
 		DeleteDC(mem1dc);
@@ -220,16 +254,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		InvalidateRect(hWnd, NULL, FALSE);
 		break;
 
+	case WM_COMMAND:
+		switch (LOWORD(wParam)) {
+		case CHILD_BUTTON:
+			if (wID != NULL) {
+				player.SetId(wID);
+				GetWindowText(hEdit, wID, 20);
+				enterID = TRUE;
+				SetTimer(hWnd, 1, 30, NULL);
+				DestroyWindow(hEdit);
+				DestroyWindow(hButtonEdit);
+				// SetWindowText(hEdit, L"Aaa");
+			}
+			break;
+		case CHILD_ID_EDIT:
+			switch (LOWORD(wParam)) {
+				GetWindowText(hEdit, wID, 20);
+				SetWindowText(hEdit, wID);
+			}
+			break;
+		}
+		break;
+				
+
 	case WM_KEYDOWN:
 		if (wParam == VK_LEFT) {
 			player.velocity.x = -player.GetRunSpeed();
 			curSpriteCnt = 3;
 			player.SetSpriteY(3);
+			player.input.bLeft = TRUE;
 		}
 		if (wParam == VK_RIGHT) {
 			player.velocity.x = player.GetRunSpeed();
 			curSpriteCnt = 1;
 			player.SetSpriteY(1);
+			player.input.bRight = TRUE;
 		}
 		if (wParam == VK_UP) {
 
@@ -237,6 +296,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		if (wParam == VK_SPACE) {
 			player.bJumpKeyPressed = TRUE;
 			// player.SetSpriteY(2);	// Sprite 의 Y 위치임. 0 - 기본, 1 - 오른쪽 이동, 2 - 점프, 3 - 왼쪽 이동
+			player.input.bSpace = TRUE;
 
 		}
 		if (wParam == 0x44) {
@@ -250,11 +310,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			player.velocity.x = 0;
 			curSpriteCnt = 0;
 			player.SetSpriteY(0);
+			player.input.bLeft = FALSE;
 		}
 		if (wParam == VK_RIGHT) {
 			player.velocity.x = 0;
 			curSpriteCnt = 0;
 			player.SetSpriteY(0);
+			player.input.bLeft = FALSE;
 		}
 		if (wParam == VK_UP) {
 
@@ -267,8 +329,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_DESTROY:
 		KillTimer(hWnd, 1);
-		KillTimer(hWnd, 2);
-		KillTimer(hWnd, 3);
 
 		PostQuitMessage(0);
 

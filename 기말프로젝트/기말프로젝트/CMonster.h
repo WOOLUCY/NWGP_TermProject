@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "global.h"
 #include <atlImage.h>
 

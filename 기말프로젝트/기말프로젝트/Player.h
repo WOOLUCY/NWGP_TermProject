@@ -1,13 +1,18 @@
 #pragma once
 #include "global.h"
 #include "CMonster.h"
-
 #include <atlImage.h>
+
+struct KeyInput {
+	bool            bRight;
+	bool            bLeft;
+	bool            bSpace;
+};
 
 class Player
 {
 private:
-	wchar_t wId;
+	LPCWCHAR wId;
 
 	int		iWidth = 170;	// draw 에 필요한 width, height 추가
 	int		iHeight = 148;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
@@ -35,14 +40,15 @@ public:
 	int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음
 	int		iYpos;
 	int		dir;
-	POS		velocity = { 0, 0 };
+	POS		velocity;
 	bool	bJumpKeyPressed = FALSE;
 	float	fJumpTime;
 	float	JumpHeight;
+	KeyInput input;
 
 public:
-	wchar_t GetId() { return wId; }
-	void SetId(wchar_t in) { wId = in; }
+	LPCWCHAR GetId() { return wId; }
+	void SetId(LPCWCHAR in) { wId = in; }
 
 	USHORT GetSpriteX() { return uSpriteX; }
 	void SetSpriteX(USHORT in) { uSpriteX = in; }
@@ -85,7 +91,7 @@ public:
 public: 
 	//생성자
 	Player();
-	Player(wchar_t id, USHORT sprite,USHORT charnum,POS position, POS Vel, USHORT heart, USHORT coin, bool find);
+	Player(LPCWCHAR id, USHORT sprite,USHORT charnum,POS position, POS Vel, USHORT heart, USHORT coin, bool find);
 	
 	~Player();
 	

@@ -17,7 +17,9 @@ Player::Player()
 	aabb.right = iXpos + (iWidth / 2);
 	aabb.top = iYpos;
 	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.3);		// 플레이어 기본 속도는 이것
-
+	velocity = { 0, 0 };
+	dir = 0;
+	input = { 0 };
 
 	bJumpKeyPressed = FALSE;
 	fJumpPower = 3.f;
@@ -25,7 +27,7 @@ Player::Player()
 	JumpHeight = 0;
 }
 
-Player::Player(wchar_t id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)
+Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)
 	:wId(id), uSpriteX(sprite), uCharnum(charnum), iXpos(position.x), iYpos(position.y), pVel(Vel), sHeart(heart), uCoin(coin), bFind(find)
 {
 	//이미지 설정하기 
@@ -66,6 +68,7 @@ void Player::Jump(USHORT spriteCnt)
 		fJumpTime = 0;
 		velocity.y = 0;
 		bJumpKeyPressed = FALSE;
+		input.bSpace = FALSE;
 	}
 	if (iYpos > 620) {
 		SetSpriteY(spriteCnt);
@@ -73,6 +76,7 @@ void Player::Jump(USHORT spriteCnt)
 		velocity.y = 0;
 		bJumpKeyPressed = FALSE;
 		iYpos = 620;
+		input.bSpace = FALSE;
 	}
 }
 
