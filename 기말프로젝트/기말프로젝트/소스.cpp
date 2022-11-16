@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "CMonster.h"
 #include "Background.h"
+#include "Platform.h"
 #include "Collision.h"
 
 #include "Coin.h"
@@ -117,7 +118,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
 	static CImage coinImg;
 	static Coin TestCoin;
+	static CImage platformImg;
+	static Platform TestPlatform;
+
 	TestCoin.myImage = &coinImg;
+	TestPlatform.myImage = &platformImg;
 
 	// W 몬스터 생성
 	static CImage MonsterImg;
@@ -148,6 +153,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		//가온 - 코인이미지 로드 
 		coinImg.Load(L"Image/coin.png");
+		platformImg.Load(L"Image/Platform.png");
+
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -184,6 +191,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
 			//가온-코인그리기 
 			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
+			TestPlatform.myImage->Draw(mem1dc, TestPlatform.iXpos, TestPlatform.iYpos, TestPlatform.GetWidth() / 2, TestPlatform.GetHeight() / 2, 0 , 0, TestPlatform.GetWidth(), TestPlatform.GetHeight());
 
 			// W Collision Box Test
 			if (IsDebugMode) {
@@ -191,6 +199,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				RECT playerBox = player.GetAABB();
 				RECT monsterBox = monster.GetAABB();
 				RECT CoinBox = TestCoin.GetAABB();
+				RECT platformbox = TestPlatform.GetAABB();
+
 				HPEN MyPen, OldPen;
 				HBRUSH MyBrush, OldBrush;
 
@@ -210,6 +220,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				Rectangle(hdc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
 				Rectangle(hdc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
 				Rectangle(hdc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
+				Rectangle(hdc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
 
 				SelectObject(hdc, OldPen);
 				DeleteObject(MyPen);

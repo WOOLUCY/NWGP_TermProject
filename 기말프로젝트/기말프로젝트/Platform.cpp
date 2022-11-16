@@ -1,9 +1,11 @@
 #include "Platform.h"
 
 Platform::Platform()
-	:uSpriteX(0), uSpriteY(0), iXpos(340), iYpos(625), iRange(60)
+	: iXpos(340), iYpos(100), iRange(60)
 
 {
+	myImage = nullptr;
+
 	iMaxX = iXpos + iRange;
 	iMinX = iXpos - iRange;
 
@@ -12,7 +14,21 @@ Platform::Platform()
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
-	aabb.top = iYpos;
+	aabb.top = iYpos+ (iHeight*0.25);
+}
+
+Platform::Platform(int xpos, int ypos)
+{
+		myImage = nullptr;
+
+	iXpos = xpos;
+	iYpos = ypos;
+
+	aabb.bottom = iYpos + (iHeight / 2);
+	aabb.left = iXpos;
+	aabb.right = iXpos + (iWidth / 2);
+	aabb.top = iYpos + (iHeight * 0.25);
+
 }
 
 
