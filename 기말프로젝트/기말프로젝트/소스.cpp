@@ -116,7 +116,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
 	static CImage coinImg;
-	static Coin TestCoin(0, 100);
+	static Coin TestCoin;
 	TestCoin.myImage = &coinImg;
 
 	// W 몬스터 생성
@@ -146,8 +146,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		// W 몬스터이미지 로드
 		MonsterImg.Load(L"Image/Monster.png");
 
-		//가온 - 코인이미지 로드 일단 하트로 해보겟음
-		coinImg.Load(L"Image/sheart.png");
+		//가온 - 코인이미지 로드 
+		coinImg.Load(L"Image/coin.png");
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -182,12 +182,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			//TextOut(hdc, player.iXpos - 10, player.iYpos, (LPCWSTR)player.GetId(), wcslen(player.GetId()));
 			// W Monster Draw
 			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
+			//가온-코인그리기 
+			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
 
 			// W Collision Box Test
 			if (IsDebugMode) {
 				TextOut(hdc, 10, 10, L"Debug Mode", strlen("Debug Mode"));
 				RECT playerBox = player.GetAABB();
 				RECT monsterBox = monster.GetAABB();
+				RECT CoinBox = TestCoin.GetAABB();
 				HPEN MyPen, OldPen;
 				HBRUSH MyBrush, OldBrush;
 
@@ -206,6 +209,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				// Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
 				Rectangle(hdc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
 				Rectangle(hdc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
+				Rectangle(hdc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
 
 				SelectObject(hdc, OldPen);
 				DeleteObject(MyPen);
@@ -213,8 +217,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				DeleteObject(MyBrush);
 			}
 
-			//가온-코인, 왜 안그려지냐 일단???? 
-			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.iWidth / 2, TestCoin.iHeight / 2, TestCoin.iWidth * TestCoin.uSpriteCount, TestCoin.iHeight, TestCoin.iWidth, TestCoin.iHeight);
 		}
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);
 		DeleteObject(hBitmap);
@@ -242,6 +244,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 			monster.ChangeSprite(&spriteCnt);
 			monster.UpdateMonsterLocation();
+
+			TestCoin.ChangeSprite();
 			break;
 
 		case 2:		// 플레이어의 '이동'을 담당하는 타이머

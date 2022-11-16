@@ -1,23 +1,56 @@
 #include "Coin.h"
 
-void Coin::ChangeSprite()
+
+#include "global.h"
+
+Coin::Coin()
+	:uSpriteX(0), uSpriteY(0),  iXpos(340), iYpos(500), iRange(60)
+
 {
-	//스프라이트 돌리는 함수
+	iMaxX = iXpos + iRange;
+	iMinX = iXpos - iRange;
+
+	//일단 걍다 0으로 초기화함 
+
+	aabb.bottom = iYpos + (iHeight / 2);
+	aabb.left = iXpos;
+	aabb.right = iXpos + (iWidth / 2);
+	aabb.top = iYpos;
+}
+
+Coin::Coin(int xpos, int ypos)
+{
+	iXpos = xpos;
+	iYpos = ypos;
+
 	
-	++uSpriteCount;
-	if (uSpriteCount == 4) {
-		uSpriteCount = 0;
-	}
-	
+	aabb.bottom = iYpos + (iHeight / 2);
+	aabb.left = iXpos;
+	aabb.right = iXpos + (iWidth / 2);
+	aabb.top = iYpos;
+
 }
 
 
-////일단 플레이어랑 똑같이함 
-//void Coin::ChangeSprite(t)
-//{
-//	if (*count == 3) {
-//		uSpriteX = (uSpriteX + 1) % 4;
-//		*count = 0;
-//	}
-//	*count += 1;
-//}
+
+Coin::~Coin()
+{
+	//일단 만들어놓음 근데 필요없을것같긴한데,,,,
+}
+
+
+void Coin::UpdateCoin()
+{
+	if (bIsCrush) return;
+
+	
+
+}
+
+void Coin::ChangeSprite()
+{
+	if (uSpriteX ==4) {
+		uSpriteX = 0;
+	}
+	++uSpriteX;
+}
