@@ -1,6 +1,7 @@
 #pragma once
 #include "global.h"
 #include "CMonster.h"
+#include "Coin.h"
 #include <atlImage.h>
 
 struct KeyInput {
@@ -100,7 +101,8 @@ public:
 	void UpdatePlayerLocation();
 
 	// W collsion
-	bool IsCollided(CMonster monster);
+	bool IsCollidedMonster(CMonster monster);
+	bool IsCollidedCoin(Coin coin);
 };
 
 
