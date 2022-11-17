@@ -182,7 +182,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		else {
-			TextOut(hdc, player.iXpos + 30 - wcslen(player.GetId()) * 2, player.iYpos - 20, player.GetId(), wcslen(wID));
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 2560, 1600);
 			ground.Draw(mem1dc, 0, 130, rect.right, rect.bottom, 0, 0, ground.GetWidth(), ground.GetHeight());
 			player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
@@ -193,9 +192,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
 			TestPlatform.myImage->Draw(mem1dc, TestPlatform.iXpos, TestPlatform.iYpos, TestPlatform.GetWidth() / 2, TestPlatform.GetHeight() / 2, 0 , 0, TestPlatform.GetWidth(), TestPlatform.GetHeight());
 
+			// ID Ãâ·Â
+			SetBkMode(mem1dc, TRANSPARENT);
+			SetTextAlign(mem1dc, TA_CENTER);
+			TextOut(mem1dc, player.iXpos + 35, player.iYpos - 20, player.GetId(), wcslen(wID));
+
 			// W Collision Box Test
 			if (IsDebugMode) {
-				TextOut(hdc, 10, 10, L"Debug Mode", strlen("Debug Mode"));
+				SetTextAlign(mem1dc, TA_LEFT);
+				TextOut(mem1dc, 10, 10, L"Debug Mode", strlen("Debug Mode"));
 				RECT playerBox = player.GetAABB();
 				RECT monsterBox = monster.GetAABB();
 				RECT CoinBox = TestCoin.GetAABB();
@@ -212,19 +217,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				{
 					MyPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 				}
-				OldPen = (HPEN)SelectObject(hdc, MyPen);
+				OldPen = (HPEN)SelectObject(mem1dc, MyPen);
 				MyBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
-				OldBrush = (HBRUSH)SelectObject(hdc, MyBrush);
+				OldBrush = (HBRUSH)SelectObject(mem1dc, MyBrush);
 
 				// Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
-				Rectangle(hdc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
-				Rectangle(hdc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
-				Rectangle(hdc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
-				Rectangle(hdc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
+				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
+				Rectangle(mem1dc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
+				Rectangle(mem1dc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
+				Rectangle(mem1dc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
 
-				SelectObject(hdc, OldPen);
+				SelectObject(mem1dc, OldPen);
 				DeleteObject(MyPen);
-				SelectObject(hdc, OldBrush);
+				SelectObject(mem1dc, OldBrush);
 				DeleteObject(MyBrush);
 			}
 
@@ -232,6 +237,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);
 		DeleteObject(hBitmap);
 		DeleteDC(mem1dc);
+		DeleteDC(hdc);
 		EndPaint(hWnd, &ps);
 		break;
 
