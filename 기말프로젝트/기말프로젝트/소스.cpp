@@ -223,8 +223,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				// Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
 				Rectangle(mem1dc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
-				Rectangle(mem1dc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
-				Rectangle(mem1dc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
+
+				//Rectangle(mem1dc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
+				//Rectangle(mem1dc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
 
 				SelectObject(mem1dc, OldPen);
 				DeleteObject(MyPen);

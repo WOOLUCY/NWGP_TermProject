@@ -1,6 +1,6 @@
 #include <ctime>
 #include <vector>
-#include "Monster.h"
+#include "CMonster.h"
 #include "Coin.h"
 #include "Player.h"
 using namespace std;
@@ -18,6 +18,6 @@ struct RecvGameData {
 	bool            bWin;
 	bool            bIsPlaying;
 
-	vector<Monster> monsters;
+	vector<CMonster> monsters;
 	vector<Coin>    coins;
 };
