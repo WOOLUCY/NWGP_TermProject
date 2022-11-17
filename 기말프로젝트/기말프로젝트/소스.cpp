@@ -159,6 +159,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		startBackground.setHeight(startBackground.Image->GetHeight());
 		background.SetWidth(background.Image->GetWidth());
 		background.setHeight(background.Image->GetHeight());
+
 		// 플레이어의 Width, Height 크기는 170, 148 로 고정이라 구하지 않음
 
 		GetClientRect(hWnd, &rect);
@@ -208,7 +209,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				HPEN MyPen, OldPen;
 				HBRUSH MyBrush, OldBrush;
 
-				if (!player.IsCollided(monster))
+				if (!player.IsCollidedMonster(monster))
 				{
 					MyPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
 				}
@@ -224,8 +225,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
 				Rectangle(mem1dc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
 
-				//Rectangle(mem1dc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
-				//Rectangle(mem1dc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
+				if (!player.IsCollidedCoin(TestCoin))
+				{
+				}
+
+				Rectangle(mem1dc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
+				Rectangle(mem1dc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
 
 				SelectObject(mem1dc, OldPen);
 				DeleteObject(MyPen);

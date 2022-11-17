@@ -102,10 +102,22 @@ void Player::ChangeSprite(int* count)
 	*count += 1;
 }
 
-bool Player::IsCollided(CMonster monster)
+bool Player::IsCollidedMonster(CMonster monster)
 {
 	RECT A = aabb;
 	RECT B = monster.GetAABB();
+
+	if (A.bottom < B.top) return false;
+	if (A.right < B.left) return false;
+	if (A.left > B.right) return false;
+	if (A.top > B.bottom) return false;
+	return true;
+}
+
+bool Player::IsCollidedCoin(Coin coin)
+{
+	RECT A = aabb;
+	RECT B = coin.GetAABB();
 
 	if (A.bottom < B.top) return false;
 	if (A.right < B.left) return false;
