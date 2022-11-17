@@ -49,7 +49,7 @@ void Coin::UpdateCoin()
 
 void Coin::ChangeSprite()
 {
-	if (uSpriteX ==4) {
+	if (uSpriteX ==12) {
 		uSpriteX = 0;
 	}
 	++uSpriteX;

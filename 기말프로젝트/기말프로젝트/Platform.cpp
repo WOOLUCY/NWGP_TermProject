@@ -19,7 +19,7 @@ Platform::Platform()
 
 Platform::Platform(int xpos, int ypos)
 {
-		myImage = nullptr;
+	myImage = nullptr;
 
 	iXpos = xpos;
 	iYpos = ypos;

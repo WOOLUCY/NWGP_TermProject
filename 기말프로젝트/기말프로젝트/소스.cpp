@@ -152,7 +152,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		MonsterImg.Load(L"Image/Monster.png");
 
 		//가온 - 코인이미지 로드 
-		coinImg.Load(L"Image/coin.png");
+		coinImg.Load(L"Image/coin2.png");
 		platformImg.Load(L"Image/Platform2.png");
 
 
