@@ -155,7 +155,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		coinImg.Load(L"Image/coin2.png");
 		platformImg.Load(L"Image/Platform2.png");
 
-
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
 		background.SetWidth(background.Image->GetWidth());
@@ -283,10 +282,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				GetWindowText(hEdit, wID, 20);
 				enterID = TRUE;
 				SetTimer(hWnd, 1, 30, NULL);
-				DestroyWindow(hEdit);
-				DestroyWindow(hButtonEdit);
 				// SetWindowText(hEdit, L"Aaa");
 			}
+			DestroyWindow(hEdit);
+			DestroyWindow(hButtonEdit);
 			break;
 		case CHILD_ID_EDIT:
 			switch (LOWORD(wParam)) {
