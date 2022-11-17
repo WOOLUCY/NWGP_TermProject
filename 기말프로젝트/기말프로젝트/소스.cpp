@@ -153,7 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		//가온 - 코인이미지 로드 
 		coinImg.Load(L"Image/coin.png");
-		platformImg.Load(L"Image/Platform.png");
+		platformImg.Load(L"Image/Platform2.png");
 
 
 		startBackground.setHeight(startBackground.Image->GetWidth());

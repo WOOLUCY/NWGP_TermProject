@@ -10,8 +10,8 @@
 class Platform
 {
 private:
-	int		iWidth = 256;	// draw 에 필요한 width, height 추가
-	int		iHeight = 256;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
+	int		iWidth = 600;	// draw 에 필요한 width, height 추가
+	int		iHeight = 60;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
 	int		iRange;
 
 	RECT	aabb;

@@ -113,3 +113,4 @@ bool Player::IsCollided(CMonster monster)
 	if (A.top > B.bottom) return false;
 	return true;
 }
+

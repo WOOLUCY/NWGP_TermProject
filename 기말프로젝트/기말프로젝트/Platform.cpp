@@ -1,7 +1,7 @@
 #include "Platform.h"
 
 Platform::Platform()
-	: iXpos(340), iYpos(100), iRange(60)
+	: iXpos(340), iYpos(600), iRange(60)
 
 {
 	myImage = nullptr;
@@ -14,7 +14,7 @@ Platform::Platform()
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
-	aabb.top = iYpos+ (iHeight*0.25);
+	aabb.top = iYpos;
 }
 
 Platform::Platform(int xpos, int ypos)
@@ -27,8 +27,7 @@ Platform::Platform(int xpos, int ypos)
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
-	aabb.top = iYpos + (iHeight * 0.25);
-
+	aabb.top = iYpos;
 }
 
 
