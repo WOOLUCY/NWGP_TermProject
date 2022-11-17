@@ -9,15 +9,21 @@
 #include "Background.h"
 #include "Platform.h"
 #include "Collision.h"
+#include "SendRecvData.h"
 
 #include "Coin.h"
 #include <time.h>
+
+#include "Common.h"
 
 using namespace std;
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
 #define BUFSIZE    512
+
+#define	CHILD_BUTTON	101		// 컨트롤박스용
+#define	CHILD_ID_EDIT	102
 
 
 bool IsDebugMode = false;
@@ -28,14 +34,13 @@ LPCTSTR lpszWindowName = L"쿠키런 이스케이프";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
-HINSTANCE hInst; // 인스턴스 핸들
-HWND hEdit; // 에디트 컨트롤
-HWND hButtonEdit; // 에디트 컨트롤
+HINSTANCE hInst;	// 인스턴스 핸들
+HWND hEdit;			// 에디트 컨트롤
+HWND hButtonEdit;	// 에디트 컨트롤
 
 
-#define	CHILD_BUTTON	101
-#define	CHILD_ID_EDIT	102
-
+static int retval;
+SOCKET sock;		// 소켓
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -72,6 +77,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 		hInstance,
 		NULL
 	);
+
+
+	/* ------------ 서버 연결용 ------------ */
+	// 윈속 초기화
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+
+	// 소켓 생성
+	/* 밑의 주석 지우면 서버 연결됩니다 */
+	//sock = socket(AF_INET, SOCK_STREAM, 0);
+	//if (sock == INVALID_SOCKET) err_quit("socket()");
+	//// connect()
+	//struct sockaddr_in serveraddr;
+	//memset(&serveraddr, 0, sizeof(serveraddr));
+	//serveraddr.sin_family = AF_INET;
+	//inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
+	//serveraddr.sin_port = htons(SERVERPORT);
+	//retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	//if (retval == SOCKET_ERROR) err_quit("connect()");
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -136,9 +161,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static USHORT curSpriteCnt = 0;
 
 	// ID
-	static LPWSTR id;
-	static bool enterID = FALSE;
-	static WCHAR wID[21] = { NULL };
+	static bool enterID = FALSE;		// ID 입력 후 '게임 시작' 판단용
+	static TCHAR wID[21] = { NULL };
+	static bool containID = FALSE;		// ID 에 문자 하나라도 들어갔는지 검사
+
+	/* ------------ 서버 연결용 ------------ */
+	struct SendPlayerData PlayerData;
+
+	// 데이터 통신에 사용할 변수
+	struct SendPlayerData buf;
+	const char* testData;
 
 	switch (iMsg) {
 	case WM_CREATE:
@@ -283,21 +315,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case CHILD_BUTTON:
-			if (wID != NULL) {
+			if (containID == TRUE) {
 				player.SetId(wID);
 				GetWindowText(hEdit, wID, 20);
-				enterID = TRUE;
 				SetTimer(hWnd, 1, 30, NULL);
+				enterID = TRUE;
+				// semin 여기서 버튼 누르면 id 전송하게 했는데
+				// ㅅㅂ 열라 안됨 개빡쳐
+				char id_send[BUFSIZE];
+
+				// 가변 길이 << 근데 ID 짧은 걸 가변길이로 보낼 필요가 있나
+				int namelen = (int)strlen((char*)wID);
+				strncpy(id_send, (char*)(LPCTSTR)wID, namelen);
+
+				retval = send(sock, (char*)&namelen, sizeof(int), 0);
+				if (retval == SOCKET_ERROR) {
+					err_display("send()");
+				}
+
+				// Id send
+				retval = send(sock, id_send, namelen, 0);
+				if (retval == SOCKET_ERROR) {
+					err_display("send()");
+				}
+
 				// SetWindowText(hEdit, L"Aaa");
+				// buf.pPlayer = player;
 			}
+			else break;
 			DestroyWindow(hEdit);
 			DestroyWindow(hButtonEdit);
 			break;
 		case CHILD_ID_EDIT:
-			switch (LOWORD(wParam)) {
-				GetWindowText(hEdit, wID, 20);
+			if (LOWORD(wParam) == EN_CHANGE) {
 				SetWindowText(hEdit, wID);
+				GetWindowText(hEdit, wID, 20);
 			}
+			if (EN_CHANGE) containID = TRUE;
 			break;
 		}
 		break;
@@ -358,6 +412,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		PostQuitMessage(0);
 
+		if (retval == SOCKET_ERROR) {
+			err_display("send()");
+		}
+
+		// 소켓 닫기
+		closesocket(sock);
+
+		// 윈속 종료
+		WSACleanup();
+		return 0;
 		break;
 	
 		}

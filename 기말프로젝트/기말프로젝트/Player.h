@@ -5,15 +5,15 @@
 #include <atlImage.h>
 
 struct KeyInput {
-	bool            bRight;
-	bool            bLeft;
-	bool            bSpace;
+	bool            bRight = 0;
+	bool            bLeft = 0;
+	bool            bSpace = 0;
 };
 
 class Player
 {
 private:
-	LPCWCHAR wId;
+	LPCWCHAR wId = 0;
 
 	int		iWidth = 170;	// draw 에 필요한 width, height 추가
 	int		iHeight = 148;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
@@ -35,7 +35,7 @@ private:
 public:
 	CImage*	myImage[4]; //이거로 스프라이트 가리키면 될것같은데 
 	// 자주 참조할 것 같고 값이 변해도 상관 없는 애들은 public 으로 뺌
-	USHORT	uCharnum;
+	USHORT	uCharnum = 0;
 	USHORT	uSpriteX;
 	USHORT	uSpriteY;
 	int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음

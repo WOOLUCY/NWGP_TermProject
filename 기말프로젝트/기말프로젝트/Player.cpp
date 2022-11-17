@@ -95,6 +95,8 @@ void Player::UpdatePlayerLocation()
 
 void Player::ChangeSprite(int* count)
 {
+	// count 는 timer 의 시간에 따라 1 씩 올라감
+	// 밑의 조건문에 count == "숫자" 숫자 올릴수록 스프라이트는 천천히 돌아갈 것
 	if (*count == 3) {
 		uSpriteX = (uSpriteX + 1) % 4;
 		*count = 0;
