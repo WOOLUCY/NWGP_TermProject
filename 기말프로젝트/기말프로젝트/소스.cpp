@@ -33,6 +33,7 @@ LPCTSTR lpszClass = L"Window Class Name";
 LPCTSTR lpszWindowName = L"쿠키런 이스케이프";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
+char* ConvertWCtoC(wchar_t* str);
 
 HINSTANCE hInst;	// 인스턴스 핸들
 HWND hEdit;			// 에디트 컨트롤
@@ -87,16 +88,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
 	// 소켓 생성
 	/* 밑의 주석 지우면 서버 연결됩니다 */
-	//sock = socket(AF_INET, SOCK_STREAM, 0);
-	//if (sock == INVALID_SOCKET) err_quit("socket()");
-	//// connect()
-	//struct sockaddr_in serveraddr;
-	//memset(&serveraddr, 0, sizeof(serveraddr));
-	//serveraddr.sin_family = AF_INET;
-	//inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
-	//serveraddr.sin_port = htons(SERVERPORT);
-	//retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
-	//if (retval == SOCKET_ERROR) err_quit("connect()");
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET) err_quit("socket()");
+	// connect()
+	struct sockaddr_in serveraddr;
+	memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR) err_quit("connect()");
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -162,7 +163,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	// ID
 	static bool enterID = FALSE;		// ID 입력 후 '게임 시작' 판단용
-	static TCHAR wID[21] = { NULL };
+	static wchar_t wID[21] = { NULL };
 	static bool containID = FALSE;		// ID 에 문자 하나라도 들어갔는지 검사
 
 	/* ------------ 서버 연결용 ------------ */
@@ -325,16 +326,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				char id_send[BUFSIZE];
 
 				// 가변 길이 << 근데 ID 짧은 걸 가변길이로 보낼 필요가 있나
-				int namelen = (int)strlen((char*)wID);
-				strncpy(id_send, (char*)(LPCTSTR)wID, namelen);
-
-				retval = send(sock, (char*)&namelen, sizeof(int), 0);
-				if (retval == SOCKET_ERROR) {
-					err_display("send()");
-				}
 
 				// Id send
-				retval = send(sock, id_send, namelen, 0);
+				retval = send(sock, ConvertWCtoC(wID), sizeof(wchar_t) * 21, 0);
 				if (retval == SOCKET_ERROR) {
 					err_display("send()");
 				}
@@ -431,3 +425,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 void UpdatePlayerInput(WPARAM input, Player player) {
 };
+
+
+char* ConvertWCtoC(wchar_t* str)
+{
+	//반환할 char* 변수 선언
+	char* pStr;
+
+	//입력받은 wchar_t 변수의 길이를 구함
+	int strSize = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);
+
+	//char* 메모리 할당
+	pStr = new char[strSize];
+
+	//형 변환
+	WideCharToMultiByte(CP_ACP, 0, str, -1, pStr, strSize, 0, 0);
+
+	return pStr;
+}

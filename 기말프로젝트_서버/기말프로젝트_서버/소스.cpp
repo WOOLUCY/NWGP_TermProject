@@ -67,16 +67,8 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 	// 클라이언트와 데이터 통신
 	while (1) {
-		// 가변 길이
-		retval = recv(client_sock, (char*)&len, sizeof(int), MSG_WAITALL);
-		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
-			break;
-		}
-		else if (retval == 0) break;
-
 		// ID recv
-		retval = recv(client_sock, buf, len, MSG_WAITALL);
+		retval = recv(client_sock, buf, sizeof(wchar_t) * 21, MSG_WAITALL);
 		buf[retval] = '\0';
 
 		sprintf(testData, buf);
@@ -188,3 +180,4 @@ int main(int argc, char* argv[])
 	return 0;
 
 }
+
