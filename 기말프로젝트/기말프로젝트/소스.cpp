@@ -4,6 +4,8 @@
 #include <atlImage.h>
 #include <mmsystem.h>
 
+#include <vector>
+
 #include "Player.h"
 #include "CMonster.h"
 #include "Background.h"
@@ -26,6 +28,9 @@ using namespace std;
 #define	CHILD_ID_EDIT	102
 
 
+
+
+
 bool IsDebugMode = false;
 void UpdatePlayerInput(WPARAM Input, Player player);
 
@@ -44,7 +49,21 @@ static int retval;
 SOCKET sock;		// 소켓
 
 
-int testnum;
+int testnum[2];
+vector<Platform> TestPlatform;
+
+CImage platformImg;
+CImage coinImg;
+
+
+void LoadImg()
+{
+	
+	platformImg.Load(L"Image/Platform2.png");
+	coinImg.Load(L"Image/coin2.png");
+
+
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -82,6 +101,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 		NULL
 	);
 
+	LoadImg();
+
 
 	/* ------------ 서버 연결용 ------------ */
 	// 윈속 초기화
@@ -103,7 +124,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
 	//가온 - 플랫폼 데이터 일단 받기 - 테스트용 int 한개만 받고 잘 오는지확인용
-	retval = recv(sock, (char*)testnum, sizeof(int), 0);
+	//한번만 받을 데이터 여기서 받기로 일단함
+	//일단 고정길이 발판 갯수받기
+	int total;
+	retval = recv(sock, (char*)&total, sizeof(int), 0);
+	for (int i{ 0 }; i < total; ++i) {
+		retval = recv(sock, (char*)testnum, sizeof(int) * 2, 0);
+		TestPlatform.push_back(Platform(testnum[0], testnum[1], &platformImg));
+	}
+
+
+
 
 
 	ShowWindow(hWnd, nCmdShow);
@@ -149,24 +180,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	player.myImage[0] = &playerImg;		// Player 클래스의 myImage 는 CImage 를 가르킨다.
 
 	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
-	static CImage coinImg;
 	static Coin TestCoin;
 	static CImage platformImg;
 
-	static Platform TestPlatform[5];
+	//static Platform TestPlatform[5];
 
 	TestCoin.myImage = &coinImg;
-	TestPlatform[0].myImage = &platformImg;
-	TestPlatform[1].myImage = &platformImg;
-	TestPlatform[1].SetXPos(testnum);
-	TestPlatform[1].SetYPos(testnum);
-	//TestPlatform[1].iXpos = 200;
-	//TestPlatform[1].iYpos = 100;
-
-
-	TestPlatform[2].myImage = &platformImg;
-	TestPlatform[3].myImage = &platformImg;
-	TestPlatform[4].myImage = &platformImg;
 
 
 	// W 몬스터 생성
@@ -204,8 +223,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		MonsterImg.Load(L"Image/Monster.png");
 
 		//가온 - 코인이미지,플랫폼 로드 
-		coinImg.Load(L"Image/coin2.png");
-		platformImg.Load(L"Image/Platform2.png");
+	//	platformImg.Load(L"Image/Platform2.png");
+
+
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -242,8 +262,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
 			//가온-코인그리기 
 			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
-			TestPlatform[0].myImage->Draw(mem1dc, TestPlatform[0].iXpos, TestPlatform[0].iYpos, TestPlatform[0].GetWidth() / 2, TestPlatform[0].GetHeight() / 2, 0, 0, TestPlatform[0].GetWidth(), TestPlatform[0].GetHeight());
-			TestPlatform[1].myImage->Draw(mem1dc, TestPlatform[1].iXpos, TestPlatform[1].iYpos, TestPlatform[1].GetWidth() / 2, TestPlatform[1].GetHeight() / 2, 0, 0, TestPlatform[1].GetWidth(), TestPlatform[1].GetHeight());
+			//TestPlatform[0].myImage->Draw(mem1dc, TestPlatform[0].iXpos, TestPlatform[0].iYpos, TestPlatform[0].GetWidth() / 2, TestPlatform[0].GetHeight() / 2, 0, 0, TestPlatform[0].GetWidth(), TestPlatform[0].GetHeight());
+			//TestPlatform[1].myImage->Draw(mem1dc, TestPlatform[1].iXpos, TestPlatform[1].iYpos, TestPlatform[1].GetWidth() / 2, TestPlatform[1].GetHeight() / 2, 0, 0, TestPlatform[1].GetWidth(), TestPlatform[1].GetHeight());
+					
+			//가온 - 플랫폼 - 위치 서버에서 바꿔줘야함 걍 대충 바갑가ㅏㅏ함
+			for (Platform& temp : TestPlatform) {
+				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
+			}
+
+
+
+
+
+
 
 			// ID 출력
 			SetBkMode(mem1dc, TRANSPARENT);

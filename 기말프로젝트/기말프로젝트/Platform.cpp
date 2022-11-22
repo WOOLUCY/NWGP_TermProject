@@ -1,4 +1,5 @@
 #include "Platform.h"
+//CImage platformImg = CImage.Load(L"Image/Platform2.png");
 
 Platform::Platform()
 	: iXpos(340), iYpos(600), iRange(60)
@@ -17,9 +18,10 @@ Platform::Platform()
 	aabb.top = iYpos;
 }
 
-Platform::Platform(int xpos, int ypos)
+Platform::Platform(int xpos, int ypos,CImage* img)
 {
-	myImage = nullptr;
+
+	myImage = img;// &platformImg;
 
 	iXpos = xpos;
 	iYpos = ypos;

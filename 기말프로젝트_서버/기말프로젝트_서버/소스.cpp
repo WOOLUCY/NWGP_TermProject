@@ -7,6 +7,8 @@
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
+#define PLATFORMNUM 10
+
 HANDLE hWriteEvent;
 HANDLE hReadEvent;
 int buf[BUFSIZE];
@@ -19,8 +21,8 @@ void InitPlatform()
 {
 	//일단 100,200,300,400, 일헉 ㅔ때려넣겠음
 
-	for (int i = 0; i < 4; ++i) {
-		platform.push_back(Platform(100, i * 100));
+	for (int i = 0; i < PLATFORMNUM; ++i) {
+		platform.push_back(Platform(i+10, i * 50));
 		printf("%d %d\n", platform[i].send.iXpos, platform[i].send.iYpos);
 
 	}
@@ -28,45 +30,55 @@ void InitPlatform()
 
 }
 
-
-DWORD WINAPI WriteThread(LPVOID arg)
+void InitCoin()
 {
-	DWORD retval;
-	for (int k = 1; k <= 500; k++) {
-		// 읽기 완료 대기
-		retval = WaitForSingleObject(hReadEvent, INFINITE);
-		if (retval != WAIT_OBJECT_0) break;
 
-		// 공유 버퍼에 데이터 저장
-		for (int i = 0; i < BUFSIZE; i++)
-			buf[i] = k;
+	for (int i = 0; i < PLATFORMNUM; ++i) {
+		platform.push_back(Platform(i + 10, i * 50-30));
+		printf("%d %d\n", platform[i].send.iXpos, platform[i].send.iYpos);
 
-		// 쓰기 완료 알림
-		SetEvent(hWriteEvent);
 	}
-	return 0;
+
 }
 
+DWORD WINAPI Send_Thread(LPVOID arg)
+{
+
+	int retval;
+	SOCKET client_sock = (SOCKET)arg;
+	struct sockaddr_in clientaddr;
+	int addrlen;
+	char addr[INET_ADDRSTRLEN];
+
+	char buf[BUFSIZE + 1]; // 가변 길이 데이터
+	int len;
+
+	RecvPlayerData* player;
+
+	char testData[BUFSIZE + 1] = "\0";
+
+	// 클라이언트 정보 얻기
+	addrlen = sizeof(clientaddr);
+	getpeername(client_sock, (struct sockaddr*)&clientaddr, &addrlen);
+	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
+
+	// 클라이언트와 데이터 통신
+	while (1) {
+
+	}
+
+
+	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, testData);
+	// 소켓 닫기
+	closesocket(client_sock);
+
+	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
+	return 0;
+
+}
 DWORD WINAPI Recv_Thread(LPVOID arg)
 {
-//	아래 주석 처리 코드는 책의 이벤트 예제임
-//	DWORD retval;
-//	while (1) {
-//		// 쓰기 완료 대기
-//		retval = WaitForSingleObject(hWriteEvent, INFINITE);
-//		if (retval != WAIT_OBJECT_0) break;
-//
-//		// 읽은 데이터 출력 후 버퍼를 0으로 초기화
-//		printf("Thread %4d:\t", GetCurrentThreadId());
-//		for (int i = 0; i < BUFSIZE; i++)
-//			printf("%3d ", buf[i]);
-//		printf("\n");
-//		memset(buf, 0, sizeof(buf));
-//
-//		// 읽기 완료 알림
-//		SetEvent(hReadEvent);
-//	}
-//	return 0;
+
 
 	int retval;
 	SOCKET client_sock = (SOCKET)arg;
@@ -102,11 +114,6 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		// player = (RecvPlayerData*)buf;
 
 		printf("접속한 Player의 ID: %s", testData);
-
-		//플랫폼 데이터 보내보겠습니다. - x,y랑 bool값 보냄
-
-		retval = send(client_sock, (char*)platform[0].send.iXpos, sizeof(int), 0);
-
 
 	}
 	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, testData);
@@ -171,7 +178,8 @@ int main(int argc, char* argv[])
 	SOCKET client_sock;
 	struct sockaddr_in clientaddr;
 	int addrlen;
-	HANDLE hThread;
+
+	HANDLE hThread[2];
 
 
 	while (1) {
@@ -191,9 +199,29 @@ int main(int argc, char* argv[])
 		printf("\n============================================================================\n");
 		printf("[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n\n", addr, ntohs(clientaddr.sin_port));
 
+		//가온 - 한번보내고 안보낼 데이터 여기서 스레드생성전에 전송
+		//일단 발판 개수 전송- 고정길이
+		int tmp = PLATFORMNUM;
+		retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
+		printf("%d\n", tmp);
+
+		for (int i{ 0 }; i < tmp; ++i) {
+			retval = send(client_sock, (char*)&platform[i].send.iXpos, sizeof(int)*2, 0);
+			printf("%d %d \t", platform[i].send.iXpos, platform[i].send.iYpos);
+
+		}
+
+
+
+
+
 		// 스레드 생성
-		hThread = CreateThread(NULL, 0, Recv_Thread,
-			(LPVOID)client_sock, 0, NULL);
+		hThread[0] = CreateThread(NULL, 0, Recv_Thread, (LPVOID)client_sock, 0, NULL);
+		//hThread[1] = CreateThread(NULL, 0, Send_Thread, (LPVOID)client_sock, 0, NULL);
+
+
+
+
 		if (hThread == NULL) { closesocket(client_sock); }
 		else CloseHandle(hThread);
 	}
