@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CMonster.cpp" />
+    <ClCompile Include="Platform.cpp" />
     <ClCompile Include="소스.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
@@ -147,6 +148,7 @@
     <ClInclude Include="CMonster.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="global.h" />
+    <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SendRecvData.h" />
   </ItemGroup>

@@ -1,4 +1,6 @@
 #include "SendRecvData.h"
+#include <vector>
+#include "Platform.h"
 #include "Common.h"
 
 
@@ -8,6 +10,24 @@
 HANDLE hWriteEvent;
 HANDLE hReadEvent;
 int buf[BUFSIZE];
+
+
+vector<Platform> platform;
+
+
+void InitPlatform()
+{
+	//일단 100,200,300,400, 일헉 ㅔ때려넣겠음
+
+	for (int i = 0; i < 4; ++i) {
+		platform.push_back(Platform(100, i * 100));
+		printf("%d %d\n", platform[i].send.iXpos, platform[i].send.iYpos);
+
+	}
+
+
+}
+
 
 DWORD WINAPI WriteThread(LPVOID arg)
 {
@@ -83,6 +103,10 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		printf("접속한 Player의 ID: %s", testData);
 
+		//플랫폼 데이터 보내보겠습니다. - x,y랑 bool값 보냄
+
+		retval = send(client_sock, (char*)platform[0].send.iXpos, sizeof(int), 0);
+
 
 	}
 	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, testData);
@@ -116,6 +140,8 @@ int main(int argc, char* argv[])
 	//CloseHandle(hReadEvent);
 	//return 0;
 
+
+	InitPlatform();
 
 	int retval;
 
@@ -181,3 +207,6 @@ int main(int argc, char* argv[])
 
 }
 
+
+
+//발판 초기화 함수

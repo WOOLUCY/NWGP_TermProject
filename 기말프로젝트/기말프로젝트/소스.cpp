@@ -43,6 +43,9 @@ HWND hButtonEdit;	// 에디트 컨트롤
 static int retval;
 SOCKET sock;		// 소켓
 
+
+int testnum;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
 	hInst = hInstance;
@@ -99,6 +102,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
+	//가온 - 플랫폼 데이터 일단 받기 - 테스트용 int 한개만 받고 잘 오는지확인용
+	retval = recv(sock, (char*)testnum, sizeof(int), 0);
+
+
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -145,10 +152,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static CImage coinImg;
 	static Coin TestCoin;
 	static CImage platformImg;
-	static Platform TestPlatform;
+
+	static Platform TestPlatform[5];
 
 	TestCoin.myImage = &coinImg;
-	TestPlatform.myImage = &platformImg;
+	TestPlatform[0].myImage = &platformImg;
+	TestPlatform[1].myImage = &platformImg;
+	TestPlatform[1].SetXPos(testnum);
+	TestPlatform[1].SetYPos(testnum);
+	//TestPlatform[1].iXpos = 200;
+	//TestPlatform[1].iYpos = 100;
+
+
+	TestPlatform[2].myImage = &platformImg;
+	TestPlatform[3].myImage = &platformImg;
+	TestPlatform[4].myImage = &platformImg;
+
 
 	// W 몬스터 생성
 	static CImage MonsterImg;
@@ -177,14 +196,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		// PlaySound(L"start.wav", NULL, SND_ASYNC);	// 듣기 싫어서 사운드 막아둠 ㅎㅎ
 		startbackgroundImg.Load(L"Image/ID입력창.png");
-		backgroundImg.Load(L"Image/BackGround.png");
+		backgroundImg.Load(L"Image/background2.png");
 		ground.Load(L"Image/ground.png");
 		playerImg.Load(L"Image/Cookies2-1.png");
 
 		// W 몬스터이미지 로드
 		MonsterImg.Load(L"Image/Monster.png");
 
-		//가온 - 코인이미지 로드 
+		//가온 - 코인이미지,플랫폼 로드 
 		coinImg.Load(L"Image/coin2.png");
 		platformImg.Load(L"Image/Platform2.png");
 
@@ -223,7 +242,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
 			//가온-코인그리기 
 			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
-			TestPlatform.myImage->Draw(mem1dc, TestPlatform.iXpos, TestPlatform.iYpos, TestPlatform.GetWidth() / 2, TestPlatform.GetHeight() / 2, 0 , 0, TestPlatform.GetWidth(), TestPlatform.GetHeight());
+			TestPlatform[0].myImage->Draw(mem1dc, TestPlatform[0].iXpos, TestPlatform[0].iYpos, TestPlatform[0].GetWidth() / 2, TestPlatform[0].GetHeight() / 2, 0, 0, TestPlatform[0].GetWidth(), TestPlatform[0].GetHeight());
+			TestPlatform[1].myImage->Draw(mem1dc, TestPlatform[1].iXpos, TestPlatform[1].iYpos, TestPlatform[1].GetWidth() / 2, TestPlatform[1].GetHeight() / 2, 0, 0, TestPlatform[1].GetWidth(), TestPlatform[1].GetHeight());
 
 			// ID 출력
 			SetBkMode(mem1dc, TRANSPARENT);
@@ -237,7 +257,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				RECT playerBox = player.GetAABB();
 				RECT monsterBox = monster.GetAABB();
 				RECT CoinBox = TestCoin.GetAABB();
-				RECT platformbox = TestPlatform.GetAABB();
+				RECT platformbox = TestPlatform[0].GetAABB();
+				RECT platformbox1 = TestPlatform[1].GetAABB();
 
 				HPEN MyPen, OldPen;
 				HBRUSH MyBrush, OldBrush;
