@@ -140,12 +140,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CMonster.cpp" />
+    <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="소스.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMonster.h" />
+    <ClInclude Include="Coin.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="Platform.h" />

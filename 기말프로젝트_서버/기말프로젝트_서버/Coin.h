@@ -1,18 +1,18 @@
 #pragma once
-
 #include <windows.h>
 
 
-
-class Platform
+class Coin
 {
-public://일단 퍼블릭으로 하겠습니다
+public:
 
 	struct SendData {
 		int		iXpos;
 		int		iYpos;
 		bool	bIsCrush;
+
 	};
+
 
 	//위치 
 	int		iXpos;
@@ -24,14 +24,12 @@ public://일단 퍼블릭으로 하겠습니다
 
 	int		iWidth = 600;
 	int		iHeight = 60;
-	
-	Platform::SendData send;
 
-	
+	Coin::SendData send;
 
 public:
+	Coin();
+	Coin(int x, int y);
 
-	Platform();
-	Platform(int x, int y);
+
 };
-

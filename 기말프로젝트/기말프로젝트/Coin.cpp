@@ -18,8 +18,13 @@ Coin::Coin()
 	aabb.top = iYpos;
 }
 
-Coin::Coin(int xpos, int ypos)
+
+
+Coin::Coin(int xpos, int ypos, CImage* img)
+	:uSpriteX(0), uSpriteY(0)
 {
+	myImage = img;
+
 	iXpos = xpos;
 	iYpos = ypos;
 

@@ -56,7 +56,7 @@ public:
 public:
 	//»ý¼ºÀÚ
 	Coin();
-	Coin(int xpos, int ypos );
+	Coin(int xpos, int ypos, CImage* img);
 
 	~Coin();
 

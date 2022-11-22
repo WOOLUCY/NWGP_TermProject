@@ -1,10 +1,10 @@
 #pragma comment(lib, "winmm")
+#include "Common.h"
 
-#include <tchar.h>
+//#include <tchar.h>
 #include <atlImage.h>
 #include <mmsystem.h>
 
-#include <vector>
 
 #include "Player.h"
 #include "CMonster.h"
@@ -16,7 +16,6 @@
 #include "Coin.h"
 #include <time.h>
 
-#include "Common.h"
 
 using namespace std;
 
@@ -51,6 +50,7 @@ SOCKET sock;		// 소켓
 
 int testnum[2];
 vector<Platform> TestPlatform;
+vector<Coin> TestCoin1;
 
 CImage platformImg;
 CImage coinImg;
@@ -134,6 +134,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	}
 
 
+	retval = recv(sock, (char*)&total, sizeof(int), 0);
+	for (int i{ 0 }; i < total; ++i) {
+		retval = recv(sock, (char*)testnum, sizeof(int) * 2, 0);
+		TestCoin1.push_back(Coin(testnum[0], testnum[1], &coinImg));
+	}
 
 
 
@@ -181,7 +186,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
 	static Coin TestCoin;
-	static CImage platformImg;
+	//static CImage platformImg;
 
 	//static Platform TestPlatform[5];
 
@@ -271,6 +276,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 
+			for (Coin& temp : TestCoin1) {
+				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0+temp.GetWidth()*temp.GetSpriteX(), 0+temp.GetHeight()*temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+			}
 
 
 
@@ -353,6 +361,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			monster.UpdateMonsterLocation();
 
 			TestCoin.ChangeSprite();
+
+
+			for (Coin& temp : TestCoin1) {
+				temp.ChangeSprite();
+			}
+
 			break;
 
 		case 2:		// 플레이어의 '이동'을 담당하는 타이머

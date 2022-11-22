@@ -1,5 +1,4 @@
 #pragma once
-#include "global.h"
 #include <atlImage.h>
 
 //가온 - 발판을 위한 클래스임니다. 
@@ -61,7 +60,4 @@ public:
 };
 
 
-//
-//
-//int Platform::w = 100;
-//int Platform::h = 100;
+

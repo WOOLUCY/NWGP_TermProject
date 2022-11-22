@@ -1,13 +1,14 @@
+#include "Common.h"
 #include "SendRecvData.h"
 #include <vector>
 #include "Platform.h"
-#include "Common.h"
-
+#include "Coin.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
 #define PLATFORMNUM 10
+#define COINNUM 10
 
 HANDLE hWriteEvent;
 HANDLE hReadEvent;
@@ -15,6 +16,7 @@ int buf[BUFSIZE];
 
 
 vector<Platform> platform;
+vector<Coin> coins;
 
 
 void InitPlatform()
@@ -33,9 +35,9 @@ void InitPlatform()
 void InitCoin()
 {
 
-	for (int i = 0; i < PLATFORMNUM; ++i) {
-		platform.push_back(Platform(i + 10, i * 50-30));
-		printf("%d %d\n", platform[i].send.iXpos, platform[i].send.iYpos);
+	for (int i = 0; i < COINNUM; ++i) {
+		coins.push_back(Coin(i *i, i * 50-30));
+		printf("%d %d\n", coins[i].send.iXpos, coins[i].send.iYpos);
 
 	}
 
@@ -149,6 +151,7 @@ int main(int argc, char* argv[])
 
 
 	InitPlatform();
+	InitCoin();
 
 	int retval;
 
@@ -211,7 +214,15 @@ int main(int argc, char* argv[])
 
 		}
 
+		tmp = COINNUM;
+		retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
+		printf("%d\n", tmp);
 
+		for (int i{ 0 }; i < tmp; ++i) {
+			retval = send(client_sock, (char*)&coins[i].send.iXpos, sizeof(int) * 2, 0);
+			printf("%d %d \t", coins[i].send.iXpos, coins[i].send.iYpos);
+
+		}
 
 
 
