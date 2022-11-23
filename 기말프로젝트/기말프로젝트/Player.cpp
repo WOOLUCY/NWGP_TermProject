@@ -22,8 +22,8 @@ Player::Player()
 	input = { 0 };
 
 	bJumpKeyPressed = FALSE;
-	fJumpPower = 3.f;
-	fJumpTime = 0.1;
+	fJumpPower = 4.f;
+	fJumpTime = 0.01;
 	JumpHeight = 0;
 }
 
@@ -59,7 +59,7 @@ void Player::Jump(USHORT spriteCnt)
 {
 	if (!bJumpKeyPressed) return;
 	SetSpriteY(2);
-	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 6; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
+	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 3; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
 	fJumpTime += 0.2f;		//	시간의 흐름을 표현하기 위해서.
 
 	if (fJumpTime > fJumpPower * 2)	//	착지했다면의 의미로, 각 변수 초기화.

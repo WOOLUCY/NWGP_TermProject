@@ -13,7 +13,7 @@ struct KeyInput {
 class Player
 {
 private:
-	LPCWCHAR wId;
+	 LPCWCHAR wId;
 
 	int		iWidth = 170;	// draw 에 필요한 width, height 추가
 	int		iHeight = 148;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠

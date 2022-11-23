@@ -26,7 +26,6 @@ void InitPlatform()
 	for (int i = 0; i < PLATFORMNUM; ++i) {
 		platform.push_back(Platform(i+10, i * 50));
 		printf("%d %d\n", platform[i].send.iXpos, platform[i].send.iYpos);
-
 	}
 
 
@@ -38,9 +37,7 @@ void InitCoin()
 	for (int i = 0; i < COINNUM; ++i) {
 		coins.push_back(Coin(i *i, i * 50-30));
 		printf("%d %d\n", coins[i].send.iXpos, coins[i].send.iYpos);
-
 	}
-
 }
 
 DWORD WINAPI Send_Thread(LPVOID arg)
@@ -66,9 +63,9 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 	// 클라이언트와 데이터 통신
 	while (1) {
-
+		Sleep(16);
+		// printf("보냄 ");
 	}
-
 
 	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, testData);
 	// 소켓 닫기
@@ -88,9 +85,9 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	int addrlen;
 	char addr[INET_ADDRSTRLEN];
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
-	int len;
-
+	
 	RecvPlayerData *player;
+	
 
 	char testData[BUFSIZE + 1] = "\0";
 	
@@ -102,9 +99,10 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	// 클라이언트와 데이터 통신
 	while (1) {
 		// ID recv
-		retval = recv(client_sock, buf, sizeof(wchar_t) * 21, MSG_WAITALL);
+		retval = recv(client_sock, buf, sizeof(RecvPlayerData), MSG_WAITALL);
 		buf[retval] = '\0';
 
+		player = (RecvPlayerData*)buf;
 		sprintf(testData, buf);
 
 		if (retval == SOCKET_ERROR) {
@@ -113,12 +111,14 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		}
 		else if (retval == 0) break;
 
-		// player = (RecvPlayerData*)buf;
+		 printf("\n접속한 Player의 ID: %ws", player->wId);
+		 printf("\n접속한 Player의 캐릭터: %d\n", player->uCharNum);
 
-		printf("접속한 Player의 ID: %s", testData);
-
+		 printf("bLeft: %s\n", player->Input.bLeft ? "true" : "false");
+		 printf("bRight: %s\n", player->Input.bRight ? "true" : "false");
+		 printf("bSpace: %s\n", player->Input.bSpace ? "true" : "false");
 	}
-	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, testData);
+	printf("\n#No.%d '%ws' SENDING COMPLATE\n", client_sock, player->wId);
 	// 소켓 닫기
 	closesocket(client_sock);
 
@@ -148,7 +148,6 @@ int main(int argc, char* argv[])
 	//CloseHandle(hWriteEvent);
 	//CloseHandle(hReadEvent);
 	//return 0;
-
 
 	InitPlatform();
 	InitCoin();
@@ -223,7 +222,6 @@ int main(int argc, char* argv[])
 			printf("%d %d \t", coins[i].send.iXpos, coins[i].send.iYpos);
 
 		}
-
 
 
 		// 스레드 생성
