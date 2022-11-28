@@ -11,6 +11,8 @@
 #include "Background.h"
 #include "Platform.h"
 #include "Collision.h"
+#include "Portal.h"
+#include "Key.h"
 #include "SendRecvData.h"
 
 #include "Coin.h"
@@ -206,6 +208,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	monster.SetMonNum(1);
 	monster.myImage[0] = &MonsterImg;
 
+	// W 열쇠 생성
+	static CImage KeyImg;
+	static Key key;
+	key.myImage = &KeyImg;
+
+	// W 포탈 생성
+	static CImage PortalImg;
+	static Portal portal;
+	portal.myImage = &PortalImg;
+
 	time_t frame_time{};
 	time_t current_time = time(NULL);
 	time_t frame_rate;
@@ -241,6 +253,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		selectBackgroundImg.Load(L"Image/Select.png");
 		selectBackground.setHeight(selectBackground.Image->GetWidth());
 		selectBackground.SetWidth(selectBackground.Image->GetWidth());
+		// W load key image
+		KeyImg.Load(L"Image/key.png");
+		// W load portal image
+		PortalImg.Load(L"Image/Portal.png");
 
 		//가온 - 코인이미지,플랫폼 로드 
 	//	platformImg.Load(L"Image/Platform.png");
@@ -279,8 +295,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, 210, 2560, 1600);
 			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);
 			player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
+			
 			// W Monster Draw
-			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);
+			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);		// W Draw Key
+			// W Key Draw
+			if (!player.GetHasKey())
+			{
+				key.myImage->Draw(mem1dc, key.iXpos, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
+			}
+
+			//portal.myImage->Draw(mem1dc, portal.iXpos, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0, 0, 500, 800);
+			
 			//가온-코인그리기 
 			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
 			//TestPlatform[0].myImage->Draw(mem1dc, TestPlatform[0].iXpos, TestPlatform[0].iYpos, TestPlatform[0].GetWidth() / 2, TestPlatform[0].GetHeight() / 2, 0, 0, TestPlatform[0].GetWidth(), TestPlatform[0].GetHeight());
@@ -296,6 +321,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
+			// W Key - Player Collision
+			if (player.IsCollidedKey(key))
+			{
+				player.SetHasKey(TRUE);
+			}
+			
 			// W Collision Box Test
 			if (IsDebugMode) {
 				SetTextAlign(mem1dc, TA_LEFT);
@@ -350,7 +381,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		MouseX = LOWORD(lParam);
 		MouseY = HIWORD(lParam);
 
-		// 첫번째 캐릭터 선택 시
+		// W
+		// 첫번째 캐릭터 선택 시: 달빛술사 쿠키
 		if (bReady == FALSE && MouseX >= 80 && MouseX <= 344 && MouseY >= 637 && MouseY <= 719) {
 			player.SetIsReady(TRUE);
 			player.SetCharNum(1);
@@ -362,6 +394,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				err_display("send()");
 			}
 		}
+
+		// 두번째 캐릭터 선택 시: 치즈케이크맛 쿠키
+		else if (bReady == FALSE && MouseX >= 510 && MouseX <= 760 && MouseY >= 646 && MouseY <= 720) {
+			player.SetIsReady(TRUE);
+			player.SetCharNum(2);
+			bReady = TRUE;
+			PlayerData.uCharNum = player.GetCharNum();
+
+			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+		}
+
+		// 세번째 캐릭터 선택 시: 벚꽃맛 쿠키
+		else if (bReady == FALSE && MouseX >= 922 && MouseX <= 1184 && MouseY >= 643 && MouseY <= 743) {
+			player.SetIsReady(TRUE);
+			player.SetCharNum(3);
+			bReady = TRUE;
+			PlayerData.uCharNum = player.GetCharNum();
+
+			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+		}
+
+		
 		
 		break;
 

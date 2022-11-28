@@ -131,3 +131,26 @@ bool Player::IsCollidedCoin(Coin coin)
 	return true;
 }
 
+bool Player::IsCollidedKey(Key key)
+{
+	RECT A = aabb;
+	RECT B = key.GetAABB();
+
+	if (A.bottom < B.top) return false;
+	if (A.right < B.left) return false;
+	if (A.left > B.right) return false;
+	if (A.top > B.bottom) return false;
+	return true;
+}
+
+bool Player::IsCollidedPortal(Portal portal)
+{
+	RECT A = aabb;
+	RECT B = portal.GetAABB();
+
+	if (A.bottom < B.top) return false;
+	if (A.right < B.left) return false;
+	if (A.left > B.right) return false;
+	if (A.top > B.bottom) return false;
+	return true;
+}

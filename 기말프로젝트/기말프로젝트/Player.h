@@ -2,6 +2,8 @@
 #include "global.h"
 #include "CMonster.h"
 #include "Coin.h"
+#include "Key.h"
+#include "Portal.h"
 #include <atlImage.h>
 
 struct KeyInput {
@@ -17,6 +19,7 @@ private:
 
 	bool	IsReady = FALSE;	// W 캐릭터를 선택했는지 여부
 	USHORT	uCharNum = 0;
+	bool	HasKey = FALSE;		// W 캐릭터가 키를 소유했는지 여부
 
 	int		iWidth = 170;	// draw 에 필요한 width, height 추가
 	int		iHeight = 148;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
@@ -55,6 +58,9 @@ public:
 
 	bool GetIsReady() { return IsReady; }
 	void SetIsReady(bool in) { IsReady = in; }
+
+	bool GetHasKey() { return HasKey; }
+	void SetHasKey(bool in) { HasKey = in; }
 
 	int GetCharNum() {return uCharNum;}
 	void SetCharNum(USHORT in) { uCharNum = in; }
@@ -114,6 +120,8 @@ public:
 	// W collsion
 	int IsCollidedMonster(CMonster monster);
 	bool IsCollidedCoin(Coin coin);
+	bool IsCollidedKey(Key key);
+	bool IsCollidedPortal(Portal portal);
 };
 
 
