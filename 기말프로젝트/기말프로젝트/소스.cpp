@@ -54,6 +54,7 @@ SOCKET sock;		// 소켓
 int testnum[2];
 vector<Platform> TestPlatform;
 vector<Coin> TestCoin1;
+vector<CMonster> TestMonsers;
 
 CImage platformImg;
 CImage coinImg;
@@ -143,6 +144,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 		TestCoin1.push_back(Coin(testnum[0], testnum[1], &coinImg));
 	}
 
+	//몬스터
+	//retval = recv(sock, (char*)&total, sizeof(int), 0);
+	//for (int i{ 0 }; i < total; ++i) {
+	//	retval = recv(sock, (char*)testnum, sizeof(int) * 2, 0);
+	//	TestCoin1.push_back(Coin(testnum[0], testnum[1], &coinImg));
+	//}
 
 
 	ShowWindow(hWnd, nCmdShow);
