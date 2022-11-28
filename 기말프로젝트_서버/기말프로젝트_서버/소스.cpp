@@ -21,7 +21,7 @@ vector<Coin> coins;
 
 void InitPlatform()
 {
-	//일단 100,200,300,400, 일헉 ㅔ때려넣겠음
+	//일단 100,200,300,400, 이렇게 때려넣겠음
 
 	for (int i = 0; i < PLATFORMNUM; ++i) {
 		platform.push_back(Platform(i+10, i * 50));

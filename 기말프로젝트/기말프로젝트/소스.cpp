@@ -44,6 +44,7 @@ HWND hEdit;			// 에디트 컨트롤
 HWND hButtonEdit;	// 에디트 컨트롤
 
 
+
 static int retval;
 SOCKET sock;		// 소켓
 
@@ -177,6 +178,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static CImage backgroundImg;
 	static CImage ground;
 
+	// W 선택창 
+	static Background selectBackground;
+	static CImage selectBackgroundImg;
+	selectBackground.Image = &selectBackgroundImg;
+	
+
 	startBackground.Image = &startbackgroundImg;
 	background.Image = &backgroundImg;	// Background 클래스의 Image 는 CImage 를 가르킨다.
 
@@ -209,6 +216,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static wchar_t wID[21] = { NULL };
 	static bool containID = FALSE;		// ID 에 문자 하나라도 들어갔는지 검사
 
+	// W character selection
+	static bool bReady = FALSE;	// 캐릭터 선택 후 게임 시작 판단용
+
 	/* ------------ 서버 연결용 ------------ */
 	static struct SendPlayerData PlayerData;
 
@@ -226,6 +236,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		// W 몬스터이미지 로드
 		MonsterImg.Load(L"Image/Monster.png");
+		// W load character selection window image
+		selectBackgroundImg.Load(L"Image/Select.png");
+		selectBackground.setHeight(selectBackground.Image->GetWidth());
+		selectBackground.SetWidth(selectBackground.Image->GetWidth());
 
 		//가온 - 코인이미지,플랫폼 로드 
 	//	platformImg.Load(L"Image/Platform.png");
@@ -256,7 +270,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				890, 505, 80, 40, hWnd, (HMENU)CHILD_BUTTON, hInst, NULL);
 			// ShowWindow(hButtonEdit, SW_HIDE);
 		}
-
+		// W render character selection window
+		else if (enterID == TRUE && bReady == FALSE) {
+			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
+		}
 		else {
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, 210, 2560, 1600);
 			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);
@@ -340,6 +357,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 		MouseX = LOWORD(lParam);
 		MouseY = HIWORD(lParam);
+
+		// 첫번째 캐릭터 선택 시
+		if (bReady == FALSE && MouseX >= 80 && MouseX <= 344 && MouseY >= 637 && MouseY <= 719) {
+			player.SetIsReady(TRUE);
+			player.SetCharNum(1);
+			bReady = TRUE;
+			PlayerData.uCharNum = player.GetCharNum();
+
+			// Id send
+			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
+		}
+		
 		break;
 
 	case WM_TIMER:
