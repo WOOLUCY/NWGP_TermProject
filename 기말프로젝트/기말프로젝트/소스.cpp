@@ -62,7 +62,7 @@ void LoadImg()
 	
 	platformImg.Load(L"Image/Platform2.png");
 	coinImg.Load(L"Image/coin2.png");
-
+	//coinImg.Load(L"Image/ce.png");
 
 }
 
@@ -203,6 +203,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	// W 몬스터 생성
 	static CImage MonsterImg;
 	static CMonster monster;
+	monster.SetMonNum(1);
 	monster.myImage[0] = &MonsterImg;
 
 	time_t frame_time{};
@@ -295,15 +296,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
-
-
-
-
-			// ID 출력
-			SetBkMode(mem1dc, TRANSPARENT);
-			SetTextAlign(mem1dc, TA_CENTER);
-			TextOut(mem1dc, player.iXpos + 35, player.iYpos - 20, player.GetId(), wcslen(wID));
-
 			// W Collision Box Test
 			if (IsDebugMode) {
 				SetTextAlign(mem1dc, TA_LEFT);
@@ -317,7 +309,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				HPEN MyPen, OldPen;
 				HBRUSH MyBrush, OldBrush;
 
-				if (!player.IsCollidedMonster(monster))
+				if (player.IsCollidedMonster(monster) == 0)
 				{
 					MyPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
 				}
@@ -333,12 +325,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
 				Rectangle(mem1dc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
 
-				if (!player.IsCollidedCoin(TestCoin))
+				if (player.IsCollidedCoin(TestCoin))
 				{
-				}
 
+				}
 				//Rectangle(mem1dc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
-				 //Rectangle(mem1dc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
+				//Rectangle(mem1dc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
 
 				SelectObject(mem1dc, OldPen);
 				DeleteObject(MyPen);
@@ -365,7 +357,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-			// Id send
 			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");

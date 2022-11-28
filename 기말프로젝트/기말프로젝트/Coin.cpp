@@ -4,7 +4,7 @@
 #include "global.h"
 
 Coin::Coin()
-	:uSpriteX(0), uSpriteY(0),  iXpos(340), iYpos(500), iRange(60)
+	:uSpriteX(0), uSpriteY(0),  iXpos(340), iYpos(500), iRange(60), uCoinNum(0)
 
 {
 	iMaxX = iXpos + iRange;

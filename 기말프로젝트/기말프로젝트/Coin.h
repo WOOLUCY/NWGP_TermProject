@@ -16,6 +16,8 @@ private:
 	int		iMaxX;
 	int		iMinX;
 
+	USHORT	uCoinNum;
+
 
 public:
 	CImage* myImage; //이거로 스프라이트 가리키면 될것같은데 
@@ -29,6 +31,8 @@ public:
 
 
 public:
+	USHORT	GetCoinNum() { return uCoinNum; }
+	void	SetCoinNum(USHORT in) { uCoinNum = in; }
 
 	USHORT GetSpriteX() { return uSpriteX; }
 	void SetSpriteX(USHORT in) { uSpriteX = in; }

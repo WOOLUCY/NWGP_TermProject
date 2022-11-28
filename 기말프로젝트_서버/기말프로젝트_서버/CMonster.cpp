@@ -1,10 +1,12 @@
 #include "CMonster.h"
 #include "global.h"
+#include <stdlib.h>
 
 CMonster::CMonster()
-	:uSpriteX(0), uSpriteY(0), uCharnum(0), iXpos(340), iYpos(625), fVel(3.f), iRange(60), dir(-1)
+	:uSpriteX(0), uSpriteY(0), uCharnum(0), iYpos(625), fVel(3.f), iRange(60), dir(-1), uMonNum(0)
 
 {
+	iXpos = 700;
 	iMaxX = iXpos + iRange;
 	iMinX = iXpos - iRange;
 
@@ -19,8 +21,8 @@ CMonster::CMonster()
 	aabb.top = iYpos;
 }
 
-CMonster::CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int range)
-	:uSpriteX(sprite), uCharnum(charnum), iXpos(position.x), iYpos(position.y), fVel(Vel), iRange(range)
+CMonster::CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int range, USHORT in)
+	:uSpriteX(sprite), uCharnum(charnum), iXpos(position.x), iYpos(position.y), fVel(Vel), iRange(range), uMonNum(in)
 {
 	//이미지 설정하기 
 

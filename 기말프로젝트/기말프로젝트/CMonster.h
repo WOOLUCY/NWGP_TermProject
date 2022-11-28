@@ -7,7 +7,8 @@ class CMonster
 private:
 	int		iWidth = 144;	// draw 에 필요한 width, height 추가
 	int		iHeight = 138;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
-	int		iRange;
+	int		iRange;			// range로 배회 범위를 지정할 수 있음
+	USHORT	uMonNum;
 
 	POS		pVel;
 	RECT	aabb;
@@ -29,6 +30,8 @@ public:
 	POS		velocity = { 0, 0 };
 
 public:
+	USHORT GetMonNum() { return uMonNum; }
+	void SetMonNum(USHORT in) { uMonNum = in; }
 
 	USHORT GetSpriteX() { return uSpriteX; }
 	void SetSpriteX(USHORT in) { uSpriteX = in; }
@@ -58,7 +61,7 @@ public:
 public:
 	//생성자
 	CMonster();
-	CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int range);
+	CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int range, USHORT in);
 
 	~CMonster();
 

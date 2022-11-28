@@ -32,4 +32,8 @@ public:
 	Coin(int x, int y);
 
 
+	RECT GetAABB() { return aabb; }
+	void SetAABB(RECT in) { aabb = in; }
+
+
 };

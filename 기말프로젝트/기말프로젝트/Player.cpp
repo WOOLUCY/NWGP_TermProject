@@ -2,7 +2,7 @@
 #include "global.h"
 
 Player::Player()
-	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(0), iXpos(640), iYpos(620), pVel(0,0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0)
+	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(0), iXpos(640), iYpos(620), pVel(0,0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
 
 {
 	//일단 걍다 0으로 초기화함 
@@ -104,16 +104,19 @@ void Player::ChangeSprite(int* count)
 	*count += 1;
 }
 
-bool Player::IsCollidedMonster(CMonster monster)
+// 충돌 시 플레이어와 충돌한 몬스터의 일련번호 반환. 0이면 충돌하지 않았다는 뜻.
+int Player::IsCollidedMonster(CMonster monster)
 {
 	RECT A = aabb;
 	RECT B = monster.GetAABB();
 
-	if (A.bottom < B.top) return false;
-	if (A.right < B.left) return false;
-	if (A.left > B.right) return false;
-	if (A.top > B.bottom) return false;
-	return true;
+	if (A.bottom < B.top) return 0;
+	if (A.right < B.left) return 0;
+	if (A.left > B.right) return 0;
+	if (A.top > B.bottom) return 0;
+
+	uRecCollidedMon = monster.GetMonNum();
+	return uRecCollidedMon;
 }
 
 bool Player::IsCollidedCoin(Coin coin)

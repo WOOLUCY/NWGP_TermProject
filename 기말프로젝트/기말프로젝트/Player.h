@@ -33,7 +33,7 @@ private:
 	float	RUN_SPEED_PPS;
 	float	fJumpPower;
 
-
+	USHORT	uRecCollidedMon;
 		
 public:
 	CImage*	myImage[4]; //이거로 스프라이트 가리키면 될것같은데 
@@ -65,6 +65,9 @@ public:
 
 	USHORT GetSpriteY() { return uSpriteY; }
 	void SetSpriteY(USHORT in) { uSpriteY = in; }
+
+	USHORT GetRecCollidedMon() { return uRecCollidedMon; }
+	void SetRecCollidedMon(USHORT in) { uRecCollidedMon = in; }
 
 	int GetXPos() { return iXpos; }
 	void SetXPos(int in) { iXpos = in; }
@@ -109,7 +112,7 @@ public:
 	void UpdatePlayerLocation();
 
 	// W collsion
-	bool IsCollidedMonster(CMonster monster);
+	int IsCollidedMonster(CMonster monster);
 	bool IsCollidedCoin(Coin coin);
 };
 
