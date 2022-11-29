@@ -212,9 +212,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
 	static Coin TestCoin;
-	//static CImage platformImg;
-
-	//static Platform TestPlatform[5];
 
 	TestCoin.myImage = &coinImg;
 
@@ -470,11 +467,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				player.SetId(wID);
 				wcscpy(PlayerData.wId, wID);
 
-				// Id send
-				retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
-				if (retval == SOCKET_ERROR) {
-					err_display("send()");
-				}
 				enterID = TRUE;
 				DestroyWindow(hEdit);
 				DestroyWindow(hButtonEdit);

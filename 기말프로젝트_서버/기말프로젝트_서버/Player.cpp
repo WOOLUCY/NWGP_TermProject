@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "global.h"
-
+#include <iostream>
 Player::Player()
 	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(0), iXpos(640), iYpos(620), pVel(0, 0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
 
@@ -14,6 +14,7 @@ Player::Player()
 	aabb.right = iXpos + (iWidth / 2);
 	aabb.top = iYpos;
 	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.3);		// 플레이어 기본 속도는 이것
+
 	velocity = { 0, 0 };
 	dir = 0;
 	input = { 0 };
@@ -48,10 +49,14 @@ Player::~Player()
 
 void Player::Jump(USHORT spriteCnt)
 {
-	if (!bJumpKeyPressed) return;
-
+	if (!bJumpKeyPressed) {
+		printf("bJumpKeyPressed?????????????????/\n");
+		return;
+	}
+	
+	printf("점프~~~~~~~~~~~~~~~~~~~\n");
 	SetSpriteY(2);
-	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 3; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
+	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 4; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
 	fJumpTime += 0.2f;		//	시간의 흐름을 표현하기 위해서.
 
 	if (fJumpTime > fJumpPower * 2)	//	착지했다면의 의미로, 각 변수 초기화.
@@ -59,16 +64,26 @@ void Player::Jump(USHORT spriteCnt)
 		SetSpriteY(spriteCnt);
 		fJumpTime = 0;
 		velocity.y = 0;
-		bJumpKeyPressed = FALSE;
-		input.bSpace = FALSE;
+		bJumpKeyPressed = false;
+		input.bSpace = false;
+		printf("착지???");
+
+
+
 	}
-	if (iYpos > 620) {
+
+	if (iYpos > 620) { //이거 바닥?
 		SetSpriteY(spriteCnt);
 		fJumpTime = 0;
 		velocity.y = 0;
-		bJumpKeyPressed = FALSE;
 		iYpos = 620;
-		input.bSpace = FALSE;
+		input.bSpace = false;
+
+		printf("점푸끝남1\n");
+		bJumpKeyPressed = false;
+		std::cout << bJumpKeyPressed <<"  "<< input.bSpace << "이거ㅣㅇ러ㅏ어리날" << std::endl;
+
+
 	}
 }
 

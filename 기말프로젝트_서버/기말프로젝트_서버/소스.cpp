@@ -14,9 +14,10 @@ HANDLE hWriteEvent;
 HANDLE hReadEvent;
 int buf[BUFSIZE];
 
+int TotalClient;
 
-Player user1;
 
+Player users[3];
 vector<Platform> platform;
 vector<Coin> coins;
 
@@ -46,6 +47,17 @@ void InitCoin()
 	}
 }
 
+void InitPlayer(USHORT num)
+{
+	switch (num) 
+	{
+	case 1:
+		break;
+		
+	}
+
+}
+
 DWORD WINAPI Send_Thread(LPVOID arg)
 {
 
@@ -58,6 +70,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
 	int len;
 
+	const int index = TotalClient - 1;
 
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
@@ -66,10 +79,14 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 	// 클라이언트와 데이터 통신
 	while (1) {
-		Sleep(16);
-		UpdatePlayerLocation(&user1);
+		UpdatePlayerLocation(&(users[index]));
 
-		TestData.player1 = user1.Send;
+		Sleep(16);
+
+
+
+
+		TestData.player1 = users[index].Send;
 		
 		retval = send(client_sock, (char*)&TestData, sizeof(TestData), 0);
 
@@ -90,6 +107,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	return 0;
 
 }
+
 DWORD WINAPI Recv_Thread(LPVOID arg)
 {
 
@@ -101,9 +119,9 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	char addr[INET_ADDRSTRLEN];
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
 	
-	ClientToServer * recvData;
-	
+	ClientToServer* recvData;
 
+	const int index = TotalClient - 1;
 	
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
@@ -134,27 +152,23 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 //printf("Collided Monster Number: %d\n", player->pPlayer.GetXPos());
 
 
+		 if (users[index].bJumpKeyPressed == true) {
+			 users[index].input.bLeft = recvData->Input.bLeft;
+			 users[index].input.bRight = recvData->Input.bRight;
 
-		 user1.input.bLeft = recvData->Input.bLeft;
-
-		 static bool first = true;
-		 if (first) {
-			 user1.input = recvData->Input;
-			 if (recvData->Input.bSpace)
-				 first = false;
 
 		 }
 		 else {
-			 if (user1.input.bSpace == false || user1.bJumpKeyPressed == false) {
-				 first = true;
-			 }
+			 users[index].input = recvData->Input;
+
 		 }
-		 //인픗을 초기화 해주니까 생긴문제임
 
 
-		 user1.input.bLeft = recvData->Input.bLeft;
 
-		 user1.input.bRight = recvData->Input.bRight;
+
+		 printf("bLeft: %s\n", users[index].input.bLeft ? "true" : "false");
+		 printf("bRight: %s\n", users[index].input.bRight ? "true" : "false");
+		 printf("bSpace: %s\n", users[index].input.bSpace ? "true" : "false");
 
 
 
@@ -170,7 +184,6 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 void UpdatePlayerLocation(Player* p)
 {
 	static int curSpriteCnt = 0;
-
 
 
 	if (!(p->input.bLeft)) {
@@ -215,15 +228,13 @@ void UpdatePlayerLocation(Player* p)
 
 	if (p->input.bSpace) {
 		//점프
-		p->SetSpriteY(2);
 		p->bJumpKeyPressed = TRUE;
 		p->Jump(curSpriteCnt);
 
 
 	}
 
-
-
+	
 	p->UpdatePlayerLocation();
 
 
@@ -268,7 +279,6 @@ int main(int argc, char* argv[])
 
 	HANDLE hThread[2];
 
-
 	while (1) {
 		// accept()
 		addrlen = sizeof(clientaddr);
@@ -285,6 +295,12 @@ int main(int argc, char* argv[])
 
 		printf("\n============================================================================\n");
 		printf("[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n\n", addr, ntohs(clientaddr.sin_port));
+		++TotalClient;
+
+		printf("총 접속 클라이언트 : %d\n", TotalClient);
+			printf("\n============================================================================\n");
+
+
 
 		//가온 - 한번보내고 안보낼 데이터 여기서 스레드생성전에 전송
 		//일단 발판 개수 전송- 고정길이
@@ -309,12 +325,13 @@ int main(int argc, char* argv[])
 		}
 
 
+
 		// 스레드 생성
 		hThread[0] = CreateThread(NULL, 0, Recv_Thread, (LPVOID)client_sock, 0, NULL);
 		hThread[1] = CreateThread(NULL, 0, Send_Thread, (LPVOID)client_sock, 0, NULL);
 
 
-
+		
 
 		if (hThread == NULL) { closesocket(client_sock); }
 		else CloseHandle(hThread);
