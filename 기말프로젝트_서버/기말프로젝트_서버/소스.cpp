@@ -118,7 +118,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 printf("bRight: %s\n", player->Input.bRight ? "true" : "false");
 		 printf("bSpace: %s\n", player->Input.bSpace ? "true" : "false");
 
-		 printf("Collided Monster Number: %d\n", player->pPlayer.GetXPos());
+		 //printf("Collided Monster Number: %d\n", player->pPlayer.GetXPos());
 	}
 	printf("\n#No.%d '%ws' SENDING COMPLATE\n", client_sock, player->wId);
 	// ╪рдо ╢щ╠Б

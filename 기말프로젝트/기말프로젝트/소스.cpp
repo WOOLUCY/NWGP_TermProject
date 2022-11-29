@@ -233,7 +233,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static bool bReady = FALSE;	// 캐릭터 선택 후 게임 시작 판단용
 
 	/* ------------ 서버 연결용 ------------ */
-	static struct SendPlayerData PlayerData;
+	static struct ClientToServer PlayerData;
 
 	// 데이터 통신에 사용할 변수
 	// struct SendPlayerData buf;
@@ -389,7 +389,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
@@ -402,7 +402,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
@@ -415,7 +415,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
@@ -458,12 +458,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				char id_send[BUFSIZE];
 				GetWindowText(hEdit, wID, 20);
 				player.SetId(wID);
+
+				//player.SetCharNum(100);
+				//PlayerData.uCharNum = player.GetCharNum();
+
 				//PlayerData.wId = wID;
 				wcscpy(PlayerData.wId, wID);
-				PlayerData.pPlayer = player;
+				//PlayerData.pPlayer = player;
 
 				// Id send
-				retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+				retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 				if (retval == SOCKET_ERROR) {
 					err_display("send()");
 				}
@@ -493,7 +497,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			player.input.bLeft = TRUE;
 			PlayerData.Input = player.input;				
 			
-			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
@@ -505,7 +509,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			player.input.bRight = TRUE;
 			PlayerData.Input = player.input;
 
-			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
@@ -519,7 +523,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			player.input.bSpace = TRUE;
 			PlayerData.Input = player.input;
 
-			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
@@ -538,7 +542,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			player.input.bLeft = FALSE;
 			PlayerData.Input = player.input;
 
-			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
@@ -551,7 +555,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			player.input.bRight = FALSE;
 			PlayerData.Input = player.input;
 
-			retval = send(sock, (const char*)&PlayerData, sizeof(SendPlayerData), 0);
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}

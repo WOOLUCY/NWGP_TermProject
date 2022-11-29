@@ -7,7 +7,7 @@ using namespace std;
 
 struct RecvPlayerData {
 	 wchar_t		 wId[21];
-	 Player			 pPlayer = {};
+	 //Player			 pPlayer = {};
 	 USHORT          uCharNum = 0;
 	 KeyInput        Input = { 0 };
 };
