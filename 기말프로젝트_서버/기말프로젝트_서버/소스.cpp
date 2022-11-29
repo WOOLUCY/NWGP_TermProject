@@ -9,7 +9,6 @@
 
 #define PLATFORMNUM 10
 #define COINNUM 10
-#define MONSTERNUM 10
 
 HANDLE hWriteEvent;
 HANDLE hReadEvent;
@@ -18,7 +17,6 @@ int buf[BUFSIZE];
 
 vector<Platform> platform;
 vector<Coin> coins;
-vector<CMonster> monsters;
 
 
 void InitPlatform()
@@ -33,14 +31,6 @@ void InitPlatform()
 
 }
 
-void InitMonster()
-{
-	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		monsters.push_back(CMonster(700 + 30 * i, 625));
-	}
-
-}
-
 void InitCoin()
 {
 
@@ -49,19 +39,7 @@ void InitCoin()
 		printf("%d %d\n", coins[i].send.iXpos, coins[i].send.iYpos);
 	}
 }
-void InitPlayer(int num)
-{
-	if (num == 1) {
-		//1번캐릭터 - 
-	}
-	else if (num == 2) {
-		//2번캐릭터
-	}
-	else {
-		//3번캐릭터
-	}
 
-}
 DWORD WINAPI Send_Thread(LPVOID arg)
 {
 
@@ -74,7 +52,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
 	int len;
 
-	ClientToServer* player;
+	RecvPlayerData* player;
 
 	char testData[BUFSIZE + 1] = "\0";
 
@@ -108,7 +86,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	char addr[INET_ADDRSTRLEN];
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
 	
-	ClientToServer *player;
+	RecvPlayerData *player;
 	
 
 	char testData[BUFSIZE + 1] = "\0";
@@ -121,10 +99,10 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	// 클라이언트와 데이터 통신
 	while (1) {
 		// ID recv
-		retval = recv(client_sock, buf, sizeof(ClientToServer), MSG_WAITALL);
+		retval = recv(client_sock, buf, sizeof(RecvPlayerData), MSG_WAITALL);
 		buf[retval] = '\0';
 
-		player = (ClientToServer*)buf;
+		player = (RecvPlayerData*)buf;
 		sprintf(testData, buf);
 
 		if (retval == SOCKET_ERROR) {
@@ -152,6 +130,26 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 int main(int argc, char* argv[])
 {
+	// 이벤트 생성
+	// hWriteEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	// hReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+	// 스레드 세 개 생성
+	//HANDLE hThread[3];
+	//hThread[0] = CreateThread(NULL, 0, WriteThread, NULL, 0, NULL);
+	//hThread[1] = CreateThread(NULL, 0, ReadThread, NULL, 0, NULL);
+	//hThread[2] = CreateThread(NULL, 0, ReadThread, NULL, 0, NULL);
+
+	//// 읽기 완료 알림
+	//SetEvent(hReadEvent);
+
+	//// 스레드 세 개 종료 대기
+	//WaitForMultipleObjects(3, hThread, TRUE, INFINITE);
+
+	//// 이벤트 제거
+	//CloseHandle(hWriteEvent);
+	//CloseHandle(hReadEvent);
+	//return 0;
 
 	InitPlatform();
 	InitCoin();
@@ -226,17 +224,6 @@ int main(int argc, char* argv[])
 			printf("%d %d \t", coins[i].send.iXpos, coins[i].send.iYpos);
 
 		}
-
-		//몬스터 보내는거 
-		//tmp = MONSTERNUM;
-		//retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
-		//printf("%d\n", tmp);
-
-		//for (int i{ 0 }; i < tmp; ++i) {
-		//	retval = send(client_sock, (char*)&monsters[i].iXpos, sizeof(int) * 2, 0);
-		//	printf("%d %d \t", monsters[i].iXpos, monsters[i].iYpos);
-
-		//}
 
 
 		// 스레드 생성

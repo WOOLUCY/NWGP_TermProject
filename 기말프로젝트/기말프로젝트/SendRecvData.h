@@ -5,14 +5,14 @@
 using namespace std;
 /* ------------------------- 서버 통신용 ------------------------- */
 
-struct ClientToServer {
+struct SendPlayerData {
 	 wchar_t		 wId[21];
-	 Player			 pPlayer = {};
+	 Player		  	 pPlayer = {};
 	 USHORT          uCharNum = 0;
 	 KeyInput        Input = { 0 };
 };
 
-struct ServerToClient {
+struct RecvGameData {
 	clock_t         ServerTime;
 	bool            bWin;
 	bool            bIsPlaying;
