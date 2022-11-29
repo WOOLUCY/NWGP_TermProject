@@ -7,7 +7,6 @@ using namespace std;
 
 struct ClientToServer {
 	 wchar_t		 wId[21];
-	 //Player		  	 pPlayer = {};
 	 USHORT          uCharNum = 0;
 	 KeyInput        Input = { 0 };
 };
@@ -16,4 +15,7 @@ struct ServerToClient {
 	clock_t         ServerTime;
 	bool            bWin;
 	bool            bIsPlaying;
+
+	Player::SendData player1;
+
 };

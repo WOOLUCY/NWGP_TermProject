@@ -1,7 +1,6 @@
 #pragma comment(lib, "winmm")
 #include "Common.h"
 
-//#include <tchar.h>
 #include <atlImage.h>
 #include <mmsystem.h>
 
@@ -29,9 +28,6 @@ using namespace std;
 #define	CHILD_ID_EDIT	112
 
 
-
-
-
 bool IsDebugMode = false;
 void UpdatePlayerInput(WPARAM Input, Player player);
 
@@ -47,16 +43,20 @@ HWND hButtonEdit;	// 에디트 컨트롤
 
 
 
-static int retval;
+int retval;
 SOCKET sock;		// 소켓
 
-
-int testnum[2];
-vector<Platform> TestPlatform;
-vector<Coin> TestCoin1;
+vector<Platform> Platforms;
+vector<Coin> Coins;
 
 CImage platformImg;
 CImage coinImg;
+CImage monsterImg;
+
+Player player;
+
+ClientToServer PlayerData;
+ServerToClient GameData;
 
 
 void LoadImg()
@@ -64,9 +64,66 @@ void LoadImg()
 	
 	platformImg.Load(L"Image/Platform2.png");
 	coinImg.Load(L"Image/coin2.png");
-	//coinImg.Load(L"Image/ce.png");
+	monsterImg.Load(L"Image/Monster.png");
+
 
 }
+
+DWORD WINAPI ClientMain(LPVOID arg)
+{
+
+
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET) err_quit("socket()");
+	// connect()
+	struct sockaddr_in serveraddr;
+	memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR) err_quit("connect()");
+
+
+
+	//가온 - 플랫폼 데이터 일단 받기 - 테스트용 int 한개만 받고 잘 오는지확인용
+
+	int temp[2];
+
+
+	int total;
+	retval = recv(sock, (char*)&total, sizeof(int), 0);
+	for (int i{ 0 }; i < total; ++i) {
+		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
+		Platforms.push_back(Platform(temp[0], temp[1], &platformImg));
+	}
+
+
+	retval = recv(sock, (char*)&total, sizeof(int), 0);
+	for (int i{ 0 }; i < total; ++i) {
+		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
+		Coins.push_back(Coin(temp[0], temp[1], &coinImg));
+	}
+
+	while (1) {
+		retval = recv(sock, (char*)&GameData, sizeof(GameData), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+			break;
+		}
+		else if (retval == 0) {
+			break;
+		}
+	}
+
+
+}
+
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -107,46 +164,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	LoadImg();
 
 
-	/* ------------ 서버 연결용 ------------ */
-	// 윈속 초기화
-	WSADATA wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-		return 1;
-
-	// 소켓 생성
-	/* 밑의 주석 지우면 서버 연결됩니다 */
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET) err_quit("socket()");
-	// connect()
-	struct sockaddr_in serveraddr;
-	memset(&serveraddr, 0, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
-	serveraddr.sin_port = htons(SERVERPORT);
-	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR) err_quit("connect()");
-
-	//가온 - 플랫폼 데이터 일단 받기 - 테스트용 int 한개만 받고 잘 오는지확인용
-	//한번만 받을 데이터 여기서 받기로 일단함
-	//일단 고정길이 발판 갯수받기
-	int total;
-	retval = recv(sock, (char*)&total, sizeof(int), 0);
-	for (int i{ 0 }; i < total; ++i) {
-		retval = recv(sock, (char*)testnum, sizeof(int) * 2, 0);
-		TestPlatform.push_back(Platform(testnum[0], testnum[1], &platformImg));
-	}
-
-
-	retval = recv(sock, (char*)&total, sizeof(int), 0);
-	for (int i{ 0 }; i < total; ++i) {
-		retval = recv(sock, (char*)testnum, sizeof(int) * 2, 0);
-		TestCoin1.push_back(Coin(testnum[0], testnum[1], &coinImg));
-	}
-
-
-
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
+
+	CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+
 
 	while (GetMessage(&Message, NULL, 0, 0)) {
 		TranslateMessage(&Message);
@@ -155,11 +177,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	return Message.wParam;
 }
 
-struct BLOCK {
-	int x;
-	int y;
-	int width;
-};
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -172,10 +189,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	COLORREF color;
 
-	BLOCK Block_local[25] = { 0 };
-
 	static Background startBackground;
 	static Background background;
+
+
 	static CImage startbackgroundImg;
 	static CImage backgroundImg;
 	static CImage ground;
@@ -187,11 +204,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	
 
 	startBackground.Image = &startbackgroundImg;
-	background.Image = &backgroundImg;	// Background 클래스의 Image 는 CImage 를 가르킨다.
+	background.Image = &backgroundImg;	
 
 	static CImage playerImg;
 	static Player player;
-	player.myImage[0] = &playerImg;		// Player 클래스의 myImage 는 CImage 를 가르킨다.
+	player.myImage[0] = &playerImg;		
 
 	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
 	static Coin TestCoin;
@@ -203,10 +220,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 
 	// W 몬스터 생성
-	static CImage MonsterImg;
 	static CMonster monster;
 	monster.SetMonNum(1);
-	monster.myImage[0] = &MonsterImg;
+	monster.myImage[0] = &monsterImg;
 
 	// W 열쇠 생성
 	static CImage KeyImg;
@@ -232,12 +248,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	// W character selection
 	static bool bReady = FALSE;	// 캐릭터 선택 후 게임 시작 판단용
 
-	/* ------------ 서버 연결용 ------------ */
-	static struct ClientToServer PlayerData;
-
-	// 데이터 통신에 사용할 변수
-	// struct SendPlayerData buf;
-	const char* testData;
 
 	switch (iMsg) {
 	case WM_CREATE:
@@ -247,19 +257,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		ground.Load(L"Image/ground2.png");
 		playerImg.Load(L"Image/Cookies3.png");
 
-		// W 몬스터이미지 로드
-		MonsterImg.Load(L"Image/Monster.png");
 		// W load character selection window image
 		selectBackgroundImg.Load(L"Image/Select.png");
 		selectBackground.setHeight(selectBackground.Image->GetWidth());
 		selectBackground.SetWidth(selectBackground.Image->GetWidth());
+
 		// W load key image
 		KeyImg.Load(L"Image/key.png");
+		
 		// W load portal image
 		PortalImg.Load(L"Image/Portal.png");
-
-		//가온 - 코인이미지,플랫폼 로드 
-	//	platformImg.Load(L"Image/Platform.png");
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -285,7 +292,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				895, 385, 130, 30, hWnd, (HMENU)CHILD_ID_EDIT, hInst, NULL);
 			hButtonEdit = CreateWindow(L"button", L"접속", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 				890, 505, 80, 40, hWnd, (HMENU)CHILD_BUTTON, hInst, NULL);
-			// ShowWindow(hButtonEdit, SW_HIDE);
 		}
 		// W render character selection window
 		else if (enterID == TRUE && bReady == FALSE) {
@@ -294,8 +300,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		else {
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, 210, 2560, 1600);
 			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);
-			player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
+			//player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
 			
+
+			player.myImage[0]->Draw(mem1dc, GameData.player1.iXpos, GameData.player1.iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+				0 + player.GetWidth() * GameData.player1.uSpriteX, 0 + player.GetHeight() * GameData.player1.uSpriteY, 170, 148);
+
+
+
 			// W Monster Draw
 			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);		// W Draw Key
 			// W Key Draw
@@ -308,16 +320,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			
 			//가온-코인그리기 
 			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
-			//TestPlatform[0].myImage->Draw(mem1dc, TestPlatform[0].iXpos, TestPlatform[0].iYpos, TestPlatform[0].GetWidth() / 2, TestPlatform[0].GetHeight() / 2, 0, 0, TestPlatform[0].GetWidth(), TestPlatform[0].GetHeight());
-			//TestPlatform[1].myImage->Draw(mem1dc, TestPlatform[1].iXpos, TestPlatform[1].iYpos, TestPlatform[1].GetWidth() / 2, TestPlatform[1].GetHeight() / 2, 0, 0, TestPlatform[1].GetWidth(), TestPlatform[1].GetHeight());
 
 			//가온 - 플랫폼 - 위치 서버에서 바꿔줘야함 걍 대충 바갑가ㅏㅏ함
-			for (Platform& temp : TestPlatform) {
+			for (Platform& temp : Platforms) {
 				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
 			}
 
 
-			for (Coin& temp : TestCoin1) {
+			for (Coin& temp : Coins) {
 				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
@@ -428,21 +438,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_TIMER:
 		switch (wParam) {
 		case 1:		// Sprite 의 교체 속도(업데이트 속도)를 담당하는 타이머
-			player.ChangeSprite(&spriteCnt);
-			player.UpdatePlayerLocation();					// Player 의 Move 함수는 이동을 담당
-			background.Update();
-			player.Jump(curSpriteCnt);
-			frame_time = time(NULL) - current_time;
-			frame_rate = 1.0 / frame_time;
-			current_time += frame_time;
+			//player.ChangeSprite(&spriteCnt);
+			//player.UpdatePlayerLocation();					// Player 의 Move 함수는 이동을 담당
+			//background.Update();
+			//player.Jump(curSpriteCnt);
+			//frame_time = time(NULL) - current_time;
+			//frame_rate = 1.0 / frame_time;
+			//current_time += frame_time;
 
-			monster.ChangeSprite(&spriteCnt);
-			monster.UpdateMonsterLocation();
+			//monster.ChangeSprite(&spriteCnt);
+			//monster.UpdateMonsterLocation();
 
-			TestCoin.ChangeSprite();
+			//TestCoin.ChangeSprite();
 
 
-			for (Coin& temp : TestCoin1) {
+			for (Coin& temp : Coins) {
 				temp.ChangeSprite();
 			}
 
@@ -458,13 +468,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				char id_send[BUFSIZE];
 				GetWindowText(hEdit, wID, 20);
 				player.SetId(wID);
-
-				//player.SetCharNum(100);
-				//PlayerData.uCharNum = player.GetCharNum();
-
-				//PlayerData.wId = wID;
 				wcscpy(PlayerData.wId, wID);
-				//PlayerData.pPlayer = player;
 
 				// Id send
 				retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
@@ -491,23 +495,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_KEYDOWN:
 		if (wParam == VK_LEFT) {
-			player.velocity.x = -player.GetRunSpeed();
 			curSpriteCnt = 3;
-			player.SetSpriteY(3);
-			player.input.bLeft = TRUE;
-			PlayerData.Input = player.input;				
-			
+			PlayerData.Input.bLeft = TRUE;
+
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
 		}
 		if (wParam == VK_RIGHT) {
-			player.velocity.x = player.GetRunSpeed();
 			curSpriteCnt = 1;
-			player.SetSpriteY(1);
-			player.input.bRight = TRUE;
-			PlayerData.Input = player.input;
+			PlayerData.Input.bRight = TRUE;
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -518,10 +516,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		}
 		if (wParam == VK_SPACE) {
-			player.bJumpKeyPressed = TRUE;
-			// player.SetSpriteY(2);	// Sprite 의 Y 위치임. 0 - 기본, 1 - 오른쪽 이동, 2 - 점프, 3 - 왼쪽 이동
-			player.input.bSpace = TRUE;
-			PlayerData.Input = player.input;
+			PlayerData.Input.bSpace = TRUE;
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -536,11 +531,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_KEYUP:
 		if (wParam == VK_LEFT) {
-			player.velocity.x = 0;
-			curSpriteCnt = 4;
-			player.SetSpriteY(4);
-			player.input.bLeft = FALSE;
-			PlayerData.Input = player.input;
+			PlayerData.Input.bLeft = FALSE;
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -549,18 +540,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		if (wParam == VK_RIGHT) {
-			player.velocity.x = 0;
-			curSpriteCnt = 0;
-			player.SetSpriteY(0);
-			player.input.bRight = FALSE;
-			PlayerData.Input = player.input;
+			PlayerData.Input.bRight = FALSE;
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
 		}
-		if (wParam == VK_UP) {
+		if (wParam == VK_SPACE) {
+			PlayerData.Input.bSpace = FALSE;
+			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send()");
+			}
 
 		}
 		break;

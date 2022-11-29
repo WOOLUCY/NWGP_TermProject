@@ -15,9 +15,15 @@ HANDLE hReadEvent;
 int buf[BUFSIZE];
 
 
+Player user1;
+
 vector<Platform> platform;
 vector<Coin> coins;
 
+ServerToClient TestData;
+
+
+void UpdatePlayerLocation(Player* p);
 
 void InitPlatform()
 {
@@ -52,9 +58,6 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
 	int len;
 
-	RecvPlayerData* player;
-
-	char testData[BUFSIZE + 1] = "\0";
 
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
@@ -64,10 +67,22 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	// 클라이언트와 데이터 통신
 	while (1) {
 		Sleep(16);
-		// printf("보냄 ");
+		UpdatePlayerLocation(&user1);
+
+		TestData.player1 = user1.Send;
+		
+		retval = send(client_sock, (char*)&TestData, sizeof(TestData), 0);
+
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+			break;
+		}
+
+
+
 	}
 
-	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, testData);
+	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, "end");
 	// 소켓 닫기
 	closesocket(client_sock);
 
@@ -86,10 +101,9 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	char addr[INET_ADDRSTRLEN];
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
 	
-	RecvPlayerData *player;
+	ClientToServer * recvData;
 	
 
-	char testData[BUFSIZE + 1] = "\0";
 	
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
@@ -99,11 +113,10 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	// 클라이언트와 데이터 통신
 	while (1) {
 		// ID recv
-		retval = recv(client_sock, buf, sizeof(RecvPlayerData), MSG_WAITALL);
+		retval = recv(client_sock, buf, sizeof(ClientToServer), MSG_WAITALL);
 		buf[retval] = '\0';
 
-		player = (RecvPlayerData*)buf;
-		sprintf(testData, buf);
+		recvData = (ClientToServer*)buf;
 
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
@@ -111,16 +124,42 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		}
 		else if (retval == 0) break;
 
-		 printf("\n접속한 Player의 ID: %ws", player->wId);
-		 printf("\n접속한 Player의 캐릭터: %d\n", player->uCharNum);
+		 printf("\n접속한 Player의 ID: %ws", recvData->wId);
+		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
 
-		 printf("bLeft: %s\n", player->Input.bLeft ? "true" : "false");
-		 printf("bRight: %s\n", player->Input.bRight ? "true" : "false");
-		 printf("bSpace: %s\n", player->Input.bSpace ? "true" : "false");
+		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
+		 printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
+		 printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
 
 		 //printf("Collided Monster Number: %d\n", player->pPlayer.GetXPos());
+
+
+
+		 user1.input.bLeft = recvData->Input.bLeft;
+
+		 static bool first = true;
+		 if (first) {
+			 user1.input = recvData->Input;
+			 if (recvData->Input.bSpace)
+				 first = false;
+
+		 }
+		 else {
+			 if (user1.input.bSpace == false || user1.bJumpKeyPressed == false) {
+				 first = true;
+			 }
+		 }
+		 //인픗을 초기화 해주니까 생긴문제임
+
+
+		 user1.input.bLeft = recvData->Input.bLeft;
+
+		 user1.input.bRight = recvData->Input.bRight;
+
+
+
 	}
-	printf("\n#No.%d '%ws' SENDING COMPLATE\n", client_sock, player->wId);
+	printf("\n#No.%d '%ws' SENDING COMPLATE\n", client_sock, recvData->wId);
 	// 소켓 닫기
 	closesocket(client_sock);
 
@@ -128,28 +167,72 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	return 0;
 }
 
+void UpdatePlayerLocation(Player* p)
+{
+	static int curSpriteCnt = 0;
+
+
+
+	if (!(p->input.bLeft)) {
+		//왼쪽으로 이동
+		p->velocity.x = 0;
+		p->SetSpriteY(4);
+
+
+
+	}
+
+	if (!(p->input.bRight)) {
+		//왼쪽으로 이동
+		p->velocity.x = 0;
+		p->SetSpriteY(0);
+
+	}
+
+
+	if (p->input.bLeft) {
+		//왼쪽으로 이동
+		curSpriteCnt = 3;
+
+		p->velocity.x = -p->GetRunSpeed();
+		p->SetSpriteY(3);
+
+	}
+
+
+	if (p->input.bRight) {
+		//오른쪽으로 이동
+		curSpriteCnt = 1;
+
+		p->velocity.x = p->GetRunSpeed();
+		p->SetSpriteY(1);
+	}
+
+
+
+
+
+
+	if (p->input.bSpace) {
+		//점프
+		p->SetSpriteY(2);
+		p->bJumpKeyPressed = TRUE;
+		p->Jump(curSpriteCnt);
+
+
+	}
+
+
+
+	p->UpdatePlayerLocation();
+
+
+
+}
+
+
 int main(int argc, char* argv[])
 {
-	// 이벤트 생성
-	// hWriteEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	// hReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-
-	// 스레드 세 개 생성
-	//HANDLE hThread[3];
-	//hThread[0] = CreateThread(NULL, 0, WriteThread, NULL, 0, NULL);
-	//hThread[1] = CreateThread(NULL, 0, ReadThread, NULL, 0, NULL);
-	//hThread[2] = CreateThread(NULL, 0, ReadThread, NULL, 0, NULL);
-
-	//// 읽기 완료 알림
-	//SetEvent(hReadEvent);
-
-	//// 스레드 세 개 종료 대기
-	//WaitForMultipleObjects(3, hThread, TRUE, INFINITE);
-
-	//// 이벤트 제거
-	//CloseHandle(hWriteEvent);
-	//CloseHandle(hReadEvent);
-	//return 0;
 
 	InitPlatform();
 	InitCoin();
@@ -228,7 +311,7 @@ int main(int argc, char* argv[])
 
 		// 스레드 생성
 		hThread[0] = CreateThread(NULL, 0, Recv_Thread, (LPVOID)client_sock, 0, NULL);
-		//hThread[1] = CreateThread(NULL, 0, Send_Thread, (LPVOID)client_sock, 0, NULL);
+		hThread[1] = CreateThread(NULL, 0, Send_Thread, (LPVOID)client_sock, 0, NULL);
 
 
 

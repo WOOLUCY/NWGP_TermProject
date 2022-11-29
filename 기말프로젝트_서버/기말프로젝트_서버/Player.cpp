@@ -6,10 +6,7 @@ Player::Player()
 
 {
 	//일단 걍다 0으로 초기화함 
-	myImage[0] = nullptr;
-	myImage[1] = nullptr;
-	myImage[2] = nullptr;
-	myImage[3] = nullptr;
+
 
 	// W AABB initialization
 	aabb.bottom = iYpos + (iHeight / 2);
@@ -25,28 +22,22 @@ Player::Player()
 	fJumpPower = 4.f;
 	fJumpTime = 0.01;
 	JumpHeight = 0;
+
+	Send.iXpos = iXpos;
+	Send.iYpos = iYpos;
+	Send.uSpriteX = uSpriteX;
+	Send.uSpriteY = uSpriteY;
+
 }
 
 Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)
 	:wId(id), uSpriteX(sprite), uCharNum(charnum), iXpos(position.x), iYpos(position.y), pVel(Vel), sHeart(heart), uCoin(coin), bFind(find)
 {
 	//이미지 설정하기 
-
-	switch (uCharNum)
-	{
-	case 0:
-
-		break;
-	case 1:
-
-		break;
-	case 2:
-
-		break;
-
-	default:
-		break;
-	}
+	Send.iXpos = iXpos;
+	Send.iYpos = iYpos;
+	Send.uSpriteX = uSpriteX;
+	Send.uSpriteY = uSpriteY;
 }
 
 Player::~Player()
@@ -58,6 +49,7 @@ Player::~Player()
 void Player::Jump(USHORT spriteCnt)
 {
 	if (!bJumpKeyPressed) return;
+
 	SetSpriteY(2);
 	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 3; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
 	fJumpTime += 0.2f;		//	시간의 흐름을 표현하기 위해서.
@@ -91,6 +83,12 @@ void Player::UpdatePlayerLocation()
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
 	aabb.top = iYpos;
+
+	Send.iXpos = iXpos;
+	Send.iYpos = iYpos;
+	Send.uSpriteX = uSpriteX;
+	Send.uSpriteY = uSpriteY;
+
 }
 
 void Player::ChangeSprite(int* count)
