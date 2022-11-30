@@ -144,13 +144,13 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		else if (retval == 0) {
 			break;
 		}
-<<<<<<< Updated upstream
-=======
+//<<<<<<< Updated upstream
+//=======
 		player.iXpos = GameData.player->iXpos;
 		player.iYpos = GameData.player->iYpos;
 
 		player.SetIsPlaying(GameData.bIsPlaying);
->>>>>>> Stashed changes
+//>>>>>>> Stashed changes
 	}
 
 

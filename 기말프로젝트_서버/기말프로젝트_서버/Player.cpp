@@ -14,7 +14,7 @@ Player::Player()
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
 	aabb.top = iYpos;
-	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.3);		// 플레이어 기본 속도는 이것
+	RUN_SPEED_PPS = (10.0 / 60.0) * (15.0 / 0.3);		// 플레이어 기본 속도는 이것
 
 	velocity = { 0, 0 };
 	dir = 0;
