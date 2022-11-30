@@ -31,6 +31,10 @@ Player::Player()
 	Send.uSpriteX = uSpriteX;
 	Send.uSpriteY = uSpriteY;
 
+	Send.sHeart = sHeart;
+	Send.uCoin = uCoin;
+
+
 }
 
 Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)
@@ -44,6 +48,10 @@ Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel
 	Send.iYpos = iYpos;
 	Send.uSpriteX = uSpriteX;
 	Send.uSpriteY = uSpriteY;
+
+	Send.sHeart = sHeart;
+	Send.uCoin = uCoin;
+
 }
 
 Player::~Player()
@@ -111,6 +119,11 @@ void Player::UpdatePlayerLocation()
 	Send.iYpos = iYpos;
 	Send.uSpriteX = uSpriteX;
 	Send.uSpriteY = uSpriteY;
+
+
+
+	Send.sHeart = sHeart;
+	Send.uCoin = uCoin;
 
 }
 

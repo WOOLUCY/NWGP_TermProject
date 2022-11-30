@@ -2,6 +2,13 @@
 #include "global.h"
 #include <atlImage.h>
 
+
+struct defaultMon {
+	int		iWidth = 144;	// draw 에 필요한 width, height 추가
+	int		iHeight = 138;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
+
+};
+
 class CMonster
 {
 private:
@@ -23,8 +30,11 @@ public:
 	struct SendData {
 		int		iXpos;
 		int		iYpos;
+
 		USHORT	uSpriteX;
 		USHORT	uSpriteY;
+
+
 
 	};
 
@@ -37,6 +47,7 @@ public:
 	int		iYpos;
 	int		dir;
 	POS		velocity = { 0, 0 };
+
 
 public:
 	USHORT GetMonNum() { return uMonNum; }
