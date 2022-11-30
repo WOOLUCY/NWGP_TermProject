@@ -19,8 +19,10 @@
 
 
 using namespace std;
+//[이세민] [오후 8:34] 192.168.219.31
+//char* SERVERIP = (char*)"192.168.219.102";// "127.0.0.1"
+char* SERVERIP = (char*)"127.0.0.1";
 
-#define SERVERIP  "192.168.102.141"// "127.0.0.1"
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
@@ -86,6 +88,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
+
 	// connect()
 	struct sockaddr_in serveraddr;
 	memset(&serveraddr, 0, sizeof(serveraddr));
@@ -583,13 +586,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_DESTROY:
-		KillTimer(hWnd, 1);
-
-		PostQuitMessage(0);
-
+	{
+		PlayerData.uCharNum = 10000;
+		retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
 		}
+
+		KillTimer(hWnd, 1);
+
+		PostQuitMessage(0);
 
 		// 소켓 닫기
 		closesocket(sock);
@@ -597,7 +603,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		// 윈속 종료
 		WSACleanup();
 		return 0;
-		break;
+		break; }
 	}
 	return DefWindowProc(hWnd, iMsg, wParam, lParam);
 }

@@ -64,7 +64,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	int retval;
 	SOCKET client_sock = (SOCKET)arg;
 	struct sockaddr_in clientaddr;
-	int addrlen;
+	int addrlen = sizeof(clientaddr);
 	char addr[INET_ADDRSTRLEN];
 
 	char buf[BUFSIZE + 1]; 
@@ -72,13 +72,14 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 	const int index = TotalClient - 1;
 
-	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (struct sockaddr*)&clientaddr, &addrlen);
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
 	// 클라이언트와 데이터 통신
 
 	while (1) {
+
+		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
 
 		Sleep(16);
@@ -90,18 +91,18 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		
 		retval = send(client_sock, (char*)&SendData, sizeof(SendData), 0);
 
+
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
 			break;
 		}
 
 
-
 	}
 
 	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, "end");
 	// 소켓 닫기
-	closesocket(client_sock);
+	//closesocket(client_sock);
 
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
 	return 0;
@@ -130,8 +131,11 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 	// 클라이언트와 데이터 통신
 	while (1) {
+
 		// ID recv
 		retval = recv(client_sock, buf, sizeof(ClientToServer), MSG_WAITALL);
+		
+		
 		buf[retval] = '\0';
 
 		recvData = (ClientToServer*)buf;
@@ -142,15 +146,10 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		}
 		else if (retval == 0) break;
 
-		 printf("\n접속한 Player의 ID: %ws", recvData->wId);
-		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
-		 printf("\n접속한 Player의 인덱스: %d\n", index);
-
-		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
-		 printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
-		 printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
+		if (recvData->uCharNum == 10000) break;
 
 		 users[index].Send.charNum = recvData->uCharNum-1;
+		 users[index].SetId(recvData->wId);
 
 		 if (users[index].bJumpKeyPressed == true) {
 			 users[index].input.bLeft = recvData->Input.bLeft;
@@ -164,20 +163,28 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 }
 
 
+		 printf("\n접속한 Player의 ID: %ws", recvData->wId);
+		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
+		 printf("\n접속한 Player의 인덱스: %d\n", index);
+
+		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
+		 printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
+		 printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
 
 
 		 printf("bLeft: %s\n", users[index].input.bLeft ? "true" : "false");
 		 printf("bRight: %s\n", users[index].input.bRight ? "true" : "false");
 		 printf("bSpace: %s\n", users[index].input.bSpace ? "true" : "false");
 
-
+		
 
 	}
-	printf("\n#No.%d '%ws' SENDING COMPLATE\n", client_sock, recvData->wId);
+	printf("\n#No.%d '%ws' Recv_Thread COMPLATE\n", client_sock, recvData->wId);
 	// 소켓 닫기
-	closesocket(client_sock);
+	//closesocket(client_sock);
 
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
+	--TotalClient;
 	return 0;
 }
 
@@ -280,6 +287,9 @@ int main(int argc, char* argv[])
 
 	HANDLE hThread[2];
 
+	hWriteEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	hReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+
 	while (1) {
 		// accept()
 		addrlen = sizeof(clientaddr);
@@ -299,7 +309,7 @@ int main(int argc, char* argv[])
 		++TotalClient;
 
 		printf("총 접속 클라이언트 : %d\n", TotalClient);
-			printf("\n============================================================================\n");
+		printf("\n============================================================================\n");
 
 
 
@@ -338,6 +348,7 @@ int main(int argc, char* argv[])
 		// 스레드 생성
 		hThread[0] = CreateThread(NULL, 0, Recv_Thread, (LPVOID)client_sock, 0, NULL);
 		hThread[1] = CreateThread(NULL, 0, Send_Thread, (LPVOID)client_sock, 0, NULL);
+
 
 
 		
