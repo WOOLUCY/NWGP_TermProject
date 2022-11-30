@@ -112,6 +112,11 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 		//UpdateMonsters(); 이거를 쓰면 2번불려서 이상해짐! 이벤트를 써야할때가 온걸수도,,?
 
+		if (TotalClient == 3)
+		{
+			SendData.bIsPlaying = TRUE;
+		}
+
 		Sleep(16);
 		SendData.player[index] = users[index].Send;
 		
@@ -199,12 +204,14 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		 }
 
-
 		 printf("\n접속한 Player의 ID: %ws", recvData->wId);
 		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
 		 printf("\n접속한 Player의 캐릭터: %d\n", users[index].Send.charNum);
 		 printf("\n접속한 Player의 인덱스: %d\n", index);
-
+		 printf("\nPlayer Is Ready: %d\n", index);
+		 printf(!(recvData->uCharNum == 0) ? "IsReady: true\n" : "IsReady: false\n");
+		 printf(recvData->IsPlaying? "IsPlaying: true\n" : "IsPlaying: false\n");
+			 
 		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
 		 printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
 		 printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
@@ -395,8 +402,6 @@ int main(int argc, char* argv[])
 
 		printf("총 접속 클라이언트 : %d\n", TotalClient);
 		printf("\n============================================================================\n");
-
-
 
 		//가온 - 한번보내고 안보낼 데이터 여기서 스레드생성전에 전송
 		//일단 발판 개수 전송- 고정길이
