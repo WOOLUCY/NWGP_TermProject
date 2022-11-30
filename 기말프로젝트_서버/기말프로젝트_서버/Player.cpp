@@ -57,8 +57,16 @@ void Player::Jump(USHORT spriteCnt)
 	if (!bJumpKeyPressed) {
 		return;
 	}
+
+	if (spriteCnt == 1)
+		SetSpriteY(2);
+	else if (spriteCnt == 3)
+		SetSpriteY(5);
+	else if (spriteCnt == 0)
+		SetSpriteY(2);
+	else if (spriteCnt == 4)
+		SetSpriteY(5);
 	
-	SetSpriteY(2);
 	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 4; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
 	fJumpTime += 0.2f;		//	시간의 흐름을 표현하기 위해서.
 

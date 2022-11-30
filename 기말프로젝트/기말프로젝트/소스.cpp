@@ -1,8 +1,9 @@
 #pragma comment(lib, "winmm")
 #include "Common.h"
 
-#include <atlImage.h>
+//#include <atlImage.h>
 #include <mmsystem.h>
+#include <algorithm>
 
 
 #include "Player.h"
@@ -51,6 +52,7 @@ SOCKET sock;		// 소켓
 vector<Platform> Platforms;
 vector<Coin> Coins;
 vector<CMonster> Monsters;
+int monsterTotal = 1;	// semin, 몬스터 몇 마리인지 
 
 Player player;
 
@@ -72,7 +74,7 @@ void LoadImg()
 
 	playersImag[0].Load(L"Image/Cookies3.png");	
 	playersImag[1].Load(L"Image/Cookies2.png");
-	playersImag[2].Load(L"Image/sheart.png");
+	playersImag[2].Load(L"Image/Cookies4.png");
 
 
 
@@ -119,8 +121,8 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		Coins.push_back(Coin(temp[0], temp[1], &coinImg));
 	}
 
-	retval = recv(sock, (char*)&total, sizeof(int), 0);
-	for (int i{ 0 }; i < total; ++i) {
+	retval = recv(sock, (char*)&monsterTotal, sizeof(int), 0);
+	for (int i{ 0 }; i < monsterTotal; ++i) {
 		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
 		Monsters.push_back(CMonster(temp[0], temp[1], &monsterImg));
 	}
@@ -137,6 +139,8 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		else if (retval == 0) {
 			break;
 		}
+		player.iXpos = GameData.player->iXpos;
+		player.iYpos = GameData.player->iYpos;
 	}
 
 
@@ -181,7 +185,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	);
 
 	LoadImg();
-
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -312,10 +315,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 		// W render character selection window
 		else if (enterID == TRUE && bReady == FALSE) {
-			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
+			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 		}
 		else {
-			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, 210, 2560, 1600);
+			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + GameData.iBgMove, 220, 2560, 1600);
 			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);
 			//player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
 			
@@ -337,26 +340,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 																																																										// W Key Draw
 			if (!player.GetHasKey())
 			{
-				key.myImage->Draw(mem1dc, key.iXpos, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
+				key.myImage->Draw(mem1dc, key.iXpos - GameData.iBgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
 			}
 
 			//portal.myImage->Draw(mem1dc, portal.iXpos, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0, 0, 500, 800);
 			
 			//가온-코인그리기 
-			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
+			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - GameData.iBgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
 
 			//가온 - 플랫폼 - 위치 서버에서 바꿔줘야함 걍 대충 바갑가ㅏㅏ함
 			for (Platform& temp : Platforms) {
-				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
+				temp.myImage->Draw(mem1dc, temp.iXpos - GameData.iBgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
 			}
 
 
 			for (Coin& temp : Coins) {
-				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+				temp.myImage->Draw(mem1dc, temp.iXpos - GameData.iBgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
 			for (CMonster& temp : Monsters) {
-				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+				temp.myImage->Draw(mem1dc, temp.iXpos - GameData.iBgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
 
@@ -370,8 +373,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			if (IsDebugMode) {
 				SetTextAlign(mem1dc, TA_LEFT);
 				TextOut(mem1dc, 10, 10, L"Debug Mode", strlen("Debug Mode"));
-				RECT playerBox = player.GetAABB();
-				RECT monsterBox = monster.GetAABB();
+				RECT playerBox;
+				/* semin, 여기 부분 서버 변하면서 살짝 수정했는데 모든 플레이어의 충돌박스 그릴 거라면 수정 필요함 */
+				playerBox.bottom = player.iYpos + (player.GetHeight() / 2);
+				playerBox.left = player.iXpos;
+				playerBox.right = player.iXpos + (player.GetWidth() / 2);
+				playerBox.top = player.iYpos;
+				
+				RECT *monsterBox;
+				monsterBox = new RECT[monsterTotal];
+				for ( int i =0; i < monsterTotal; i++)
+					monsterBox[i] = Monsters[i].GetAABB();
 				//RECT CoinBox = TestCoin.GetAABB();
 				//RECT platformbox = TestPlatform[0].GetAABB();
 				//RECT platformbox1 = TestPlatform[1].GetAABB();
@@ -393,7 +405,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 				//Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
-				Rectangle(mem1dc, monsterBox.left, monsterBox.top, monsterBox.right, monsterBox.bottom);
+				for ( int i = 0; i < monsterTotal; i++ )
+					Rectangle(mem1dc, monsterBox[i].left - GameData.iBgMove /2, monsterBox[i].top, monsterBox[i].right - GameData.iBgMove/ 2, monsterBox[i].bottom);
 
 				if (player.IsCollidedCoin(TestCoin))
 				{
@@ -521,6 +534,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		if (wParam == VK_LEFT) {
 			curSpriteCnt = 3;
 			PlayerData.Input.bLeft = TRUE;
+			PlayerData.Up.bLeft = FALSE;
+			PlayerData.Up.bRight = FALSE;
+			//bgMove = std::clamp(bgMove, -200, 4000);
+
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -530,6 +547,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		if (wParam == VK_RIGHT) {
 			curSpriteCnt = 1;
 			PlayerData.Input.bRight = TRUE;
+			PlayerData.Up.bLeft = FALSE;
+			PlayerData.Up.bRight = FALSE;
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -541,6 +560,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 		if (wParam == VK_SPACE) {
 			PlayerData.Input.bSpace = TRUE;
+			PlayerData.Up.bSpace = FALSE;
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -556,6 +576,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYUP:
 		if (wParam == VK_LEFT) {
 			PlayerData.Input.bLeft = FALSE;
+			PlayerData.Up.bLeft = TRUE;
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -565,6 +586,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == VK_RIGHT) {
 			PlayerData.Input.bRight = FALSE;
+			PlayerData.Up.bRight = TRUE;
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -573,6 +595,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 		if (wParam == VK_SPACE) {
 			PlayerData.Input.bSpace = FALSE;
+			PlayerData.Up.bSpace = TRUE;
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");

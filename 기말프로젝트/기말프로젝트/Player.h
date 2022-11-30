@@ -64,6 +64,7 @@ public:
 	float	fJumpTime;
 	float	JumpHeight;
 	KeyInput input;
+	KeyInput up;
 
 public:
 	LPCWCHAR GetId() { return wId; }

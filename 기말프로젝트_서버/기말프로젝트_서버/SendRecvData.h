@@ -10,12 +10,14 @@ struct ClientToServer {
 	 wchar_t		 wId[21];
 	 USHORT          uCharNum = 0;
 	 KeyInput        Input = { 0 };
+	 KeyInput        Up = { 0 };
 };
 
 struct ServerToClient {
 	clock_t         ServerTime;
 	bool            bWin;
 	bool            bIsPlaying;
+	int				iBgMove;
 
 	Player::SendData player[3];
 	//onster::SendData TestMon;

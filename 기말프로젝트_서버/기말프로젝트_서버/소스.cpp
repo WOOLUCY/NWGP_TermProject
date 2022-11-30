@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "SendRecvData.h"
 #include <vector>
+#include <algorithm>
 #include "Platform.h"
 #include "Coin.h"
 
@@ -18,16 +19,19 @@ HANDLE hReadEvent;
 int TotalClient;
 
 
-Player users[3];
+Player				users[3];
 
-vector<Platform> platform;
-vector<Coin> coins;
-vector<CMonster> monsters;
+vector<Platform>	platform;
+vector<Coin>		coins;
+vector<CMonster>	monsters;
 
-ServerToClient SendData;
+int					backgroundMove;
+
+ServerToClient		SendData;
 
 
 void UpdatePlayerLocation(Player* p);
+void ChangePlayerSprite(Player* p, int* count);
 
 void InitPlatform()
 {
@@ -71,6 +75,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	int len;
 
 	const int index = TotalClient - 1;
+	int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 	getpeername(client_sock, (struct sockaddr*)&clientaddr, &addrlen);
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
@@ -81,12 +86,9 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
+		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
 		Sleep(16);
-
-
-
-
 		SendData.player[index] = users[index].Send;
 		
 		retval = send(client_sock, (char*)&SendData, sizeof(SendData), 0);
@@ -154,11 +156,14 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 if (users[index].bJumpKeyPressed == true) {
 			 users[index].input.bLeft = recvData->Input.bLeft;
 			 users[index].input.bRight = recvData->Input.bRight;
+			 users[index].up.bLeft = recvData->Up.bLeft;
+			 users[index].up.bRight = recvData->Up.bRight;
 
 
 		 }
 		 else {
 			 users[index].input = recvData->Input;
+			 users[index].up = recvData->Up;
 
 		 }
 
@@ -188,64 +193,97 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	return 0;
 }
 
+void ChangePlayerSprite(Player* p, int* count)
+{
+	// count 는 timer 의 시간에 따라 1 씩 올라감
+	// 밑의 조건문에 count == "숫자" 숫자 올릴수록 스프라이트는 천천히 돌아갈 것
+	if (*count == 3) {
+		p->uSpriteX = (p->uSpriteX + 1) % 4;
+		*count = 0;
+	}
+	*count += 1;
+}
+
 void UpdatePlayerLocation(Player* p)
 {
 	static int curSpriteCnt = 0;
 
-
-	if (!(p->input.bLeft)) {
+	if (!(p->input.bLeft) && (p->up.bLeft)) {
 		//왼쪽으로 이동
 		p->velocity.x = 0;
 		p->SetSpriteY(4);
-
-
-
 	}
 
-	if (!(p->input.bRight)) {
+	if (!(p->input.bRight) && (p->up.bRight)) {
 		//왼쪽으로 이동
 		p->velocity.x = 0;
 		p->SetSpriteY(0);
-
 	}
 
+	// 캐릭터의 위치가 이동할 때는 배경화면이 끝에 갔을 때 ( 왼쪽 끝 )
+	if (SendData.iBgMove <= -200 ) {
+		if (p->input.bLeft) {
+			curSpriteCnt = 3;
+			p->iXpos += -p->GetRunSpeed();
+			p->SetSpriteY(3);
 
-	if (p->input.bLeft) {
-		//왼쪽으로 이동
-		curSpriteCnt = 3;
+		}
 
-		p->velocity.x = -p->GetRunSpeed();
-		p->SetSpriteY(3);
+		if (p->input.bRight) {
+			curSpriteCnt = 1;
+			p->iXpos += p->GetRunSpeed();
+			p->SetSpriteY(1);
+			if ( p->Send.iXpos >= 640 )
+				SendData.iBgMove = -195;
 
+		}
 	}
 
+	// 캐릭터의 위치가 이동할 때는 배경화면이 끝에 갔을 때 ( 오른쪽 끝 )
+	else if ( SendData.iBgMove >= 1200) {
+		if (p->input.bLeft) {
+			curSpriteCnt = 3;
+			p->iXpos += -p->GetRunSpeed();
+			p->SetSpriteY(3);
+			if (p->Send.iXpos <= 640)
+				SendData.iBgMove = 1195;
+		}
 
-	if (p->input.bRight) {
-		//오른쪽으로 이동
-		curSpriteCnt = 1;
-
-		p->velocity.x = p->GetRunSpeed();
-		p->SetSpriteY(1);
+		if (p->input.bRight) {
+			curSpriteCnt = 1;
+			p->iXpos += p->GetRunSpeed();
+			p->SetSpriteY(1);
+		}
 	}
 
+	/* 그 외에는 배경화면이 이동 */
+	else {
+		if (p->input.bLeft) {
+			//왼쪽으로 이동
+			curSpriteCnt = 3;
+			//p->velocity.x = -p->GetRunSpeed();
+			SendData.iBgMove += -p->GetRunSpeed();
+			SendData.iBgMove = std::clamp(SendData.iBgMove, -200, 1200);
+			p->SetSpriteY(3);
+		}
 
+		if (p->input.bRight) {
+			//오른쪽으로 이동
+			curSpriteCnt = 1;
 
-
-
-
+			//p->velocity.x = p->GetRunSpeed();
+			SendData.iBgMove += p->GetRunSpeed();
+			SendData.iBgMove = std::clamp(SendData.iBgMove, -200, 1200);
+			p->SetSpriteY(1);
+		}
+	}
 	if (p->input.bSpace) {
-		//점프
+		//왼쪽 점프
 		p->bJumpKeyPressed = TRUE;
 		p->Jump(curSpriteCnt);
-
-
 	}
 
-	
 	p->UpdatePlayerLocation();
-
-
-
 }
 
 
