@@ -18,7 +18,7 @@ private:
 	POS		pVel;
 
 	bool	IsReady = FALSE;	// W 캐릭터를 선택했는지 여부
-	USHORT	uCharNum = 0;
+	USHORT	uCharNum = 999;
 
 	int		iWidth = 170;	// draw 에 필요한 width, height 추가
 	int		iHeight = 148;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
@@ -39,7 +39,7 @@ private:
 public:
 
 	struct SendData {
-		int		charNum;
+		int		charNum = 999;
 		int		iXpos;	
 		int		iYpos;
 		USHORT	uSpriteX;

@@ -150,7 +150,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		if (recvData->uCharNum == 10000) break;
 
-		 users[index].Send.charNum = recvData->uCharNum-1;
+		 users[index].Send.charNum = recvData->uCharNum - 1;
 		 users[index].SetId(recvData->wId);
 
 		 if (users[index].bJumpKeyPressed == true) {
@@ -170,6 +170,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		 printf("\n접속한 Player의 ID: %ws", recvData->wId);
 		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
+		 printf("\n접속한 Player의 캐릭터: %d\n", users[index].Send.charNum);
 		 printf("\n접속한 Player의 인덱스: %d\n", index);
 
 		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
