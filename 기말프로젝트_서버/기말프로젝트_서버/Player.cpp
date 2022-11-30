@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "global.h"
 #include <iostream>
+
 Player::Player()
 	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(0), iXpos(640), iYpos(620), pVel(0, 0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
 

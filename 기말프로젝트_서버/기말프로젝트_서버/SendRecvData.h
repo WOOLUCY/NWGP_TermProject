@@ -1,7 +1,8 @@
 #pragma once
 #include <ctime>
-// #include <vector>
 #include "Player.h"
+#include "CMonster.h"
+
 using namespace std;
 /* ------------------------- 서버 통신용 ------------------------- */
 
@@ -17,6 +18,7 @@ struct ServerToClient {
 	bool            bIsPlaying;
 
 	Player::SendData player[3];
+	//onster::SendData TestMon;
 
 
 };

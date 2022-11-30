@@ -11,10 +11,6 @@ CMonster::CMonster()
 	iMinX = iXpos - iRange;
 
 	//일단 걍다 0으로 초기화함 
-	myImage[0] = nullptr;
-	myImage[1] = nullptr;
-	myImage[2] = nullptr;
-	myImage[3] = nullptr;
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
@@ -26,21 +22,17 @@ CMonster::CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int r
 {
 	//이미지 설정하기 
 
-	switch (uCharnum)
-	{
-	case 0:
 
-		break;
-	case 1:
+}
 
-		break;
-	case 2:
+CMonster::CMonster(int x, int y)
+	:iXpos(x),iYpos(y)
+{
 
-		break;
+	send.iXpos = iXpos;
+	send.iYpos = iYpos;
 
-	default:
-		break;
-	}
+
 }
 
 CMonster::~CMonster()

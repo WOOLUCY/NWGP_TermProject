@@ -48,6 +48,7 @@ SOCKET sock;		// 家南
 
 vector<Platform> Platforms;
 vector<Coin> Coins;
+vector<CMonster> Monsters;
 
 Player player;
 
@@ -66,6 +67,7 @@ void LoadImg()
 	platformImg.Load(L"Image/Platform2.png");
 	coinImg.Load(L"Image/coin2.png");
 	monsterImg.Load(L"Image/Monster.png");
+
 	playersImag[0].Load(L"Image/Cookies3.png");	
 	playersImag[1].Load(L"Image/Cookies2.png");
 	playersImag[2].Load(L"Image/sheart.png");
@@ -113,6 +115,15 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
 		Coins.push_back(Coin(temp[0], temp[1], &coinImg));
 	}
+
+	retval = recv(sock, (char*)&total, sizeof(int), 0);
+	for (int i{ 0 }; i < total; ++i) {
+		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
+		Monsters.push_back(CMonster(temp[0], temp[1], &monsterImg));
+	}
+
+
+
 
 	while (1) {
 		retval = recv(sock, (char*)&GameData, sizeof(GameData), 0);
@@ -225,7 +236,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	// W 阁胶磐 积己
 	static CMonster monster;
 	monster.SetMonNum(1);
-	monster.myImage[0] = &monsterImg;
+	monster.myImage= &monsterImg;
 
 	// W 凯艰 积己
 	static CImage KeyImg;
@@ -315,9 +326,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			// W Monster Draw
-			monster.myImage[0]->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);		// W Draw Key
-			// W Key Draw
+			// W Monster Draw	
+			
+			//monster.myImage->Draw(mem1dc, monster.iXpos, monster.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * monster.GetSpriteX(), 0 + monster.GetHeight() * monster.GetSpriteY(), 144, 138);		// W Draw Key
+			
+																																																										
+																																																										// W Key Draw
 			if (!player.GetHasKey())
 			{
 				key.myImage->Draw(mem1dc, key.iXpos, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
@@ -337,6 +351,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			for (Coin& temp : Coins) {
 				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
+
+			for (CMonster& temp : Monsters) {
+				temp.myImage->Draw(mem1dc, temp.iXpos, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+			}
+
 
 			// W Key - Player Collision
 			if (player.IsCollidedKey(key))

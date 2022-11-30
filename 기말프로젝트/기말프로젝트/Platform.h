@@ -28,8 +28,6 @@ public:
 
 	bool	bIsCrush = false;
 	
-	//static int h;
-	//static int w;
 
 
 public:

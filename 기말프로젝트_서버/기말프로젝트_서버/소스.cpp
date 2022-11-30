@@ -9,10 +9,11 @@
 
 #define PLATFORMNUM 10
 #define COINNUM 10
+#define MONSTERNUM 10
+
 
 HANDLE hWriteEvent;
 HANDLE hReadEvent;
-int buf[BUFSIZE];
 
 int TotalClient;
 
@@ -21,8 +22,9 @@ Player users[3];
 
 vector<Platform> platform;
 vector<Coin> coins;
+vector<CMonster> monsters;
 
-ServerToClient TestData;
+ServerToClient SendData;
 
 
 void UpdatePlayerLocation(Player* p);
@@ -33,7 +35,7 @@ void InitPlatform()
 
 	for (int i = 0; i < PLATFORMNUM; ++i) {
 		platform.push_back(Platform(i+10, i * 50));
-		printf("%d %d\n", platform[i].send.iXpos, platform[i].send.iYpos);
+		//printf("%d %d\n", platform[i].send.iXpos, platform[i].send.iYpos);
 	}
 
 
@@ -44,20 +46,17 @@ void InitCoin()
 
 	for (int i = 0; i < COINNUM; ++i) {
 		coins.push_back(Coin(i *i, i * 50-30));
-		printf("%d %d\n", coins[i].send.iXpos, coins[i].send.iYpos);
+		//printf("%d %d\n", coins[i].send.iXpos, coins[i].send.iYpos);
 	}
 }
 
-void InitPlayer(USHORT num)
+void InitMonster()
 {
-	switch (num) 
-	{
-	case 1:
-		break;
-		
+	for (int i{ 0 }; i < MONSTERNUM; ++i) {
+		monsters.push_back(CMonster(i * i, i));
 	}
-
 }
+
 
 DWORD WINAPI Send_Thread(LPVOID arg)
 {
@@ -68,17 +67,17 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	int addrlen;
 	char addr[INET_ADDRSTRLEN];
 
-	char buf[BUFSIZE + 1]; // 가변 길이 데이터
+	char buf[BUFSIZE + 1]; 
 	int len;
 
 	const int index = TotalClient - 1;
 
-	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (struct sockaddr*)&clientaddr, &addrlen);
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
 	// 클라이언트와 데이터 통신
+
 	while (1) {
 		UpdatePlayerLocation(&(users[index]));
 
@@ -87,9 +86,9 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 
 
-		TestData.player[index] = users[index].Send;
+		SendData.player[index] = users[index].Send;
 		
-		retval = send(client_sock, (char*)&TestData, sizeof(TestData), 0);
+		retval = send(client_sock, (char*)&SendData, sizeof(SendData), 0);
 
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
@@ -151,9 +150,8 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
 		 printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
 
-		 //printf("Collided Monster Number: %d\n", player->pPlayer.GetXPos());
-
 		 users[index].Send.charNum = recvData->uCharNum-1;
+
 		 if (users[index].bJumpKeyPressed == true) {
 			 users[index].input.bLeft = recvData->Input.bLeft;
 			 users[index].input.bRight = recvData->Input.bRight;
@@ -249,6 +247,7 @@ int main(int argc, char* argv[])
 
 	InitPlatform();
 	InitCoin();
+	InitMonster();
 
 	int retval;
 
@@ -313,7 +312,6 @@ int main(int argc, char* argv[])
 
 		for (int i{ 0 }; i < tmp; ++i) {
 			retval = send(client_sock, (char*)&platform[i].send.iXpos, sizeof(int)*2, 0);
-			printf("%d %d \t", platform[i].send.iXpos, platform[i].send.iYpos);
 
 		}
 
@@ -323,10 +321,18 @@ int main(int argc, char* argv[])
 
 		for (int i{ 0 }; i < tmp; ++i) {
 			retval = send(client_sock, (char*)&coins[i].send.iXpos, sizeof(int) * 2, 0);
-			printf("%d %d \t", coins[i].send.iXpos, coins[i].send.iYpos);
 
 		}
 
+
+		tmp = MONSTERNUM;
+		retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
+
+		for (int i{ 0 }; i < tmp; ++i) {
+			retval = send(client_sock, (char*)&monsters[i].send.iXpos, sizeof(int) * 2, 0);
+			printf("%d %d \t", monsters[i].send.iXpos, monsters[i].send.iYpos);
+
+		}
 
 
 		// 스레드 생성

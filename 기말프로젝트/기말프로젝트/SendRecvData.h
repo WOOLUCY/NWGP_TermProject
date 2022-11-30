@@ -18,5 +18,6 @@ struct ServerToClient {
 
 
 	Player::SendData player[3];
+	//CMonster::SendData TestMon;
 
 };
