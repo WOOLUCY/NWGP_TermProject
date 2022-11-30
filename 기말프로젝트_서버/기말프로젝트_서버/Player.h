@@ -44,6 +44,7 @@ public:
 		int		iYpos;
 		USHORT	uSpriteX;
 		USHORT	uSpriteY;
+		int		iBgMove;
 
 
 	};
@@ -51,6 +52,7 @@ public:
 	SendData Send;
 
 
+	int		iBgMove =  0;
 	USHORT	uSpriteX;
 	USHORT	uSpriteY;
 	int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음

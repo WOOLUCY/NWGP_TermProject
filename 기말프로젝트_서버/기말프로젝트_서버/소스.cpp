@@ -221,7 +221,7 @@ void UpdatePlayerLocation(Player* p)
 	}
 
 	// 캐릭터의 위치가 이동할 때는 배경화면이 끝에 갔을 때 ( 왼쪽 끝 )
-	if (SendData.iBgMove <= -200 ) {
+	if (p->Send.iBgMove <= -200 ) {
 		if (p->input.bLeft) {
 			curSpriteCnt = 3;
 			p->iXpos += -p->GetRunSpeed();
@@ -234,19 +234,19 @@ void UpdatePlayerLocation(Player* p)
 			p->iXpos += p->GetRunSpeed();
 			p->SetSpriteY(1);
 			if ( p->Send.iXpos >= 640 )
-				SendData.iBgMove = -195;
+				p->Send.iBgMove = -195;
 
 		}
 	}
 
 	// 캐릭터의 위치가 이동할 때는 배경화면이 끝에 갔을 때 ( 오른쪽 끝 )
-	else if ( SendData.iBgMove >= 1200) {
+	else if (p->Send.iBgMove >= 1200) {
 		if (p->input.bLeft) {
 			curSpriteCnt = 3;
 			p->iXpos += -p->GetRunSpeed();
 			p->SetSpriteY(3);
 			if (p->Send.iXpos <= 640)
-				SendData.iBgMove = 1195;
+				p->Send.iBgMove = 1195;
 		}
 
 		if (p->input.bRight) {
@@ -262,8 +262,8 @@ void UpdatePlayerLocation(Player* p)
 			//왼쪽으로 이동
 			curSpriteCnt = 3;
 			//p->velocity.x = -p->GetRunSpeed();
-			SendData.iBgMove += -p->GetRunSpeed();
-			SendData.iBgMove = std::clamp(SendData.iBgMove, -200, 1200);
+			p->Send.iBgMove += -p->GetRunSpeed();
+			p->Send.iBgMove = std::clamp(p->Send.iBgMove, -200, 1200);
 			p->SetSpriteY(3);
 		}
 
@@ -272,8 +272,8 @@ void UpdatePlayerLocation(Player* p)
 			curSpriteCnt = 1;
 
 			//p->velocity.x = p->GetRunSpeed();
-			SendData.iBgMove += p->GetRunSpeed();
-			SendData.iBgMove = std::clamp(SendData.iBgMove, -200, 1200);
+			p->Send.iBgMove += p->GetRunSpeed();
+			p->Send.iBgMove = std::clamp(p->Send.iBgMove, -200, 1200);
 			p->SetSpriteY(1);
 		}
 	}

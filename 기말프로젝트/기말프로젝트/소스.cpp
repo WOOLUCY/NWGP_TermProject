@@ -73,7 +73,7 @@ void LoadImg()
 	monsterImg.Load(L"Image/Monster.png");
 
 	playersImag[0].Load(L"Image/Cookies3.png");	
-	playersImag[1].Load(L"Image/Cookies2.png");
+	playersImag[1].Load(L"Image/Cookies2-1.png");
 	playersImag[2].Load(L"Image/Cookies4.png");
 
 
@@ -139,8 +139,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		else if (retval == 0) {
 			break;
 		}
-		player.iXpos = GameData.player->iXpos;
-		player.iYpos = GameData.player->iYpos;
 	}
 
 
@@ -268,6 +266,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	// W character selection
 	static bool bReady = FALSE;	// 캐릭터 선택 후 게임 시작 판단용
 
+	// semin, Background
+	static int bgMove = 0;
+	static int myCharacter = 0;
+
 
 	switch (iMsg) {
 	case WM_CREATE:
@@ -305,6 +307,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		SelectObject(mem1dc, hBitmap);
 		SetStretchBltMode(mem1dc, COLORONCOLOR);
 
+		// semin, 내 캐릭터에 대해서만 정보 따로 가지고 옴
+		for (int i = 0; i < 3; i++) {
+			if (PlayerData.uCharNum == GameData.player[i].charNum + 1) {
+				bgMove = GameData.player[i].iBgMove;
+				player.iXpos = GameData.player[i].iXpos;
+				player.iYpos = GameData.player[i].iYpos;
+				myCharacter = i;
+			}
+		}
+
 		if (enterID == FALSE) {
 			startBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
 
@@ -318,17 +330,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 		}
 		else {
-			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + GameData.iBgMove, 220, 2560, 1600);
-			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);
+			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + bgMove, 220, 2560, 1600);
+			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);r
 			//player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
 			
 			//playerImg.Draw
 
 			for (int i = 0; i < 3; ++i) {
-				playersImag[GameData.player[i].charNum].Draw(mem1dc, GameData.player[i].iXpos, GameData.player[i].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
-					0 + player.GetWidth() * GameData.player[i].uSpriteX, 0 + player.GetHeight() * GameData.player[i].uSpriteY, 170, 148);
+				if (i != myCharacter) {
+					playersImag[GameData.player[i].charNum].Draw(mem1dc, GameData.player[i].iXpos - GameData.player[myCharacter].iBgMove / 2 + GameData.player[i].iBgMove / 2, GameData.player[i].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+						0 + player.GetWidth() * GameData.player[i].uSpriteX, 0 + player.GetHeight() * GameData.player[i].uSpriteY, 170, 148);
+				}
 
-
+				if (i == myCharacter) {
+					playersImag[GameData.player[myCharacter].charNum].Draw(mem1dc, GameData.player[myCharacter].iXpos, GameData.player[myCharacter].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+						0 + player.GetWidth() * GameData.player[myCharacter].uSpriteX, 0 + player.GetHeight() * GameData.player[myCharacter].uSpriteY, 170, 148);
+				}
 			}
 
 
@@ -340,26 +357,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 																																																										// W Key Draw
 			if (!player.GetHasKey())
 			{
-				key.myImage->Draw(mem1dc, key.iXpos - GameData.iBgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
+				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
 			}
 
 			//portal.myImage->Draw(mem1dc, portal.iXpos, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0, 0, 500, 800);
 			
 			//가온-코인그리기 
-			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - GameData.iBgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
+			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - bgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
 
 			//가온 - 플랫폼 - 위치 서버에서 바꿔줘야함 걍 대충 바갑가ㅏㅏ함
 			for (Platform& temp : Platforms) {
-				temp.myImage->Draw(mem1dc, temp.iXpos - GameData.iBgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
+				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
 			}
 
 
 			for (Coin& temp : Coins) {
-				temp.myImage->Draw(mem1dc, temp.iXpos - GameData.iBgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
 			for (CMonster& temp : Monsters) {
-				temp.myImage->Draw(mem1dc, temp.iXpos - GameData.iBgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
 
@@ -406,7 +423,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				//Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
 				for ( int i = 0; i < monsterTotal; i++ )
-					Rectangle(mem1dc, monsterBox[i].left - GameData.iBgMove /2, monsterBox[i].top, monsterBox[i].right - GameData.iBgMove/ 2, monsterBox[i].bottom);
+					Rectangle(mem1dc, monsterBox[i].left - bgMove /2, monsterBox[i].top, monsterBox[i].right - bgMove / 2, monsterBox[i].bottom);
 
 				if (player.IsCollidedCoin(TestCoin))
 				{

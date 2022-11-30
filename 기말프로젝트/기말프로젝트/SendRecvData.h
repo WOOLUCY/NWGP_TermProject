@@ -16,7 +16,6 @@ struct ServerToClient {
 	clock_t         ServerTime;
 	bool            bWin;
 	bool            bIsPlaying;
-	int				iBgMove;
 
 
 	Player::SendData player[3];
