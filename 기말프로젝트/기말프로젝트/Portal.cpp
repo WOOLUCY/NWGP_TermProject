@@ -4,7 +4,7 @@
 #include "global.h"
 
 Portal::Portal()
-	:iXpos(1000), iYpos(700)
+	:iXpos(900), iYpos(550)
 {
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
@@ -33,7 +33,7 @@ Portal::~Portal()
 void Portal::ChangeSprite(int* count)
 {
 	if (*count == 3) {
-		uSpriteX = (uSpriteX + 1) % 4;
+		uSpriteX = (uSpriteX + 1) % 16;
 		*count = 0;
 	}
 	*count += 1;

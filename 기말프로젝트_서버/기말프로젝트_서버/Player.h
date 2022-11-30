@@ -18,7 +18,13 @@ private:
 	POS		pVel;
 
 	bool	IsReady = FALSE;	// W 캐릭터를 선택했는지 여부
+<<<<<<< Updated upstream
 	USHORT	uCharNum = 999;
+=======
+	bool	bIsPlaying = FALSE;
+	USHORT	uCharNum = 0;
+	
+>>>>>>> Stashed changes
 
 	int		iWidth = 170;	// draw 에 필요한 width, height 추가
 	int		iHeight = 148;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
@@ -71,6 +77,9 @@ public:
 
 	bool GetIsReady() { return IsReady; }
 	void SetIsReady(bool in) { IsReady = in; }
+
+	bool GetIsPlaying() { return bIsPlaying; }
+	void SetIsPlaying(bool in) { bIsPlaying = in; }
 
 	int GetCharNum() { return uCharNum; }
 	void SetCharNum(USHORT in) { uCharNum = in; }
