@@ -16,6 +16,7 @@ struct ServerToClient {
 	bool            bWin;
 	bool            bIsPlaying;
 
-	Player::SendData player1;
+
+	Player::SendData player[3];
 
 };

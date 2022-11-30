@@ -6,16 +6,16 @@ Player::Player()
 
 {
 	//일단 걍다 0으로 초기화함 
-	myImage[0] = nullptr;
-	myImage[1] = nullptr;
-	myImage[2] = nullptr;
-	myImage[3] = nullptr;
+	myImage = nullptr;
+
+
 
 	// W AABB initialization
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
 	aabb.top = iYpos;
+
 	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.3);		// 플레이어 기본 속도는 이것
 	velocity = { 0, 0 };
 	dir = 0;

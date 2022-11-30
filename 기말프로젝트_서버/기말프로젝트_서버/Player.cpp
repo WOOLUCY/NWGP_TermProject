@@ -24,6 +24,7 @@ Player::Player()
 	fJumpTime = 0.01;
 	JumpHeight = 0;
 
+	Send.charNum = uCharNum-1;
 	Send.iXpos = iXpos;
 	Send.iYpos = iYpos;
 	Send.uSpriteX = uSpriteX;
@@ -35,6 +36,9 @@ Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel
 	:wId(id), uSpriteX(sprite), uCharNum(charnum), iXpos(position.x), iYpos(position.y), pVel(Vel), sHeart(heart), uCoin(coin), bFind(find)
 {
 	//이미지 설정하기 
+
+	Send.charNum = uCharNum;
+
 	Send.iXpos = iXpos;
 	Send.iYpos = iYpos;
 	Send.uSpriteX = uSpriteX;
@@ -50,11 +54,9 @@ Player::~Player()
 void Player::Jump(USHORT spriteCnt)
 {
 	if (!bJumpKeyPressed) {
-		printf("bJumpKeyPressed?????????????????/\n");
 		return;
 	}
 	
-	printf("점프~~~~~~~~~~~~~~~~~~~\n");
 	SetSpriteY(2);
 	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 4; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
 	fJumpTime += 0.2f;		//	시간의 흐름을 표현하기 위해서.
@@ -66,7 +68,6 @@ void Player::Jump(USHORT spriteCnt)
 		velocity.y = 0;
 		bJumpKeyPressed = false;
 		input.bSpace = false;
-		printf("착지???");
 
 
 
@@ -79,9 +80,7 @@ void Player::Jump(USHORT spriteCnt)
 		iYpos = 620;
 		input.bSpace = false;
 
-		printf("점푸끝남1\n");
 		bJumpKeyPressed = false;
-		std::cout << bJumpKeyPressed <<"  "<< input.bSpace << "이거ㅣㅇ러ㅏ어리날" << std::endl;
 
 
 	}

@@ -49,15 +49,16 @@ SOCKET sock;		// 소켓
 vector<Platform> Platforms;
 vector<Coin> Coins;
 
-CImage platformImg;
-CImage coinImg;
-CImage monsterImg;
-
 Player player;
 
 ClientToServer PlayerData;
 ServerToClient GameData;
 
+
+CImage platformImg;
+CImage coinImg;
+CImage monsterImg;
+CImage playersImag[3];
 
 void LoadImg()
 {
@@ -65,6 +66,10 @@ void LoadImg()
 	platformImg.Load(L"Image/Platform2.png");
 	coinImg.Load(L"Image/coin2.png");
 	monsterImg.Load(L"Image/Monster.png");
+	playersImag[0].Load(L"Image/Cookies3.png");	
+	playersImag[1].Load(L"Image/Cookies2.png");
+	playersImag[2].Load(L"Image/sheart.png");
+
 
 
 }
@@ -207,8 +212,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	background.Image = &backgroundImg;	
 
 	static CImage playerImg;
-	static Player player;
-	player.myImage[0] = &playerImg;		
+
+
+	player.myImage = &playerImg;		
 
 	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
 	static Coin TestCoin;
@@ -299,10 +305,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);
 			//player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
 			
+			//playerImg.Draw
 
-			player.myImage[0]->Draw(mem1dc, GameData.player1.iXpos, GameData.player1.iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
-				0 + player.GetWidth() * GameData.player1.uSpriteX, 0 + player.GetHeight() * GameData.player1.uSpriteY, 170, 148);
+			for (int i = 0; i < 3; ++i) {
+				playersImag[GameData.player[i].charNum].Draw(mem1dc, GameData.player[i].iXpos, GameData.player[i].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+					0 + player.GetWidth() * GameData.player[i].uSpriteX, 0 + player.GetHeight() * GameData.player[i].uSpriteY, 170, 148);
 
+
+			}
 
 
 			// W Monster Draw

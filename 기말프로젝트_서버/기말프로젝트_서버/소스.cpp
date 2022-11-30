@@ -18,6 +18,7 @@ int TotalClient;
 
 
 Player users[3];
+
 vector<Platform> platform;
 vector<Coin> coins;
 
@@ -86,7 +87,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 
 
-		TestData.player1 = users[index].Send;
+		TestData.player[index] = users[index].Send;
 		
 		retval = send(client_sock, (char*)&TestData, sizeof(TestData), 0);
 
@@ -144,6 +145,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		 printf("\n접속한 Player의 ID: %ws", recvData->wId);
 		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
+		 printf("\n접속한 Player의 인덱스: %d\n", index);
 
 		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
 		 printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
@@ -151,7 +153,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		 //printf("Collided Monster Number: %d\n", player->pPlayer.GetXPos());
 
-
+		 users[index].Send.charNum = recvData->uCharNum-1;
 		 if (users[index].bJumpKeyPressed == true) {
 			 users[index].input.bLeft = recvData->Input.bLeft;
 			 users[index].input.bRight = recvData->Input.bRight;
@@ -304,6 +306,7 @@ int main(int argc, char* argv[])
 
 		//가온 - 한번보내고 안보낼 데이터 여기서 스레드생성전에 전송
 		//일단 발판 개수 전송- 고정길이
+
 		int tmp = PLATFORMNUM;
 		retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
 		printf("%d\n", tmp);

@@ -39,6 +39,7 @@ private:
 public:
 
 	struct SendData {
+		int		charNum;
 		int		iXpos;	
 		int		iYpos;
 		USHORT	uSpriteX;
