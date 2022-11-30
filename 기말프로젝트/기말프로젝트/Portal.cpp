@@ -4,7 +4,7 @@
 #include "global.h"
 
 Portal::Portal()
-	:iXpos(100), iYpos(625)
+	:iXpos(1000), iYpos(700)
 {
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
@@ -28,4 +28,13 @@ Portal::Portal(int xpos, int ypos, CImage* img)
 Portal::~Portal()
 {
 	//일단 만들어놓음 근데 필요없을것같긴한데,,,,
+}
+
+void Portal::ChangeSprite(int* count)
+{
+	if (*count == 3) {
+		uSpriteX = (uSpriteX + 1) % 4;
+		*count = 0;
+	}
+	*count += 1;
 }

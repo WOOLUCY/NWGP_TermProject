@@ -5,8 +5,8 @@
 class Portal
 {
 private:
-	int		iWidth = 500;	// draw 에 필요한 width, height 추가
-	int		iHeight = 800;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
+	int		iWidth = 182;	// draw 에 필요한 width, height 추가
+	int		iHeight = 206;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
 
 	RECT	aabb;
 
@@ -15,6 +15,9 @@ public:
 
 	int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음
 	int		iYpos;
+
+	USHORT	uSpriteX;
+	USHORT	uSpriteY;
 
 public:
 	int GetXPos() { return iXpos; }
@@ -29,12 +32,24 @@ public:
 	RECT GetAABB() { return aabb; }
 	void SetAABB(RECT in) { aabb = in; }
 
+
+	USHORT GetSpriteX() { return uSpriteX; }
+	void SetSpriteX(USHORT in) { uSpriteX = in; }
+	void AddSpriteX() { uSpriteX++; }
+
+	USHORT GetSpriteY() { return uSpriteY; }
+	void SetSpriteY(USHORT in) { uSpriteY = in; }
+
+
+
 public:
 	//생성자
 	Portal();
 	Portal(int xpos, int ypos, CImage* img);
 
 	~Portal();
+
+	void ChangeSprite(int* count);
 };
 
 
