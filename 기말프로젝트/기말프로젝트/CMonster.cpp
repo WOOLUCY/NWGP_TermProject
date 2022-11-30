@@ -26,7 +26,7 @@ CMonster::CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int r
 }
 
 CMonster::CMonster(int xpos, int ypos, CImage* img)
-	:uSpriteX(0), uSpriteY(0)
+	: uSpriteX(0), uSpriteY(0)
 {
 	myImage = img;
 
