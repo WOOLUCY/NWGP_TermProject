@@ -11,7 +11,6 @@ struct ClientToServer {
 	 USHORT          uCharNum = 0;
 	 KeyInput        Input = { 0 };
 	 KeyInput        Up = { 0 };
-	 bool			 IsPlaying = FALSE;
 };
 
 struct ServerToClient {

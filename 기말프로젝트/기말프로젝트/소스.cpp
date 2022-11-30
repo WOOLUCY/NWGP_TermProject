@@ -139,13 +139,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		else if (retval == 0) {
 			break;
 		}
-<<<<<<< Updated upstream
-=======
-		player.iXpos = GameData.player->iXpos;
-		player.iYpos = GameData.player->iYpos;
-
-		player.SetIsPlaying(GameData.bIsPlaying);
->>>>>>> Stashed changes
 	}
 
 
@@ -295,7 +288,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		KeyImg.Load(L"Image/key.png");
 		
 		// W load portal image
-		PortalImg.Load(L"Image/Portal2.png");
+		PortalImg.Load(L"Image/Portal.png");
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -459,10 +452,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		MouseX = LOWORD(lParam);
 		MouseY = HIWORD(lParam);
 
-		if (player.GetIsPlaying())
-		{
-			PlayerData.IsPlaying = TRUE;
-		}
 		// W
 		// 첫번째 캐릭터 선택 시: 달빛술사 쿠키
 		if (bReady == FALSE && MouseX >= 80 && MouseX <= 344 && MouseY >= 637 && MouseY <= 719) {
