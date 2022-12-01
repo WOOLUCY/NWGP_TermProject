@@ -117,6 +117,12 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 	int retval;
 	SOCKET client_sock = (SOCKET)arg;
+	int option = TRUE;               //네이글 알고리즘 on/off
+	setsockopt(client_sock,             //해당 소켓
+		IPPROTO_TCP,          //소켓의 레벨
+		TCP_NODELAY,          //설정 옵션
+		(const char*)&option, // 옵션 포인터
+		sizeof(option));      //옵션 크기
 	struct sockaddr_in clientaddr;
 	int addrlen;
 	char addr[INET_ADDRSTRLEN];

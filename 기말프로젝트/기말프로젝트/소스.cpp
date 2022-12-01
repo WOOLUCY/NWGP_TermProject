@@ -1,7 +1,7 @@
 #pragma comment(lib, "winmm")
 #include "Common.h"
 
-//#include <atlImage.h>
+#include <atlImage.h>
 #include <mmsystem.h>
 #include <algorithm>
 
@@ -49,6 +49,7 @@ HWND hButtonEdit;	// 에디트 컨트롤
 int retval;
 SOCKET sock;		// 소켓
 
+
 vector<Platform> Platforms;
 vector<Coin> Coins;
 vector<CMonster> Monsters;
@@ -90,6 +91,13 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
+
+	int option = TRUE;               //네이글 알고리즘 on/off
+	setsockopt(sock,             //해당 소켓
+		IPPROTO_TCP,          //소켓의 레벨
+		TCP_NODELAY,          //설정 옵션
+		(const char*)&option, // 옵션 포인터
+		sizeof(option));      //옵션 크기
 
 	// connect()
 	struct sockaddr_in serveraddr;
