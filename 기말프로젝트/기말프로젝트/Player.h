@@ -47,6 +47,10 @@ public:
 		USHORT	uSpriteY;
 		int		iBgMove;
 
+		USHORT	sHeart;
+		USHORT	uCoin;
+
+
 
 	};
 

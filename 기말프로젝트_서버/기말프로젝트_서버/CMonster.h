@@ -74,7 +74,7 @@ public:
 	~CMonster();
 
 	void ChangeSprite(int* count);
-	void UpdateMonsterLocation();
+	void UpdateMonsterLocation(SendData* d);
 };
 
 
