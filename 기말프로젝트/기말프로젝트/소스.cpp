@@ -21,8 +21,9 @@
 
 using namespace std;
 //[이세민] [오후 8:34] 192.168.219.31
-//char* SERVERIP = (char*)"192.168.219.102";// "127.0.0.1"
-char* SERVERIP = (char*)"192.168.100.116";
+char* SERVERIP = (char*)"127.0.0.1";
+//char* SERVERIP = (char*)"192.168.100.116";
+//char* SERVERIP = (char*)"192.168.141.42";
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -92,7 +93,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
 
-	int option = TRUE;               //네이글 알고리즘 on/off
+	int option = FALSE;               //네이글 알고리즘 on/off
 	setsockopt(sock,             //해당 소켓
 		IPPROTO_TCP,          //소켓의 레벨
 		TCP_NODELAY,          //설정 옵션
@@ -296,7 +297,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		KeyImg.Load(L"Image/key.png");
 		
 		// W load portal image
-		PortalImg.Load(L"Image/Portal.png");
+		PortalImg.Load(L"Image/Portal2.png");
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -370,7 +371,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
 			}
 
-			portal.myImage->Draw(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206);
+			//portal.myImage->Draw(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206);
+			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
+			
 			
 			//가온-코인그리기 
 			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - bgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
