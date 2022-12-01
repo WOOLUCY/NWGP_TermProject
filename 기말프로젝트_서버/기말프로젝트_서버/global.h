@@ -1,9 +1,6 @@
 #pragma once
 // #include <windows.h>
-
-#define PLATFORMNUM 10
-#define COINNUM 10
-#define MONSTERNUM 10
+#include <atlImage.h>
 
 
 struct POS {
@@ -18,7 +15,10 @@ struct POS {
 	}
 };
 
-
+struct IMAGE {
+	static CImage Image;
+	int width = 0, height = 0;
+};
 
 //int CLAMP(int minimum, int x, int maximum) {
 //	return max(minimum, min(x, maximum));

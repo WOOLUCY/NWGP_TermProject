@@ -1,5 +1,4 @@
 #include "Common.h"
-#include "global.h"
 #include "SendRecvData.h"
 #include <vector>
 #include <algorithm>
@@ -9,6 +8,9 @@
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
+#define PLATFORMNUM 10
+#define COINNUM 10
+#define MONSTERNUM 10
 
 
 HANDLE hWriteEvent;
@@ -30,9 +32,6 @@ ServerToClient		SendData;
 
 void UpdatePlayerLocation(Player* p);
 void ChangePlayerSprite(Player* p, int* count);
-void UpdateMonsters();
-
-
 
 void InitPlatform()
 {
@@ -45,6 +44,7 @@ void InitPlatform()
 
 
 }
+
 void InitCoin()
 {
 
@@ -53,34 +53,11 @@ void InitCoin()
 		//printf("%d %d\n", coins[i].send.iXpos, coins[i].send.iYpos);
 	}
 }
+
 void InitMonster()
 {
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		monsters.push_back(CMonster(i*100+600, i));
-	}
-}
-void InitPlayer(int num, Player* p)
-{
-	//이거 캐릭터별로 능력치 다르게 한거임~~메롱메롱 배고푸 흑흑
-	if (num == 1) {
-		p->SetHeart(5);
-		p->SetRunSpeed(p->GetRunSpeed() * 0.75);
-
-		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 0.75);
-	}
-	else if (num == 2) {
-		p->SetHeart(4);
-		p->SetRunSpeed(p->GetRunSpeed());
-
-		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 0.75);
-
-	}
-	else if (num == 3) {
-		p->SetHeart(3);
-		p->SetRunSpeed(p->GetRunSpeed() * 1.25);
-		printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 0.75);
-
-
+		monsters.push_back(CMonster(i * i, i));
 	}
 }
 
@@ -110,12 +87,6 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
-		//UpdateMonsters(); 이거를 쓰면 2번불려서 이상해짐! 이벤트를 써야할때가 온걸수도,,?
-
-		if (TotalClient == 3)
-		{
-			SendData.bIsPlaying = TRUE;
-		}
 
 		Sleep(16);
 		SendData.player[index] = users[index].Send;
@@ -160,16 +131,14 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	getpeername(client_sock, (struct sockaddr*)&clientaddr, &addrlen);
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
-
-
 	// 클라이언트와 데이터 통신
 	while (1) {
 
 		// ID recv
 		retval = recv(client_sock, buf, sizeof(ClientToServer), MSG_WAITALL);
-		buf[retval] = '\0';
-
 		
+		
+		buf[retval] = '\0';
 
 		recvData = (ClientToServer*)buf;
 
@@ -183,12 +152,6 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		 users[index].Send.charNum = recvData->uCharNum - 1;
 		 users[index].SetId(recvData->wId);
-
-		 if (users[index].GetHeart() == 0) {
-			 InitPlayer(recvData->uCharNum, &users[index]);
-		 }
-
-
 
 		 if (users[index].bJumpKeyPressed == true) {
 			 users[index].input.bLeft = recvData->Input.bLeft;
@@ -204,14 +167,12 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		 }
 
+
 		 printf("\n접속한 Player의 ID: %ws", recvData->wId);
 		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
 		 printf("\n접속한 Player의 캐릭터: %d\n", users[index].Send.charNum);
 		 printf("\n접속한 Player의 인덱스: %d\n", index);
-		 printf("\nPlayer Is Ready: %d\n", index);
-		 printf(!(recvData->uCharNum == 0) ? "IsReady: true\n" : "IsReady: false\n");
-		 printf(recvData->IsPlaying? "IsPlaying: true\n" : "IsPlaying: false\n");
-			 
+
 		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
 		 printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
 		 printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
@@ -327,20 +288,6 @@ void UpdatePlayerLocation(Player* p)
 }
 
 
-void UpdateMonsters()
-{
-	static int i{ 0 };
-	//몬스터 위치그거 하겠슴다. 
-	for (CMonster& tmp : monsters) {
-		tmp.UpdateMonsterLocation(&SendData.monsters[i]);
-		//printf("몬스터 업데이트 %d %d\n", tmp.send.iXpos, tmp.send.iYpos);
-		++i;
-
-		if (i == MONSTERNUM - 1) i = 0;
-	}
-
-}
-
 int main(int argc, char* argv[])
 {
 
@@ -403,23 +350,36 @@ int main(int argc, char* argv[])
 		printf("총 접속 클라이언트 : %d\n", TotalClient);
 		printf("\n============================================================================\n");
 
+
+
 		//가온 - 한번보내고 안보낼 데이터 여기서 스레드생성전에 전송
 		//일단 발판 개수 전송- 고정길이
 
-		for (int i{ 0 }; i < PLATFORMNUM; ++i) {
+		int tmp = PLATFORMNUM;
+		retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
+		printf("%d\n", tmp);
+
+		for (int i{ 0 }; i < tmp; ++i) {
 			retval = send(client_sock, (char*)&platform[i].send.iXpos, sizeof(int)*2, 0);
 
 		}
 
+		tmp = COINNUM;
+		retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
+		printf("%d\n", tmp);
 
-		for (int i{ 0 }; i < COINNUM; ++i) {
+		for (int i{ 0 }; i < tmp; ++i) {
 			retval = send(client_sock, (char*)&coins[i].send.iXpos, sizeof(int) * 2, 0);
 
 		}
 
 
-		for (int i{ 0 }; i < MONSTERNUM; ++i) {
+		tmp = MONSTERNUM;
+		retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
+
+		for (int i{ 0 }; i < tmp; ++i) {
 			retval = send(client_sock, (char*)&monsters[i].send.iXpos, sizeof(int) * 2, 0);
+			printf("%d %d \t", monsters[i].send.iXpos, monsters[i].send.iYpos);
 
 		}
 

@@ -1,6 +1,4 @@
 #pragma once
-#include "global.h"
-
 #include <ctime>
 #include "Player.h"
 #include "CMonster.h"
@@ -13,7 +11,6 @@ struct ClientToServer {
 	 USHORT          uCharNum = 0;
 	 KeyInput        Input = { 0 };
 	 KeyInput        Up = { 0 };
-	 bool			 IsPlaying = FALSE;
 };
 
 struct ServerToClient {
@@ -22,7 +19,7 @@ struct ServerToClient {
 	bool            bIsPlaying;
 
 	Player::SendData player[3];
-	CMonster::SendData monsters[MONSTERNUM];
+	//onster::SendData TestMon;
 
 
 };

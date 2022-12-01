@@ -18,7 +18,6 @@ private:
 	LPCWCHAR wId = 0;
 
 	bool	IsReady = FALSE;	// W 캐릭터를 선택했는지 여부
-	bool	bIsPlaying = FALSE;
 	USHORT	uCharNum = 0;
 	bool	HasKey = FALSE;		// W 캐릭터가 키를 소유했는지 여부
 
@@ -48,10 +47,6 @@ public:
 		USHORT	uSpriteY;
 		int		iBgMove;
 
-		USHORT	sHeart;
-		USHORT	uCoin;
-
-
 
 	};
 
@@ -79,9 +74,6 @@ public:
 
 	bool GetIsReady() { return IsReady; }
 	void SetIsReady(bool in) { IsReady = in; }
-
-	bool GetIsPlaying() { return bIsPlaying; }
-	void SetIsPlaying(bool in) { bIsPlaying = in; }
 
 	bool GetHasKey() { return HasKey; }
 	void SetHasKey(bool in) { HasKey = in; }

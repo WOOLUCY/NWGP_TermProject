@@ -5,7 +5,7 @@
 #include <mmsystem.h>
 #include <algorithm>
 
-#include "global.h"
+
 #include "Player.h"
 #include "CMonster.h"
 #include "Background.h"
@@ -52,10 +52,6 @@ SOCKET sock;		// 소켓
 vector<Platform> Platforms;
 vector<Coin> Coins;
 vector<CMonster> Monsters;
-
-defaultMon mon;
-
-
 int monsterTotal = 1;	// semin, 몬스터 몇 마리인지 
 
 Player player;
@@ -112,21 +108,21 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
 
 	int total;
-	//retval = recv(sock, (char*)&total, sizeof(int), 0);
-	for (int i{ 0 }; i < PLATFORMNUM; ++i) {
+	retval = recv(sock, (char*)&total, sizeof(int), 0);
+	for (int i{ 0 }; i < total; ++i) {
 		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
 		Platforms.push_back(Platform(temp[0], temp[1], &platformImg));
 	}
 
 
-	//retval = recv(sock, (char*)&total, sizeof(int), 0);
-	for (int i{ 0 }; i < COINNUM; ++i) {
+	retval = recv(sock, (char*)&total, sizeof(int), 0);
+	for (int i{ 0 }; i < total; ++i) {
 		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
 		Coins.push_back(Coin(temp[0], temp[1], &coinImg));
 	}
 
-	//retval = recv(sock, (char*)&monsterTotal, sizeof(int), 0);
-	for (int i{ 0 }; i < MONSTERNUM; ++i) {
+	retval = recv(sock, (char*)&monsterTotal, sizeof(int), 0);
+	for (int i{ 0 }; i < monsterTotal; ++i) {
 		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
 		Monsters.push_back(CMonster(temp[0], temp[1], &monsterImg));
 	}
@@ -136,21 +132,13 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
 	while (1) {
 		retval = recv(sock, (char*)&GameData, sizeof(GameData), 0);
-		
-			if (retval == SOCKET_ERROR) {
+		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
 			break;
 		}
 		else if (retval == 0) {
 			break;
 		}
-//<<<<<<< Updated upstream
-//=======
-		player.iXpos = GameData.player->iXpos;
-		player.iYpos = GameData.player->iYpos;
-
-		player.SetIsPlaying(GameData.bIsPlaying);
-//>>>>>>> Stashed changes
 	}
 
 
@@ -300,7 +288,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		KeyImg.Load(L"Image/key.png");
 		
 		// W load portal image
-		PortalImg.Load(L"Image/Portal2.png");
+		PortalImg.Load(L"Image/Portal.png");
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -386,17 +374,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 
 			for (Coin& temp : Coins) {
-				coinImg.Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 
-					0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
 			for (CMonster& temp : Monsters) {
 				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
-		/*	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-				monsterImg.Draw(mem1dc, GameData.monsters[i].iXpos - bgMove / 2, GameData.monsters[i].iYpos, mon.iWidth / 2, mon.iHeight / 2,
-					0 + mon.iWidth * GameData.monsters[i].uSpriteX, 0 + mon.iHeight * GameData.monsters[i].uSpriteY, mon.iWidth, mon.iHeight);
-			}*/
 
 
 			// W Key - Player Collision
@@ -418,8 +401,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				
 				RECT *monsterBox;
 				monsterBox = new RECT[monsterTotal];
-				//for ( int i =0; i < monsterTotal; i++)
-				//	monsterBox[i] = Monsters[i].GetAABB();
+				for ( int i =0; i < monsterTotal; i++)
+					monsterBox[i] = Monsters[i].GetAABB();
 				//RECT CoinBox = TestCoin.GetAABB();
 				//RECT platformbox = TestPlatform[0].GetAABB();
 				//RECT platformbox1 = TestPlatform[1].GetAABB();
@@ -469,10 +452,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		MouseX = LOWORD(lParam);
 		MouseY = HIWORD(lParam);
 
-		if (player.GetIsPlaying())
-		{
-			PlayerData.IsPlaying = TRUE;
-		}
 		// W
 		// 첫번째 캐릭터 선택 시: 달빛술사 쿠키
 		if (bReady == FALSE && MouseX >= 80 && MouseX <= 344 && MouseY >= 637 && MouseY <= 719) {
