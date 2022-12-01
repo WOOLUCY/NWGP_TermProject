@@ -1,6 +1,4 @@
 #pragma once
-#include "global.h"
-
 #include <ctime>
 #include "Player.h"
 #include "CMonster.h"
@@ -21,7 +19,7 @@ struct ServerToClient {
 	bool            bIsPlaying;
 
 	Player::SendData player[3];
-	CMonster::SendData monsters[MONSTERNUM];
+	//onster::SendData TestMon;
 
 
 };
