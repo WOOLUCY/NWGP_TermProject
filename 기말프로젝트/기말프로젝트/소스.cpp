@@ -22,7 +22,7 @@
 using namespace std;
 //[이세민] [오후 8:34] 192.168.219.31
 //char* SERVERIP = (char*)"192.168.219.102";// "127.0.0.1"
-char* SERVERIP = (char*)"127.0.0.1";
+char* SERVERIP = (char*)"192.168.100.116";
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
