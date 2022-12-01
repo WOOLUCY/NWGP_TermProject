@@ -22,7 +22,7 @@
 using namespace std;
 //[이세민] [오후 8:34] 192.168.219.31
 //char* SERVERIP = (char*)"192.168.219.102";// "127.0.0.1"
-char* SERVERIP = (char*)"192.168.100.116";
+char* SERVERIP = (char*)"127.0.0.1";
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -73,9 +73,9 @@ void LoadImg()
 	coinImg.Load(L"Image/coin2.png");
 	monsterImg.Load(L"Image/Monster.png");
 
-	playersImag[0].Load(L"Image/Cookies3.png");	
-	playersImag[1].Load(L"Image/Cookies2-1.png");
-	playersImag[2].Load(L"Image/Cookies4.png");
+	playersImag[0].Load(L"Image/Cookies3-2.png");	
+	playersImag[1].Load(L"Image/Cookies2-2.png");
+	playersImag[2].Load(L"Image/Cookies4-1.png");
 
 
 
@@ -92,7 +92,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
 
-	int option = TRUE;               //네이글 알고리즘 on/off
+	int option = FALSE;               //네이글 알고리즘 on/off
 	setsockopt(sock,             //해당 소켓
 		IPPROTO_TCP,          //소켓의 레벨
 		TCP_NODELAY,          //설정 옵션
@@ -343,17 +343,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			//player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
 			
 			//playerImg.Draw
-
 			for (int i = 0; i < 3; ++i) {
 				if (GameData.player[i].charNum < 3) {
 					if (i != myCharacter) {
-						playersImag[GameData.player[i].charNum].Draw(mem1dc, GameData.player[i].iXpos - GameData.player[myCharacter].iBgMove / 2 + GameData.player[i].iBgMove / 2, GameData.player[i].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
-							0 + player.GetWidth() * GameData.player[i].uSpriteX, 0 + player.GetHeight() * GameData.player[i].uSpriteY, 170, 148);
+						playersImag[GameData.player[i].charNum].TransparentBlt(mem1dc, GameData.player[i].iXpos - GameData.player[myCharacter].iBgMove / 2 + GameData.player[i].iBgMove / 2, GameData.player[i].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+							0 + player.GetWidth() * GameData.player[i].uSpriteX, 0 + player.GetHeight() * GameData.player[i].uSpriteY, 170, 148, RGB(255, 0, 255));
+						//playersImag[GameData.player[i].charNum].Draw(mem1dc, GameData.player[i].iXpos - GameData.player[myCharacter].iBgMove / 2 + GameData.player[i].iBgMove / 2, GameData.player[i].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+						//	0 + player.GetWidth() * GameData.player[i].uSpriteX, 0 + player.GetHeight() * GameData.player[i].uSpriteY, 170, 148);
 					}
 
 					if (i == myCharacter) {
-						playersImag[GameData.player[myCharacter].charNum].Draw(mem1dc, GameData.player[myCharacter].iXpos, GameData.player[myCharacter].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
-							0 + player.GetWidth() * GameData.player[myCharacter].uSpriteX, 0 + player.GetHeight() * GameData.player[myCharacter].uSpriteY, 170, 148);
+						/*playersImag[GameData.player[myCharacter].charNum].Draw(mem1dc, GameData.player[myCharacter].iXpos, GameData.player[myCharacter].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+							0 + player.GetWidth() * GameData.player[myCharacter].uSpriteX, 0 + player.GetHeight() * GameData.player[myCharacter].uSpriteY, 170, 148);*/
+						playersImag[GameData.player[myCharacter].charNum].TransparentBlt(mem1dc, GameData.player[myCharacter].iXpos, GameData.player[myCharacter].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+							0 + player.GetWidth() * GameData.player[myCharacter].uSpriteX, 0 + player.GetHeight() * GameData.player[myCharacter].uSpriteY, 170, 148, RGB(255, 0, 255));
 					}
 				}
 			}

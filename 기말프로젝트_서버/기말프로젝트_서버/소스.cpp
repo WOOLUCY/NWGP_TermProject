@@ -101,7 +101,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 
 	}
-
+	SendData.player[index].charNum = 999;
 	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, "end");
 	// ╪рдо ╢щ╠Б
 	//closesocket(client_sock);
