@@ -2,6 +2,7 @@
 #include "SendRecvData.h"
 #include <vector>
 #include <algorithm>
+#include <locale.h>
 #include "Platform.h"
 #include "Coin.h"
 
@@ -79,13 +80,31 @@ void InitMonster()
 DWORD WINAPI Update_Thread(LPVOID arg)
 {
 	const int index = TotalClient - 1;
+	clock_t start = clock(), pre = clock();
+	double time = 0;
+	if (TotalClient == 3)
+		clock_t start = clock();
 	// 클라이언트와 데이터 통신
 
 	while (1) {
 		if (users[index].GetCharNum() == 10000) break;
 
 		WaitForSingleObject(hEventHandle, INFINITE);
+		// 몬스터 스프라이트 업데이트 ( 이동도 여기서 하면 될 듯 )
 		ChangeMonsterSprite(&MonsterSpriteCnt);
+
+		// semin, 게임 시간
+		if (index == 2) {	// 마지막 접속한 사람의 thread에서 계산함
+			pre = clock();
+			time = (pre - start);
+			printf("%f 초 \n", time / CLOCKS_PER_SEC);
+			if ((double)(time) / CLOCKS_PER_SEC >= 120 ) {	// 120초(2분) 지나면 게임 끝
+				printf("게임 끝났음\n");
+				SendData.bIsPlaying = FALSE;
+			}
+			SendData.ServerTime = time;	// time / CLOCKS_PER_SEC 하면 초 단위로 나온다
+		}
+
 		Sleep(16);
 		SetEvent(hEventHandle);
 	}
@@ -122,6 +141,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 		Sleep(16);
 		SendData.player[index] = users[index].Send;
+		wcscpy(SendData.player[index].wID, users[index].Send.wID);
 		for (int i = 0; i < MONSTERNUM; i++) {
 			SendData.TestMon[i] = cmonsters[i].send;
 		}
@@ -190,6 +210,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		 users[index].Send.charNum = recvData->uCharNum - 1;
 		 users[index].SetId(recvData->wId);
+		 wcscpy(users[index].Send.wID, recvData->wId);
 
 		 if (users[index].bJumpKeyPressed == true) {
 			 users[index].input.bLeft = recvData->Input.bLeft;
@@ -206,7 +227,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 }
 
 
-		 printf("\n접속한 Player의 ID: %ws", recvData->wId);
+		 printf("\n접속한 Player의 ID: %ws", users[index].Send.wID);
 		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
 		 printf("\n접속한 Player의 캐릭터: %d\n", users[index].Send.charNum);
 		 printf("\n접속한 Player의 인덱스: %d\n", index);
@@ -347,6 +368,7 @@ int main(int argc, char* argv[])
 	InitMonster();
 
 	int retval;
+	setlocale(LC_ALL, "KOREAN");
 
 	// 윈속 초기화
 	WSADATA wsa;

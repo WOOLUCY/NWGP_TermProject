@@ -6,14 +6,14 @@ using namespace std;
 /* ------------------------- 서버 통신용 ------------------------- */
 
 struct ClientToServer {
-	 wchar_t		 wId[21];
+	 wchar_t		 wId[21] = { '\0' };
 	 USHORT          uCharNum = 0;
 	 KeyInput        Input = { 0 };
 	 KeyInput        Up = { 0 };
 };
 
 struct ServerToClient {
-	clock_t         ServerTime;
+	double          ServerTime;	 // semin, clock_t -> double 자료형 바꿈
 	bool            bWin;
 	bool            bIsPlaying;
 

@@ -45,6 +45,7 @@ public:
 		USHORT	uSpriteX;
 		USHORT	uSpriteY;
 		int		iBgMove;
+		wchar_t wID[21] = { '\0' };
 
 
 	};

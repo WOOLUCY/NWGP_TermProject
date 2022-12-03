@@ -4,7 +4,7 @@
 #include <atlImage.h>
 #include <mmsystem.h>
 #include <algorithm>
-
+#include <locale.h>
 
 #include "Player.h"
 #include "CMonster.h"
@@ -41,6 +41,7 @@ LPCTSTR lpszWindowName = L"쿠키런 이스케이프";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 char* ConvertWCtoC(wchar_t* str);
+char* UTF8ToANSI(char* pszCode);
 
 HINSTANCE hInst;	// 인스턴스 핸들
 HWND hEdit;			// 에디트 컨트롤
@@ -73,7 +74,7 @@ CImage playersImag[3];
 void LoadImg()
 {
 	
-	platformImg.Load(L"Image/Platform2.png");
+	platformImg.Load(L"Image/platform3.png");
 	coinImg.Load(L"Image/coin2.png");
 	monsterImg.Load(L"Image/Monster2.png");
 
@@ -294,6 +295,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (iMsg) {
 	case WM_CREATE:
+		setlocale(LC_ALL, "KOREAN");
 		// PlaySound(L"start.wav", NULL, SND_ASYNC);	// 듣기 싫어서 사운드 막아둠 ㅎㅎ
 		startbackgroundImg.Load(L"Image/ID입력창.png");
 		backgroundImg.Load(L"Image/background.jpg");
@@ -428,10 +430,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				playerBox.right = player.iXpos + (player.GetWidth() / 2);
 				playerBox.top = player.iYpos;
 				
-				RECT *monsterBox;
-				monsterBox = new RECT[monsterTotal];
-				for ( int i =0; i < MONSTERNUM; i++)
-					monsterBox[i] = monster.GetAABB();
+				RECT* monsterBox;
+				monsterBox = new RECT[MONSTERNUM];
+				for (int i = 0; i < MONSTERNUM; i++) {
+					monsterBox[i].bottom = Monsters[i].send.iYpos + (monster.GetHeight() / 2);
+					monsterBox[i].left = Monsters[i].send.iXpos;
+					monsterBox[i].right = Monsters[i].send.iXpos + (monster.GetWidth() / 2);
+					monsterBox[i].top = Monsters[i].send.iYpos;
+					//monsterBox[i] = monster.GetAABB();
+				}
+					
 				//RECT CoinBox = TestCoin.GetAABB();
 				//RECT platformbox = TestPlatform[0].GetAABB();
 				//RECT platformbox1 = TestPlatform[1].GetAABB();
@@ -453,7 +461,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 				//Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
-				for ( int i = 0; i < monsterTotal; i++ )
+				for ( int i = 0; i < MONSTERNUM; i++ )
 					Rectangle(mem1dc, monsterBox[i].left - bgMove /2, monsterBox[i].top, monsterBox[i].right - bgMove / 2, monsterBox[i].bottom);
 
 				if (player.IsCollidedCoin(TestCoin))
@@ -469,7 +477,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				DeleteObject(MyBrush);
 			}
 
+			// semin, 닉네임 출력~ 제일 위에 하려고 맨 밑에 코드 씀
+			SetTextAlign(mem1dc, TA_CENTER);
+			SetBkMode(mem1dc, TRANSPARENT);
+			for (int i = 0; i < 3; i++) {
+				if (GameData.player[i].charNum < 3) {
+					if (i == myCharacter)
+						TextOut(mem1dc, GameData.player[i].iXpos + player.GetWidth() / 4,
+							GameData.player[i].iYpos - 35, GameData.player[i].wID, wcslen((GameData.player[i].wID)));
+					else {
+						TextOut(mem1dc, GameData.player[i].iXpos + player.GetWidth() / 4 - GameData.player[myCharacter].iBgMove / 2 + GameData.player[i].iBgMove / 2,
+							GameData.player[i].iYpos - 35, GameData.player[i].wID, wcslen((GameData.player[i].wID)));
+					}
+				}
+			}
 		}
+
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);
 		DeleteObject(hBitmap);
 		DeleteDC(mem1dc);
@@ -559,8 +582,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			if (HIWORD(wParam) == BN_CLICKED) {
 				char id_send[BUFSIZE];
 				GetWindowText(hEdit, wID, 20);
-				player.SetId(wID);
 				wcscpy(PlayerData.wId, wID);
+				ConvertWCtoC(PlayerData.wId);
 
 				enterID = TRUE;
 				DestroyWindow(hEdit);
@@ -700,4 +723,25 @@ char* ConvertWCtoC(wchar_t* str)
 	WideCharToMultiByte(CP_ACP, 0, str, -1, pStr, strSize, 0, 0);
 
 	return pStr;
+}
+
+char* UTF8ToANSI(char* pszCode)
+{
+	BSTR    bstrWide;
+	char* pszAnsi;
+	int     nLength;
+	// Get nLength of the Wide Char buffer
+	nLength = MultiByteToWideChar(CP_UTF8, 0, pszCode, strlen(pszCode) + 1,
+		NULL, NULL);
+	bstrWide = SysAllocStringLen(NULL, nLength);
+	// Change UTF-8 to Unicode (UTF-16)
+	MultiByteToWideChar(CP_UTF8, 0, pszCode, strlen(pszCode) + 1, bstrWide,
+		nLength);
+	// Get nLength of the multi byte buffer
+	nLength = WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, NULL, 0, NULL, NULL);
+	pszAnsi = new char[nLength];
+	// Change from unicode to mult byte
+	WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, pszAnsi, nLength, NULL, NULL);
+	SysFreeString(bstrWide);
+	return pszAnsi;
 }
