@@ -10,6 +10,7 @@ private:
 	int		iRange;			// range로 배회 범위를 지정할 수 있음
 	USHORT	uMonNum;
 
+	POS		pVel;
 	RECT	aabb;
 	float	fVel;
 
@@ -28,6 +29,8 @@ public:
 	};
 
 	SendData send;
+
+	CImage* myImage; //이거로 스프라이트 가리키면 될것같은데 
 
 	USHORT	uCharnum;
 	USHORT	uSpriteX;

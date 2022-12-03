@@ -13,8 +13,7 @@
 #define MONSTERNUM 10
 
 
-HANDLE hWriteEvent;
-HANDLE hReadEvent;
+HANDLE hEventHandle;
 
 int TotalClient;
 
@@ -23,15 +22,22 @@ Player				users[3];
 
 vector<Platform>	platform;
 vector<Coin>		coins;
-vector<CMonster>	monsters;
+//vector<CMonster>	monsters;
+
+CMonster			cmonsters[MONSTERNUM];
 
 int					backgroundMove;
+int					eventCnt;	// 접속 유저들의 스레드 중 한 개만 event를 하기 위함
+
+int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
+int	MonsterSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 ServerToClient		SendData;
 
 
 void UpdatePlayerLocation(Player* p);
 void ChangePlayerSprite(Player* p, int* count);
+void ChangeMonsterSprite(int* count);
 
 void InitPlatform()
 {
@@ -56,9 +62,37 @@ void InitCoin()
 
 void InitMonster()
 {
+	// semin, 몬스터 벡터 -> 배열 바꾸면서 send 방법도 바꿈. 
+	// 여기서 recv 하는 게 아니라 send_thread 에서 처음 init 데이터도 보냄.
+	// 어차피 몬스터는 이동하면서 계속 보내질 것이기 때문에 send_thread 에 
+	// 합치는 게 나을 것이라 판단
+
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		monsters.push_back(CMonster(i * i, i));
+		// monsters.push_back(CMonster(i * i, i));
+		cmonsters[i].send.iXpos = i * i;
+		cmonsters[i].send.iYpos = i + i * 10;
 	}
+}
+
+
+
+DWORD WINAPI Update_Thread(LPVOID arg)
+{
+	const int index = TotalClient - 1;
+	// 클라이언트와 데이터 통신
+
+	while (1) {
+		if (users[index].GetCharNum() == 10000) break;
+
+		WaitForSingleObject(hEventHandle, INFINITE);
+		ChangeMonsterSprite(&MonsterSpriteCnt);
+		Sleep(16);
+		SetEvent(hEventHandle);
+	}
+
+	SendData.player[index].charNum = 999;
+	return 0;
+
 }
 
 
@@ -75,7 +109,6 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	int len;
 
 	const int index = TotalClient - 1;
-	int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 	getpeername(client_sock, (struct sockaddr*)&clientaddr, &addrlen);
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
@@ -83,13 +116,15 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	// 클라이언트와 데이터 통신
 
 	while (1) {
-
 		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
 		Sleep(16);
 		SendData.player[index] = users[index].Send;
+		for (int i = 0; i < MONSTERNUM; i++) {
+			SendData.TestMon[i] = cmonsters[i].send;
+		}
 		
 		retval = send(client_sock, (char*)&SendData, sizeof(SendData), 0);
 
@@ -98,7 +133,6 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 			err_display("recv()");
 			break;
 		}
-
 
 	}
 	SendData.player[index].charNum = 999;
@@ -113,8 +147,6 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 DWORD WINAPI Recv_Thread(LPVOID arg)
 {
-
-
 	int retval;
 	SOCKET client_sock = (SOCKET)arg;
 	int option = TRUE;               //네이글 알고리즘 on/off
@@ -210,6 +242,19 @@ void ChangePlayerSprite(Player* p, int* count)
 	}
 	*count += 1;
 }
+
+
+void ChangeMonsterSprite(int* count)
+{
+	if (*count == 3) {
+		for (int i = 0; i < MONSTERNUM; i++) {
+			cmonsters[i].send.uSpriteX = (cmonsters[i].send.uSpriteX + 1) % 8;
+			*count = 0;
+		}
+	}
+	*count += 1;
+}
+
 
 void UpdatePlayerLocation(Player* p)
 {
@@ -330,10 +375,10 @@ int main(int argc, char* argv[])
 	struct sockaddr_in clientaddr;
 	int addrlen;
 
-	HANDLE hThread[2];
+	HANDLE hThread[3];
 
-	hWriteEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	hReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	// 이벤트 생성
+	hEventHandle = CreateEvent(NULL, FALSE, TRUE, NULL);
 
 	while (1) {
 		// accept()
@@ -380,19 +425,19 @@ int main(int argc, char* argv[])
 		}
 
 
-		tmp = MONSTERNUM;
-		retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
+		//tmp = MONSTERNUM;
+		//retval = send(client_sock, (char*)&tmp, sizeof(int), 0);
 
-		for (int i{ 0 }; i < tmp; ++i) {
-			retval = send(client_sock, (char*)&monsters[i].send.iXpos, sizeof(int) * 2, 0);
-			printf("%d %d \t", monsters[i].send.iXpos, monsters[i].send.iYpos);
+		for (int i{ 0 }; i < MONSTERNUM; ++i) {
+			//retval = send(client_sock, (const char*)&SendData.test[i], sizeof(CMonster), 0);
+			printf("%d %d \t", cmonsters[i].send.iXpos, cmonsters[i].send.iYpos);
 
 		}
-
 
 		// 스레드 생성
 		hThread[0] = CreateThread(NULL, 0, Recv_Thread, (LPVOID)client_sock, 0, NULL);
 		hThread[1] = CreateThread(NULL, 0, Send_Thread, (LPVOID)client_sock, 0, NULL);
+		hThread[2] = CreateThread(NULL, 0, Update_Thread, (LPVOID)client_sock, 0, NULL);
 
 
 
@@ -401,6 +446,9 @@ int main(int argc, char* argv[])
 		if (hThread == NULL) { closesocket(client_sock); }
 		else CloseHandle(hThread);
 	}
+
+	// 이벤트 제거
+	CloseHandle(hEventHandle);
 
 	// 소켓 닫기
 	closesocket(listen_sock);
