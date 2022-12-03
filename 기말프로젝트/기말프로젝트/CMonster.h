@@ -28,6 +28,8 @@ public:
 
 	};
 
+	SendData send;
+
 	CImage* myImage; //이거로 스프라이트 가리키면 될것같은데 
 	// 자주 참조할 것 같고 값이 변해도 상관 없는 애들은 public 으로 뺌
 	USHORT	uCharnum;

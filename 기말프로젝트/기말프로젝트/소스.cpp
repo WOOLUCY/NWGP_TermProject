@@ -18,6 +18,7 @@
 #include "Coin.h"
 #include <time.h>
 
+#define MONSTERNUM 10
 
 using namespace std;
 //[이세민] [오후 8:34] 192.168.219.31
@@ -53,7 +54,9 @@ SOCKET sock;		// 소켓
 
 vector<Platform> Platforms;
 vector<Coin> Coins;
-vector<CMonster> Monsters;
+//vector<CMonster> Monsters;
+
+CMonster Monsters[MONSTERNUM];
 int monsterTotal = 1;	// semin, 몬스터 몇 마리인지 
 
 Player player;
@@ -72,7 +75,7 @@ void LoadImg()
 	
 	platformImg.Load(L"Image/Platform2.png");
 	coinImg.Load(L"Image/coin2.png");
-	monsterImg.Load(L"Image/Monster.png");
+	monsterImg.Load(L"Image/Monster2.png");
 
 	playersImag[0].Load(L"Image/Cookies3-2.png");	
 	playersImag[1].Load(L"Image/Cookies2-2.png");
@@ -130,11 +133,16 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		Coins.push_back(Coin(temp[0], temp[1], &coinImg));
 	}
 
-	retval = recv(sock, (char*)&monsterTotal, sizeof(int), 0);
-	for (int i{ 0 }; i < monsterTotal; ++i) {
-		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
-		Monsters.push_back(CMonster(temp[0], temp[1], &monsterImg));
-	}
+	char buf[BUFSIZE + 1];
+
+	//retval = recv(sock, (char*)&monsterTotal, sizeof(int), 0);
+	//for (int i{ 0 }; i < MONSTERNUM; ++i) {
+		//retval = recv(sock, buf, sizeof(CMonster), MSG_WAITALL);
+		//Monsters.push_back(CMonster(temp[0], temp[1], &monsterImg));
+		//buf[retval] = '\0';
+		//Monsters[i] = (CMonster*)buf;
+
+	//}
 
 
 
@@ -148,6 +156,10 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		else if (retval == 0) {
 			break;
 		}
+
+		for (int i = 0; i < MONSTERNUM; i++)
+			Monsters[i].send = GameData.TestMon[i];
+
 	}
 
 
@@ -374,6 +386,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
 			}
 
+
+			// 포탈
 			//portal.myImage->Draw(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206);
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 			
@@ -386,13 +400,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
 			}
 
-
+			// 코인
 			for (Coin& temp : Coins) {
 				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
-			for (CMonster& temp : Monsters) {
-				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+			// semin, 몬스터
+			for (int i = 0; i < MONSTERNUM; i++) {
+				monster.myImage->TransparentBlt(mem1dc, Monsters[i].send.iXpos - bgMove / 2, Monsters[i].send.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * Monsters[i].send.uSpriteX, 0 + monster.GetHeight() * Monsters[i].send.uSpriteY, monster.GetWidth(), monster.GetHeight(), RGB(0, 255, 0));
 			}
 
 
@@ -415,8 +430,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				
 				RECT *monsterBox;
 				monsterBox = new RECT[monsterTotal];
-				for ( int i =0; i < monsterTotal; i++)
-					monsterBox[i] = Monsters[i].GetAABB();
+				for ( int i =0; i < MONSTERNUM; i++)
+					monsterBox[i] = monster.GetAABB();
 				//RECT CoinBox = TestCoin.GetAABB();
 				//RECT platformbox = TestPlatform[0].GetAABB();
 				//RECT platformbox1 = TestPlatform[1].GetAABB();
