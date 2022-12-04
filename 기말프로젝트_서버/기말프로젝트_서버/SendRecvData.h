@@ -1,4 +1,5 @@
 #pragma once
+#include "global.h"
 #include <ctime>
 #include "Player.h"
 #include "CMonster.h"
@@ -8,7 +9,7 @@ using namespace std;
 
 struct ClientToServer {
 	 wchar_t		 wId[21] = { '\0' };
-	 USHORT          uCharNum = 0;
+	 USHORT          uCharNum = 10;
 	 KeyInput        Input = { 0 };
 	 KeyInput        Up = { 0 };
 };
@@ -19,7 +20,7 @@ struct ServerToClient {
 	bool            bIsPlaying;
 
 	Player::SendData player[3];
-	CMonster::SendData TestMon[11];
+	CMonster::SendData monsters[MONSTERNUM];
 
 
 };

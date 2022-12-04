@@ -73,8 +73,8 @@ public:
 	bool GetIsReady() { return IsReady; }
 	void SetIsReady(bool in) { IsReady = in; }
 
-	int GetCharNum() { return uCharNum; }
-	void SetCharNum(USHORT in) { uCharNum = in; }
+	int GetCharNum() { return Send.charNum; }
+	void SetCharNum(USHORT in) { Send.charNum= in; }
 
 	USHORT GetSpriteX() { return uSpriteX; }
 	void SetSpriteX(USHORT in) { uSpriteX = in; }

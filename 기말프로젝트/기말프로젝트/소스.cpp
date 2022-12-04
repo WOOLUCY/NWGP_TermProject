@@ -1,5 +1,6 @@
 #pragma comment(lib, "winmm")
 #include "Common.h"
+#include "global.h"
 
 #include <atlImage.h>
 #include <mmsystem.h>
@@ -120,31 +121,17 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	int temp[2];
 
 
-	int total;
-	retval = recv(sock, (char*)&total, sizeof(int), 0);
-	for (int i{ 0 }; i < total; ++i) {
+	for (int i{ 0 }; i < PLATFORMNUM; ++i) {
 		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
 		Platforms.push_back(Platform(temp[0], temp[1], &platformImg));
 	}
 
-
-	retval = recv(sock, (char*)&total, sizeof(int), 0);
-	for (int i{ 0 }; i < total; ++i) {
+	for (int i{ 0 }; i < COINNUM; ++i) {
 		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
 		Coins.push_back(Coin(temp[0], temp[1], &coinImg));
 	}
 
 	char buf[BUFSIZE + 1];
-
-	//retval = recv(sock, (char*)&monsterTotal, sizeof(int), 0);
-	//for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		//retval = recv(sock, buf, sizeof(CMonster), MSG_WAITALL);
-		//Monsters.push_back(CMonster(temp[0], temp[1], &monsterImg));
-		//buf[retval] = '\0';
-		//Monsters[i] = (CMonster*)buf;
-
-	//}
-
 
 
 
@@ -158,11 +145,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			break;
 		}
 
-		for (int i = 0; i < MONSTERNUM; i++)
-			Monsters[i].send = GameData.TestMon[i];
-
 	}
-
 
 }
 
@@ -209,7 +192,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 
 	while (GetMessage(&Message, NULL, 0, 0)) {
@@ -407,9 +389,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
 			}
 
-			// semin, 몬스터
-			for (int i = 0; i < MONSTERNUM; i++) {
-				monster.myImage->TransparentBlt(mem1dc, Monsters[i].send.iXpos - bgMove / 2, Monsters[i].send.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * Monsters[i].send.uSpriteX, 0 + monster.GetHeight() * Monsters[i].send.uSpriteY, monster.GetWidth(), monster.GetHeight(), RGB(0, 255, 0));
+			//// semin, 몬스터
+			//for (int i = 0; i < MONSTERNUM; i++) {
+			//	monster.myImage->TransparentBlt(mem1dc, Monsters[i].send.iXpos - bgMove / 2, Monsters[i].send.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * Monsters[i].send.uSpriteX, 0 + monster.GetHeight() * Monsters[i].send.uSpriteY, monster.GetWidth(), monster.GetHeight(), RGB(0, 255, 0));
+			//}
+
+			for (int i{ 0 }; i < MONSTERNUM;++i) {
+				monster.myImage->TransparentBlt(mem1dc, GameData.monsters[i].iXpos- bgMove / 2, GameData.monsters[i].iYpos,monster.GetWidth() / 2, monster.GetHeight() / 2,
+					0 + monster.GetWidth() * GameData.monsters[i].uSpriteX, 0 + monster.GetHeight() * GameData.monsters[i].uSpriteY, monster.GetWidth(), monster.GetHeight(), RGB(0, 255, 0));
 			}
 
 
@@ -512,6 +499,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
+			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+
+
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
@@ -525,6 +515,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
+				CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
@@ -537,6 +529,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			player.SetCharNum(3);
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
+
+			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {

@@ -2,7 +2,7 @@
 #include "global.h"
 
 Player::Player()
-	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(0), iXpos(640), iYpos(620), pVel(0,0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
+	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(999), iXpos(640), iYpos(620), pVel(0,0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
 
 {
 	//일단 걍다 0으로 초기화함 

@@ -15,12 +15,25 @@ CMonster::CMonster()
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
 	aabb.top = iYpos;
+
+
+	send.iXpos = iXpos;
+	send.iYpos = iYpos;
+	send.uSpriteX = uSpriteX;
+	send.uSpriteY = uSpriteY;
+
 }
 
 CMonster::CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int range, USHORT in)
 	:uSpriteX(sprite), uCharnum(charnum), iXpos(position.x), iYpos(position.y), fVel(Vel), iRange(range), uMonNum(in)
 {
 	//이미지 설정하기 
+
+
+	send.iXpos = iXpos;
+	send.iYpos = iYpos;
+	send.uSpriteX = uSpriteX;
+	send.uSpriteY = uSpriteY;
 
 
 }
@@ -41,7 +54,8 @@ CMonster::~CMonster()
 }
 
 
-void CMonster::UpdateMonsterLocation()
+
+void CMonster::UpdateMonsterLocation(SendData* d)
 {
 	// dir = std::clamp(-1, (int)velocity.x, 1);
 	iXpos += dir * fVel;
@@ -61,6 +75,12 @@ void CMonster::UpdateMonsterLocation()
 	aabb.left = iXpos;
 	aabb.right = iXpos + (iWidth / 2);
 	aabb.top = iYpos;
+
+	d->iXpos = iXpos;
+	d->iYpos = iYpos;
+	d->uSpriteX = uSpriteX;
+	d->uSpriteY = uSpriteY;
+
 }
 
 void CMonster::ChangeSprite(int* count)
