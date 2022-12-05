@@ -191,7 +191,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-
+	CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 
 	while (GetMessage(&Message, NULL, 0, 0)) {
@@ -535,7 +535,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -550,7 +549,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -565,7 +563,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
