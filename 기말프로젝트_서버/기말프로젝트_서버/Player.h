@@ -29,7 +29,6 @@ private:
 	USHORT	uCoin;
 
 	bool	bFind;
-	RECT	aabb;
 
 	float	RUN_SPEED_PPS;
 	float	fJumpPower;
@@ -46,6 +45,7 @@ public:
 		USHORT	uSpriteY;
 		int		iBgMove;
 		wchar_t wID[21] = { '\0' };
+		RECT	aabb;
 
 
 	};
@@ -56,8 +56,8 @@ public:
 	int		iBgMove =  0;
 	USHORT	uSpriteX;
 	USHORT	uSpriteY;
-	int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음
-	int		iYpos;
+	//int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음
+	//int		iYpos;
 	int		dir;
 	POS		velocity;
 	bool	bJumpKeyPressed = FALSE;
@@ -65,6 +65,7 @@ public:
 	float	JumpHeight;
 	KeyInput input;
 	KeyInput up;
+	int curSpriteCnt;
 
 public:
 	LPCWCHAR GetId() { return wId; }
@@ -86,11 +87,11 @@ public:
 	USHORT GetRecCollidedMon() { return uRecCollidedMon; }
 	void SetRecCollidedMon(USHORT in) { uRecCollidedMon = in; }
 
-	int GetXPos() { return iXpos; }
-	void SetXPos(int in) { iXpos = in; }
+	int GetXPos() { return Send.iXpos; }
+	void SetXPos(int in) { Send.iXpos = in; }
 
-	int GetYPos() { return iYpos; }
-	void SetYPos(int in) { iYpos = in; }
+	int GetYPos() { return Send.iYpos; }
+	void SetYPos(int in) { Send.iYpos = in; }
 
 	POS GetVel() { return pVel; }
 	void SetVel(POS in) { pVel = in; }
@@ -107,8 +108,8 @@ public:
 	bool GetFind() { return bFind; }
 	void SetFind(bool in) { bFind = in; }
 
-	RECT GetAABB() { return aabb; }
-	void SetAABB(RECT in) { aabb = in; }
+	RECT GetAABB() { return Send.aabb; }
+	void SetAABB(RECT in) { Send.aabb = in; }
 
 	wchar_t GetMaxJump() { return MaxJump; }
 	void SetMaxJump(USHORT in) { MaxJump = in; }
@@ -130,7 +131,7 @@ public:
 
 	// W collsion
 	int IsCollidedMonster(CMonster monster);
-	bool IsCollidedCoin(Coin coin);
+	bool IsCollidedCoin(Coin* coin);
 };
 
 

@@ -7,8 +7,8 @@
 class Coin
 {
 private:
-	int		iWidth = 64;	// draw 에 필요한 width, height 추가
-	int		iHeight = 64;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
+	int		iWidth = 30;	// draw 에 필요한 width, height 추가
+	int		iHeight = 30;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
 	int		iRange;
 
 	RECT	aabb;
@@ -20,6 +20,16 @@ private:
 
 
 public:
+	struct SendData {
+		int		iXpos;
+		int		iYpos;
+		bool	bIsCrush;
+		USHORT	uSpriteX = 0;
+		USHORT	uSpriteY = 0;
+		RECT	aabb;
+
+	};
+
 	CImage* myImage; //이거로 스프라이트 가리키면 될것같은데 
 	// 자주 참조할 것 같고 값이 변해도 상관 없는 애들은 public 으로 뺌
 	USHORT	uSpriteX = 0;

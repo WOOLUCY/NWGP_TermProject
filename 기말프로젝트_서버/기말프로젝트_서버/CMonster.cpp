@@ -3,49 +3,56 @@
 #include <stdlib.h>
 
 CMonster::CMonster()
-	:uSpriteX(0), uSpriteY(0), uCharnum(0), iYpos(625), fVel(3.f), iRange(60), dir(-1), uMonNum(0)
+	: send(), uCharnum(0), fVel(3.f), iRange(60), dir(-1), uMonNum(0)
 
 {
-	iXpos = 700;
-	iMaxX = iXpos + iRange;
-	iMinX = iXpos - iRange;
+	SetSpriteY(0);
+	iMaxX = send.iXpos + iRange;
+	iMinX = send.iXpos - iRange;
 
 	//일단 걍다 0으로 초기화함 
-	aabb.bottom = iYpos + (iHeight / 2);
-	aabb.left = iXpos;
-	aabb.right = iXpos + (iWidth / 2);
-	aabb.top = iYpos;
+	send.aabb.bottom = send.iYpos + (iHeight / 2);
+	send.aabb.left = send.iXpos;
+	send.aabb.right = send.iXpos + (iWidth / 2);
+	send.aabb.top = send.iYpos;
 
 
-	send.iXpos = iXpos;
-	send.iYpos = iYpos;
-	send.uSpriteX = uSpriteX;
-	send.uSpriteY = uSpriteY;
+	//send.iXpos = iXpos;
+	//send.iYpos = iYpos;
+	//send.uSpriteX = uSpriteX;
+	//send.uSpriteY = uSpriteY;
 
+}
+
+void CMonster::updateRange() {
+	iMaxX = send.iXpos + iRange;
+	iMinX = send.iXpos - iRange;
 }
 
 CMonster::CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int range, USHORT in)
-	:uSpriteX(sprite), uCharnum(charnum), iXpos(position.x), iYpos(position.y), fVel(Vel), iRange(range), uMonNum(in)
+	: uCharnum(charnum), fVel(Vel), iRange(range), uMonNum(in)
 {
 	//이미지 설정하기 
 
-
-	send.iXpos = iXpos;
-	send.iYpos = iYpos;
-	send.uSpriteX = uSpriteX;
-	send.uSpriteY = uSpriteY;
+	send.uSpriteX = sprite;
+	send.iXpos = position.x;
+	send.iYpos = position.y;
 
 
 }
 
-CMonster::CMonster(int x, int y)
-	:iXpos(x),iYpos(y)
+CMonster::CMonster(int x, int y, int in)
 {
 
-	send.iXpos = iXpos;
-	send.iYpos = iYpos;
+	send.iXpos = x;
+	send.iYpos = y;
 
+	iRange = 10;
 
+	iMaxX = send.iXpos + iRange;
+	iMinX = send.iXpos - iRange;
+
+	uMonNum = in;
 }
 
 CMonster::~CMonster()
@@ -58,35 +65,35 @@ CMonster::~CMonster()
 void CMonster::UpdateMonsterLocation(SendData* d)
 {
 	// dir = std::clamp(-1, (int)velocity.x, 1);
-	iXpos += dir * fVel;
-	if (iXpos == iMinX)
+	send.iXpos += dir * fVel;
+	if (send.iXpos == iMinX)
 	{
 		dir = 1;
-		SetSpriteY(1);
+		SetSpriteY(2);
 	}
-	if (iXpos == iMaxX)
+	if (send.iXpos == iMaxX)
 	{
 		dir = -1;
 		SetSpriteY(0);
 	}
 
 	// AABB update
-	aabb.bottom = iYpos + (iHeight / 2);
-	aabb.left = iXpos;
-	aabb.right = iXpos + (iWidth / 2);
-	aabb.top = iYpos;
+	send.aabb.bottom = send.iYpos + (iHeight / 2);
+	send.aabb.left = send.iXpos;
+	send.aabb.right = send.iXpos + (iWidth / 2);
+	send.aabb.top = send.iYpos;
 
-	d->iXpos = iXpos;
-	d->iYpos = iYpos;
-	d->uSpriteX = uSpriteX;
-	d->uSpriteY = uSpriteY;
+	//d->iXpos = iXpos;
+	//d->iYpos = iYpos;
+	//d->uSpriteX = uSpriteX;
+	//send.uSpriteY = uSpriteY;
 
 }
 
 void CMonster::ChangeSprite(int* count)
 {
 	if (*count == 3) {
-		uSpriteX = (uSpriteX + 1) % 4;
+		send.uSpriteX = (send.uSpriteX + 1) % 8;
 		*count = 0;
 	}
 	*count += 1;

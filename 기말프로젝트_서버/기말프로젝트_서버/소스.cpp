@@ -23,9 +23,10 @@ int TotalClient;
 Player				users[3];
 
 vector<Platform>	platform;
-vector<Coin>		coins;
+//vector<Coin>		coins;
 //vector<CMonster>	monsters;
 
+Coin				coins[COINNUM];
 CMonster			cmonsters[MONSTERNUM];
 
 int					backgroundMove;
@@ -40,6 +41,7 @@ ServerToClient		SendData;
 void UpdatePlayerLocation(Player* p);
 void ChangePlayerSprite(Player* p, int* count);
 void ChangeMonsterSprite(int* count);
+void ChangeCoinSprite(int* count);
 void UpdateMonsters();
 
 void InitPlatform()
@@ -58,8 +60,11 @@ void InitCoin()
 {
 
 	for (int i = 0; i < COINNUM; ++i) {
-		coins.push_back(Coin(i *i, i * 50-30));
+		//coins.push_back(Coin(i *i, i * 50-30));
+		coins[i].send.iXpos = i * 100 - 200;
+		coins[i].send.iYpos = 650;
 		//printf("%d %d\n", coins[i].send.iXpos, coins[i].send.iYpos);
+		coins[i].CoinUpdate();
 	}
 }
 
@@ -72,8 +77,11 @@ void InitMonster()
 
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
 		// monsters.push_back(CMonster(i * i, i));
-		cmonsters[i].send.iXpos = i * i;
-		cmonsters[i].send.iYpos = i + i * 10;
+		cmonsters[i].send.iXpos = i * 50 - 200;
+		cmonsters[i].send.iYpos = 620;
+		cmonsters[i].updateRange();
+		cmonsters[i].SetMonNum(i);
+		//printf("%d %d    %d %d\n", cmonsters[i].send.iXpos, cmonsters[i].send.iYpos, cmonsters[i].iMaxX, cmonsters[i].iMinX);
 	}
 }
 
@@ -112,6 +120,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		clock_t start = clock();
 	// 클라이언트와 데이터 통신
 	int	MonsterSpriteCnt = 0;	// 스프라이트 카운트 변수
+	int CoinSpriteCnt = 0;
 
 	while (1) {
 		if (users[index].GetCharNum() == 10000) break;
@@ -119,23 +128,24 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		WaitForSingleObject(hEventHandle, INFINITE);
 		// 몬스터 스프라이트 업데이트 ( 이동도 여기서 하면 될 듯 )
 		ChangeMonsterSprite(&MonsterSpriteCnt);
+		ChangeCoinSprite(&CoinSpriteCnt);
 
-	//	UpdateMonsters();
+		UpdateMonsters();
 
 		// semin, 게임 시간
 		if (index == 2) {	// 마지막 접속한 사람의 thread에서 계산함
 			pre = clock();
 			time = (pre - start);
-			printf("%f 초 \n", time / CLOCKS_PER_SEC);
+			//printf("%f 초 \n", time / CLOCKS_PER_SEC);
 			if ((double)(time) / CLOCKS_PER_SEC >= 120 ) {	// 120초(2분) 지나면 게임 끝
-				printf("게임 끝났음\n");
+				//printf("게임 끝났음\n");
 				SendData.bIsPlaying = FALSE;
 			}
 			SendData.ServerTime = time;	// time / CLOCKS_PER_SEC 하면 초 단위로 나온다
 		}
+		Sleep(16);
 		SetEvent(hEventHandle);
 
-		Sleep(16);
 
 	}
 
@@ -165,10 +175,6 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 
 	//const int index = TotalClient - 1;
-	clock_t start = clock(), pre = clock();
-	double time = 0;
-	if (TotalClient == 3)
-		clock_t start = clock();
 
 	int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
 
@@ -178,11 +184,15 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
+		// 몬스터 충돌
+		for (int i = 0; i < MONSTERNUM; i++) 
+			users[index].IsCollidedMonster(cmonsters[i]);
+		// 코인 충돌
+		for (int i = 0; i < COINNUM; i++)
+			users[index].IsCollidedCoin(&coins[i]);
 
 		//ChangePlayerSprite(&(users[index]), &playerSpriteCnt); ->이거 update로 옮김
 		//UpdateMonsters();
-
-
 
 		Sleep(16);
 		SendData.player[index] = users[index].Send;
@@ -190,6 +200,8 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		for (int i = 0; i < MONSTERNUM; i++) {
 			SendData.monsters[i] = cmonsters[i].send;
 		}
+		for (int i = 0; i < COINNUM; i++)
+			SendData.coins[i] = coins[i].send;
 		
 		retval = send(client_sock, (char*)&SendData, sizeof(SendData), 0);
 
@@ -279,19 +291,19 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 }
 
 
-		 printf("\n접속한 Player의 ID: %ws", users[index].Send.wID);
-		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
-		 printf("\n접속한 Player의 캐릭터: %d\n", users[index].Send.charNum);
-		 printf("\n접속한 Player의 인덱스: %d\n", index);
+		 //printf("\n접속한 Player의 ID: %ws", users[index].Send.wID);
+		 //printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
+		 //printf("\n접속한 Player의 캐릭터: %d\n", users[index].Send.charNum);
+		 //printf("\n접속한 Player의 인덱스: %d\n", index);
 
-		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
-		 printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
-		 printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
+		 //printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
+		 //printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
+		 //printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
 
 
-		 printf("bLeft: %s\n", users[index].input.bLeft ? "true" : "false");
-		 printf("bRight: %s\n", users[index].input.bRight ? "true" : "false");
-		 printf("bSpace: %s\n", users[index].input.bSpace ? "true" : "false");
+		 //printf("bLeft: %s\n", users[index].input.bLeft ? "true" : "false");
+		 //printf("bRight: %s\n", users[index].input.bRight ? "true" : "false");
+		 //printf("bSpace: %s\n", users[index].input.bSpace ? "true" : "false");
 
 		
 
@@ -315,7 +327,17 @@ void ChangePlayerSprite(Player* p, int* count)
 	}
 	*count += 1;
 
-	printf("[%d] 번 스프라이트 업데이트불림\n", p->GetCharNum());
+	//printf("[%d] 번 스프라이트 업데이트불림\n", p->GetCharNum());
+}
+
+void ChangeCoinSprite(int* count) {
+	if (*count == 2) {
+		for (int i = 0; i < COINNUM; i++) {
+			coins[i].send.uSpriteX = (coins[i].send.uSpriteX + 1) % 24;
+			*count = 0;
+		}
+	}
+	*count += 1;
 }
 
 
@@ -335,96 +357,17 @@ void UpdateMonsters()
 {
 	static int i{ 0 };
 	//몬스터 위치그거 하겠슴다. 
+	//완료햇슴다
 
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
 		cmonsters[i].UpdateMonsterLocation(&SendData.monsters[i]);
-		++i;
-		if (i == MONSTERNUM - 1) i = 0;
 	}
-
-
 }
 
 void UpdatePlayerLocation(Player* p)
 {
-	static int curSpriteCnt = 0;
-
-	if (!(p->input.bLeft) && (p->up.bLeft)) {
-		//왼쪽으로 이동
-		p->velocity.x = 0;
-		p->SetSpriteY(4);
-	}
-
-	if (!(p->input.bRight) && (p->up.bRight)) {
-		//왼쪽으로 이동
-		p->velocity.x = 0;
-		p->SetSpriteY(0);
-	}
-
-	// 캐릭터의 위치가 이동할 때는 배경화면이 끝에 갔을 때 ( 왼쪽 끝 )
-	if (p->Send.iBgMove <= -200 ) {
-		if (p->input.bLeft) {
-			curSpriteCnt = 3;
-			p->iXpos += -p->GetRunSpeed();
-			p->SetSpriteY(3);
-
-		}
-
-		if (p->input.bRight) {
-			curSpriteCnt = 1;
-			p->iXpos += p->GetRunSpeed();
-			p->SetSpriteY(1);
-			if ( p->Send.iXpos >= 640 )
-				p->Send.iBgMove = -195;
-
-		}
-	}
-
-	// 캐릭터의 위치가 이동할 때는 배경화면이 끝에 갔을 때 ( 오른쪽 끝 )
-	else if (p->Send.iBgMove >= 1200) {
-		if (p->input.bLeft) {
-			curSpriteCnt = 3;
-			p->iXpos += -p->GetRunSpeed();
-			p->SetSpriteY(3);
-			if (p->Send.iXpos <= 640)
-				p->Send.iBgMove = 1195;
-		}
-
-		if (p->input.bRight) {
-			curSpriteCnt = 1;
-			p->iXpos += p->GetRunSpeed();
-			p->SetSpriteY(1);
-		}
-	}
-
-	/* 그 외에는 배경화면이 이동 */
-	else {
-		if (p->input.bLeft) {
-			//왼쪽으로 이동
-			curSpriteCnt = 3;
-			//p->velocity.x = -p->GetRunSpeed();
-			p->Send.iBgMove += -p->GetRunSpeed();
-			p->Send.iBgMove = std::clamp(p->Send.iBgMove, -200, 1200);
-			p->SetSpriteY(3);
-		}
-
-		if (p->input.bRight) {
-			//오른쪽으로 이동
-			curSpriteCnt = 1;
-
-			//p->velocity.x = p->GetRunSpeed();
-			p->Send.iBgMove += p->GetRunSpeed();
-			p->Send.iBgMove = std::clamp(p->Send.iBgMove, -200, 1200);
-			p->SetSpriteY(1);
-		}
-	}
-	if (p->input.bSpace) {
-		//왼쪽 점프
-		p->bJumpKeyPressed = TRUE;
-		p->Jump(curSpriteCnt);
-	}
-
 	p->UpdatePlayerLocation();
+	p->Jump(p->curSpriteCnt);
 }
 
 
@@ -503,10 +446,10 @@ int main(int argc, char* argv[])
 		}
 
 
-		for (int i{ 0 }; i < COINNUM; ++i) {
-			retval = send(client_sock, (char*)&coins[i].send.iXpos, sizeof(int) * 2, 0);
+		//for (int i{ 0 }; i < COINNUM; ++i) {
+		//	retval = send(client_sock, (char*)&coins[i].send.iXpos, sizeof(int) * 2, 0);
 
-		}
+		//}
 
 
 

@@ -55,10 +55,8 @@ SOCKET sock;		// 소켓
 
 
 vector<Platform> Platforms;
-vector<Coin> Coins;
-//vector<CMonster> Monsters;
+//vector<Coin> Coins;
 
-CMonster Monsters[MONSTERNUM];
 int monsterTotal = 1;	// semin, 몬스터 몇 마리인지 
 
 Player player;
@@ -76,7 +74,7 @@ void LoadImg()
 {
 	
 	platformImg.Load(L"Image/platform3.png");
-	coinImg.Load(L"Image/coin2.png");
+	coinImg.Load(L"Image/coin3.png");
 	monsterImg.Load(L"Image/Monster2.png");
 
 	playersImag[0].Load(L"Image/Cookies3-2.png");	
@@ -126,12 +124,12 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		Platforms.push_back(Platform(temp[0], temp[1], &platformImg));
 	}
 
-	for (int i{ 0 }; i < COINNUM; ++i) {
-		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
-		Coins.push_back(Coin(temp[0], temp[1], &coinImg));
-	}
+	//for (int i{ 0 }; i < COINNUM; ++i) {
+	//	//retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
+	//	//Coins.push_back(Coin(temp[0], temp[1], &coinImg));
+	//}
 
-	char buf[BUFSIZE + 1];
+	//char buf[BUFSIZE + 1];
 
 
 
@@ -236,15 +234,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	player.myImage = &playerImg;		
 
 	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
-	static Coin TestCoin;
-
-	TestCoin.myImage = &coinImg;
+	static Coin coin;
+	coin.myImage = &coinImg;
 
 
 	// W 몬스터 생성
 	static CMonster monster;
 	monster.SetMonNum(1);
 	monster.myImage= &monsterImg;
+
 
 	// W 열쇠 생성
 	static CImage KeyImg;
@@ -377,17 +375,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			
 			
 			//가온-코인그리기 
-			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - bgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
+			//TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - bgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
 
 			//가온 - 플랫폼 - 위치 서버에서 바꿔줘야함 걍 대충 바갑가ㅏㅏ함
 			for (Platform& temp : Platforms) {
 				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
 			}
 
-			// 코인
-			for (Coin& temp : Coins) {
-				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
-			}
 
 			//// semin, 몬스터
 			//for (int i = 0; i < MONSTERNUM; i++) {
@@ -397,6 +391,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			for (int i{ 0 }; i < MONSTERNUM;++i) {
 				monster.myImage->TransparentBlt(mem1dc, GameData.monsters[i].iXpos- bgMove / 2, GameData.monsters[i].iYpos,monster.GetWidth() / 2, monster.GetHeight() / 2,
 					0 + monster.GetWidth() * GameData.monsters[i].uSpriteX, 0 + monster.GetHeight() * GameData.monsters[i].uSpriteY, monster.GetWidth(), monster.GetHeight(), RGB(0, 255, 0));
+			}
+
+			// 코인
+			//for (Coin& temp : Coins) {
+			//	temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
+			//}
+
+			for (int i{ 0 }; i < COINNUM; ++i) {
+				coin.myImage->TransparentBlt(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, coin.GetWidth() / 1.5, coin.GetHeight() / 1.5,
+					0 + coin.GetWidth() * GameData.coins[i].uSpriteX, 0 + coin.GetHeight() * GameData.coins[i].uSpriteY, coin.GetWidth(), coin.GetHeight(), RGB(255, 255, 0));
 			}
 
 
@@ -411,25 +415,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				SetTextAlign(mem1dc, TA_LEFT);
 				TextOut(mem1dc, 10, 10, L"Debug Mode", strlen("Debug Mode"));
 				RECT playerBox;
+
 				/* semin, 여기 부분 서버 변하면서 살짝 수정했는데 모든 플레이어의 충돌박스 그릴 거라면 수정 필요함 */
-				playerBox.bottom = player.iYpos + (player.GetHeight() / 2);
-				playerBox.left = player.iXpos;
-				playerBox.right = player.iXpos + (player.GetWidth() / 2);
-				playerBox.top = player.iYpos;
+
+				playerBox.bottom = GameData.player[myCharacter].aabb.bottom;
+				playerBox.left = GameData.player[myCharacter].aabb.left;
+				playerBox.right = GameData.player[myCharacter].aabb.right;
+				playerBox.top = GameData.player[myCharacter].aabb.top;
+	
 				
 				RECT* monsterBox;
 				monsterBox = new RECT[MONSTERNUM];
 				for (int i = 0; i < MONSTERNUM; i++) {
-					monsterBox[i].bottom = Monsters[i].send.iYpos + (monster.GetHeight() / 2);
-					monsterBox[i].left = Monsters[i].send.iXpos;
-					monsterBox[i].right = Monsters[i].send.iXpos + (monster.GetWidth() / 2);
-					monsterBox[i].top = Monsters[i].send.iYpos;
-					//monsterBox[i] = monster.GetAABB();
+					monsterBox[i].bottom = GameData.monsters[i].aabb.bottom;
+					monsterBox[i].left = GameData.monsters[i].aabb.left;
+					monsterBox[i].right = GameData.monsters[i].aabb.right;
+					monsterBox[i].top = GameData.monsters[i].aabb.top;
 				}
 					
 				//RECT CoinBox = TestCoin.GetAABB();
 				//RECT platformbox = TestPlatform[0].GetAABB();
 				//RECT platformbox1 = TestPlatform[1].GetAABB();
+				RECT* coinBox;
+				coinBox = new RECT[COINNUM];
+				for (int i = 0; i < MONSTERNUM; i++) {
+					if (GameData.coins[i].bIsCrush == FALSE) {
+						coinBox[i].bottom = GameData.coins[i].aabb.bottom;
+						coinBox[i].left = GameData.coins[i].aabb.left;
+						coinBox[i].right = GameData.coins[i].aabb.right;
+						coinBox[i].top = GameData.coins[i].aabb.top;
+					}
+				}
 
 				HPEN MyPen, OldPen;
 				HBRUSH MyBrush, OldBrush;
@@ -450,8 +466,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
 				for ( int i = 0; i < MONSTERNUM; i++ )
 					Rectangle(mem1dc, monsterBox[i].left - bgMove /2, monsterBox[i].top, monsterBox[i].right - bgMove / 2, monsterBox[i].bottom);
+				for (int i = 0; i < COINNUM; i++)
+					Rectangle(mem1dc, coinBox[i].left - bgMove / 2, coinBox[i].top, coinBox[i].right - bgMove / 2, coinBox[i].bottom);
 
-				if (player.IsCollidedCoin(TestCoin))
+				if (player.IsCollidedCoin(coin))
 				{
 
 				}
@@ -560,9 +578,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			//TestCoin.ChangeSprite();
 
 
-			for (Coin& temp : Coins) {
-				temp.ChangeSprite();
-			}
+			//for (Coin& temp : Coins) {
+			//	temp.ChangeSprite();
+			//}
 
 			portal.ChangeSprite(&spriteCnt);
 

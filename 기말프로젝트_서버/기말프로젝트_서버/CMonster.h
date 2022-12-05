@@ -11,20 +11,18 @@ private:
 	USHORT	uMonNum;
 
 	POS		pVel;
-	RECT	aabb;
 	float	fVel;
 
 	int		iDir;
-	int		iMaxX;
-	int		iMinX;
 
 public:
 
 	struct SendData {
-		int		iXpos;
-		int		iYpos;
-		USHORT	uSpriteX;
-		USHORT	uSpriteY;
+		int		iXpos = 700;
+		int		iYpos = 625;
+		USHORT	uSpriteX = 0;
+		USHORT	uSpriteY = 0;
+		RECT	aabb;
 
 	};
 
@@ -33,29 +31,31 @@ public:
 	CImage* myImage; //이거로 스프라이트 가리키면 될것같은데 
 
 	USHORT	uCharnum;
-	USHORT	uSpriteX;
-	USHORT	uSpriteY;
-	int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음
-	int		iYpos;
+	//USHORT	uSpriteX;
+	//USHORT	uSpriteY;
+	//int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음
+	//int		iYpos;
 	int		dir;
 	POS		velocity = { 0, 0 };
+	int		iMaxX;
+	int		iMinX;
 
 public:
 	USHORT GetMonNum() { return uMonNum; }
 	void SetMonNum(USHORT in) { uMonNum = in; }
 
-	USHORT GetSpriteX() { return uSpriteX; }
-	void SetSpriteX(USHORT in) { uSpriteX = in; }
-	void AddSpriteX() { uSpriteX++; }
+	USHORT GetSpriteX() { return send.uSpriteX; }
+	void SetSpriteX(USHORT in) { send.uSpriteX = in; }
+	void AddSpriteX() { send.uSpriteX++; }
 
-	USHORT GetSpriteY() { return uSpriteY; }
-	void SetSpriteY(USHORT in) { uSpriteY = in; }
+	USHORT GetSpriteY() { return send.uSpriteY; }
+	void SetSpriteY(USHORT in) { send.uSpriteY = in; }
 
-	int GetXPos() { return iXpos; }
-	void SetXPos(int in) { iXpos = in; }
+	int GetXPos() { return send.iXpos; }
+	void SetXPos(int in) { send.iXpos = in; }
 
-	int GetYPos() { return iYpos; }
-	void SetYPos(int in) { iYpos = in; }
+	int GetYPos() { return send.iYpos; }
+	void SetYPos(int in) { send.iYpos = in; }
 
 	float GetVel() { return fVel; }
 	void SetVel(float in) { fVel = in; }
@@ -63,17 +63,19 @@ public:
 	int GetWidth() { return iWidth; }
 	int GetHeight() { return iHeight; }
 
-	RECT GetAABB() { return aabb; }
-	void SetAABB(RECT in) { aabb = in; }
+	RECT GetAABB() { return send.aabb; }
+	void SetAABB(RECT in) { send.aabb = in; }
 
 	int GetRange() { return iRange; }
 	void SetRange(int in) { iRange = in; }
+
+	void updateRange();
 
 public:
 	//생성자
 	CMonster();
 	CMonster(USHORT sprite, USHORT charnum, POS position, float Vel, int range, USHORT in);
-	CMonster(int x, int y);
+	CMonster(int x, int y, int in);
 	~CMonster();
 
 	void ChangeSprite(int* count);

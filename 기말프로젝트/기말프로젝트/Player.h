@@ -31,13 +31,14 @@ private:
 	USHORT	uCoin;
 
 	bool	bFind;
-	RECT	aabb;
 
 	float	RUN_SPEED_PPS;
 	float	fJumpPower;
 
 	USHORT	uRecCollidedMon;
-		
+
+	RECT	aabb;
+
 public:
 	struct SendData {
 		int		charNum = 999;
@@ -47,6 +48,7 @@ public:
 		USHORT	uSpriteY;
 		int		iBgMove;
 		wchar_t wID[21] = { '\0' };
+		RECT	aabb;
 
 
 	};
@@ -113,8 +115,8 @@ public:
 	bool GetFind() { return bFind; }
 	void SetFind(bool in) { bFind = in; }
 
-	RECT GetAABB() { return aabb; }
-	void SetAABB(RECT in) { aabb = in; }
+	RECT GetAABB() { return Send.aabb; }
+	void SetAABB(RECT in) { Send.aabb = in; }
 
 	wchar_t GetMaxJump() { return MaxJump; }
 	void SetMaxJump(USHORT in) { MaxJump = in; }

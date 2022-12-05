@@ -21,10 +21,11 @@ private:
 public:
 
 	struct SendData {
-		int		iXpos;
-		int		iYpos;
-		USHORT	uSpriteX;
-		USHORT	uSpriteY;
+		int		iXpos = 700;
+		int		iYpos = 625;
+		USHORT	uSpriteX = 0;
+		USHORT	uSpriteY = 0;
+		RECT	aabb;
 
 	};
 
