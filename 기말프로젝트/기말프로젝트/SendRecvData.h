@@ -15,7 +15,7 @@ struct ClientToServer {
 struct ServerToClient {
 	double          ServerTime;	 // semin, clock_t -> double 자료형 바꿈
 	bool            bWin;
-	bool            bIsPlaying;
+	bool            bIsPlaying = FALSE;
 
 
 	Player::SendData player[3];

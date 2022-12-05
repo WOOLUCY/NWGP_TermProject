@@ -14,6 +14,7 @@
 #include "Collision.h"
 #include "Portal.h"
 #include "Key.h"
+#include "Button.h"
 #include "SendRecvData.h"
 
 #include "Coin.h"
@@ -134,7 +135,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	char buf[BUFSIZE + 1];
 
 
-
 	while (1) {
 		retval = recv(sock, (char*)&GameData, sizeof(GameData), 0);
 		if (retval == SOCKET_ERROR) {
@@ -225,7 +225,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static Background selectBackground;
 	static CImage selectBackgroundImg;
 	selectBackground.Image = &selectBackgroundImg;
-	
+
+	static CImage readyImg;
+	static Button readyButton;
+	readyButton.myImage = &readyImg;
 
 	startBackground.Image = &startbackgroundImg;
 	background.Image = &backgroundImg;	
@@ -269,6 +272,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	// W character selection
 	static bool bReady = FALSE;	// 캐릭터 선택 후 게임 시작 판단용
+	// W
+	static bool bIsPlaying = FALSE;	// 다른 접속자들이 모두 선택을 했는지 확인
+	static bool bFirstSelected = FALSE;
+	static bool bSecondSelected = FALSE;
+	static bool bThirdSelected = FALSE;
 
 	// semin, Background
 	static int bgMove = 0;
@@ -288,6 +296,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		selectBackgroundImg.Load(L"Image/Select.png");
 		selectBackground.setHeight(selectBackground.Image->GetWidth());
 		selectBackground.SetWidth(selectBackground.Image->GetWidth());
+
+		readyImg.Load(L"Image/Ready.png");
 
 		// W load key image
 		KeyImg.Load(L"Image/key.png");
@@ -322,6 +332,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 		}
 
+		// W 캐릭터 선택 정보
+		// 데이터 전송하는 시점을 창 띄우자마자로 바꿀 수 있는지
+		bIsPlaying = GameData.bIsPlaying;
+		for (int i = 0; i < 3; ++i)
+		{
+			if (GameData.player[i].charNum + 1 == 1) {
+				bFirstSelected = TRUE;
+			}
+			if (GameData.player[i].charNum + 1 == 2) {
+				bSecondSelected = TRUE;
+			}
+			if (GameData.player[i].charNum + 1 == 3) {
+				bThirdSelected = TRUE;
+			}
+		}
+
 		if (enterID == FALSE) {
 			startBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
 
@@ -331,12 +357,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				890, 505, 80, 40, hWnd, (HMENU)CHILD_BUTTON, hInst, NULL);
 		}
 		// W render character selection window
-		else if (enterID == TRUE && bReady == FALSE) {
+		else if (enterID == TRUE && bIsPlaying == FALSE) {
 			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
+			if (bFirstSelected) {
+				readyButton.myImage->Draw(mem1dc, 45, 638, readyButton.GetWidth(), readyButton.GetHeight(), 0, 0, readyButton.GetWidth(), readyButton.GetHeight());
+			}
+			if (bSecondSelected) {
+				readyButton.myImage->Draw(mem1dc, 463, 638, readyButton.GetWidth(), readyButton.GetHeight(), 0, 0, readyButton.GetWidth(), readyButton.GetHeight());
+			}
+			if (bThirdSelected) {
+				readyButton.myImage->Draw(mem1dc, 883, 638, readyButton.GetWidth(), readyButton.GetHeight(), 0, 0, readyButton.GetWidth(), readyButton.GetHeight());
+			}
+
 		}
 		else {
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + bgMove, 220, 2560, 1600);
-			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);r
+			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);
 			//player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
 			
 			//playerImg.Draw
@@ -493,14 +529,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		// W
 		// 첫번째 캐릭터 선택 시: 달빛술사 쿠키
-		if (bReady == FALSE && MouseX >= 80 && MouseX <= 344 && MouseY >= 637 && MouseY <= 719) {
+		if (bReady == FALSE && MouseX >= 80 && MouseX <= 344 && MouseY >= 637 && MouseY <= 719 && bFirstSelected == FALSE) {
 			player.SetIsReady(TRUE);
 			player.SetCharNum(1);
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
 			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
-
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -509,13 +544,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		// 두번째 캐릭터 선택 시: 치즈케이크맛 쿠키
-		else if (bReady == FALSE && MouseX >= 510 && MouseX <= 760 && MouseY >= 646 && MouseY <= 720) {
+		else if (bReady == FALSE && MouseX >= 510 && MouseX <= 760 && MouseY >= 646 && MouseY <= 720 && bSecondSelected == FALSE) {
 			player.SetIsReady(TRUE);
 			player.SetCharNum(2);
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-				CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -524,14 +559,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		// 세번째 캐릭터 선택 시: 벚꽃맛 쿠키
-		else if (bReady == FALSE && MouseX >= 922 && MouseX <= 1184 && MouseY >= 643 && MouseY <= 743) {
+		else if (bReady == FALSE && MouseX >= 922 && MouseX <= 1184 && MouseY >= 643 && MouseY <= 743 && bThirdSelected == FALSE) {
 			player.SetIsReady(TRUE);
 			player.SetCharNum(3);
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
 			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
-
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {

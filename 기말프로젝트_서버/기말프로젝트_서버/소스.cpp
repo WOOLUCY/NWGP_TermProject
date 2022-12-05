@@ -19,6 +19,10 @@ HANDLE hEventHandle;
 
 int TotalClient;
 
+bool				bFirstSelected = FALSE;
+bool				bSecondSelected = FALSE;
+bool				bThirdSelected = FALSE;
+
 
 Player				users[3];
 
@@ -122,6 +126,10 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 
 	//	UpdateMonsters();
 
+		// W, 게임 시작 여부
+		if (bFirstSelected && bSecondSelected && bThirdSelected) {
+			SendData.bIsPlaying = TRUE;
+		}
 		// semin, 게임 시간
 		if (index == 2) {	// 마지막 접속한 사람의 thread에서 계산함
 			pre = clock();
@@ -253,10 +261,24 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		if (recvData->uCharNum == 10000) break;
 
+		// W 캐릭터가 모두 선택되었는지 파악
+		if (recvData->uCharNum == 1)
+		{
+			bFirstSelected = TRUE;
+		}
+		if (recvData->uCharNum == 2)
+		{
+			bSecondSelected = TRUE;
+		}
+		if (recvData->uCharNum == 3)
+		{
+			bThirdSelected = TRUE;
+		}
+		
+
 		 users[index].Send.charNum = recvData->uCharNum - 1;
 		 users[index].SetId(recvData->wId);
 		 wcscpy(users[index].Send.wID, recvData->wId);
-
 
 		 if (users[index].GetHeart() == 0) {
 			 InitPlayer(users[index].Send.charNum, &users[index]);
@@ -281,7 +303,6 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 		 printf("\n접속한 Player의 ID: %ws", users[index].Send.wID);
 		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
-		 printf("\n접속한 Player의 캐릭터: %d\n", users[index].Send.charNum);
 		 printf("\n접속한 Player의 인덱스: %d\n", index);
 
 		 printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
@@ -315,7 +336,7 @@ void ChangePlayerSprite(Player* p, int* count)
 	}
 	*count += 1;
 
-	printf("[%d] 번 스프라이트 업데이트불림\n", p->GetCharNum());
+	//printf("[%d] 번 스프라이트 업데이트불림\n", p->GetCharNum());
 }
 
 
