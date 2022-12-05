@@ -92,20 +92,23 @@ void InitMonster()
 void InitPlayer(int num, Player* p)
 {
 	if (num == 0) {
-		p->SetHeart(5);
+		// p->SetHeart(5);
+		p->Send.uHeart = 5;
 		p->SetRunSpeed(p->GetRunSpeed() * 0.75);
 
 		printf("InitPlayerÈ£ÃâµÊ %d %f\n", 5, p->GetRunSpeed() * 0.75);
 	}
 	else if (num == 1) {
-		p->SetHeart(4);
+		// p->SetHeart(4);
+		p->Send.uHeart = 4;
 		p->SetRunSpeed(p->GetRunSpeed());
 
 		printf("InitPlayerÈ£ÃâµÊ %d %f\n", 5, p->GetRunSpeed() * 0.75);
 
 	}
 	else if (num == 2) {
-		p->SetHeart(3);
+		// p->SetHeart(3);
+		p->Send.uHeart = 3;
 		p->SetRunSpeed(p->GetRunSpeed() * 1.25);
 		printf("InitPlayerÈ£ÃâµÊ %d %f\n", 3, p->GetRunSpeed() * 0.75);
 
@@ -292,10 +295,10 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 users[index].SetId(recvData->wId);
 		 wcscpy(users[index].Send.wID, recvData->wId);
 
-		 if (users[index].GetHeart() == 0) {
+		 if (users[index].Send.uHeart == 0) {
 			 InitPlayer(users[index].Send.charNum, &users[index]);
 		 }
-
+		 
 
 
 		 if (users[index].bJumpKeyPressed == true) {

@@ -4,8 +4,7 @@
 #include <algorithm>
 
 Player::Player()
-	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(999), pVel(0, 0), sHeart(0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
-
+	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(999), pVel(0, 0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
 {
 	//일단 걍다 0으로 초기화함 
 	Send.iXpos = 640;
@@ -34,7 +33,7 @@ Player::Player()
 }
 
 Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)
-	:wId(id), uSpriteX(sprite), uCharNum(charnum), pVel(Vel), sHeart(heart), uCoin(coin), bFind(find)
+	:wId(id), uSpriteX(sprite), uCharNum(charnum), pVel(Vel), uCoin(coin), bFind(find)
 {
 	//이미지 설정하기 
 

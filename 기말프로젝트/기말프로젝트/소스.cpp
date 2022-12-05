@@ -425,8 +425,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			//portal.myImage->Draw(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206);
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 			
-			// W 체력창 출력
-			heart.myImage->Draw(mem1dc, 1000, 10, heart.GetWidth() / 5, heart.GetHeight() / 5, 0 + heart.GetWidth() * heart.GetSpriteX(), 0 + heart.GetHeight() * heart.GetSpriteY(), heart.GetWidth(), heart.GetHeight());
+			// W 내 캐릭터에 대해 맞는 체력창 출력
+			for (int i = 0; i < 3; i++) {
+				if (PlayerData.uCharNum == GameData.player[i].charNum + 1) {
+					USHORT uHeartNum = GameData.player[i].uHeart;
+					for (int j = 0; j < uHeartNum; ++j) {
+						heart.myImage->Draw(mem1dc, 1200 - (j * (heart.GetWidth() / 6  + 5)), 10, heart.GetWidth() / 6, heart.GetHeight() / 6, 0 + heart.GetWidth() * heart.GetSpriteX(), 0 + heart.GetHeight() * heart.GetSpriteY(), heart.GetWidth(), heart.GetHeight());
+					}
+				}
+			}
 
 			
 			//가온-코인그리기 
@@ -552,7 +559,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			// W 시간 출력
+			// W 텍스트 출력
 			// https://ebebeb111.tistory.com/76
 			AddFontResourceA("CookieRun Bold.ttf");
 			wstringstream wss;
@@ -560,6 +567,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			HFONT hFont, OldFont;
 			hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("CookieRun Bold"));
 			OldFont = (HFONT)SelectObject(mem1dc, hFont);
+			SetTextColor(mem1dc, RGB(255, 255, 255));
+			SetBkColor(mem1dc, RGB(0, 0, 0));
+			TextOut(mem1dc, 1280/2, 10, L"SCORE", strlen("SCORE"));
 			TextOut(mem1dc, 30, 10, wss.str().c_str(), wcslen(wss.str().c_str()));
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
