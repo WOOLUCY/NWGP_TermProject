@@ -363,6 +363,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 		// W render character selection window
 		else if (enterID == TRUE &&	bReady == FALSE) {
+			// 조건문에 bReady == FALSE 대신 bIsPlaying == FALSE 해두면 3명 접속해야지 실행
 			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 			if (bFirstSelected) {
 				readyButton.myImage->Draw(mem1dc, 45, 638, readyButton.GetWidth(), readyButton.GetHeight(), 0, 0, readyButton.GetWidth(), readyButton.GetHeight());
@@ -521,13 +522,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 			// W 시간 출력
-
+			// https://ebebeb111.tistory.com/76
+			AddFontResourceA("CookieRun Bold.ttf");
 			wstringstream wss;
 			wss << (int)GameData.ServerTime / CLOCKS_PER_SEC;
 			HFONT hFont, OldFont;
-			hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("바탕"));
+			hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("CookieRun Bold"));
 			OldFont = (HFONT)SelectObject(mem1dc, hFont);
-			TextOut(mem1dc, 100, 100, wss.str().c_str(), wcslen(wss.str().c_str()));
+			TextOut(mem1dc, 30, 10, wss.str().c_str(), wcslen(wss.str().c_str()));
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
 
