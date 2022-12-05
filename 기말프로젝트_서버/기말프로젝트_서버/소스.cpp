@@ -332,7 +332,7 @@ void ChangePlayerSprite(Player* p, int* count)
 	}
 	*count += 1;
 
-	printf("[%d] 번 스프라이트 업데ㅣ트불림\n", p->GetCharNum());
+	printf("[%d] 번 스프라이트 업데이트불림\n", p->GetCharNum());
 }
 
 
