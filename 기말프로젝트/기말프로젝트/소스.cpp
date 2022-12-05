@@ -26,10 +26,7 @@
 #define MONSTERNUM 10
 
 using namespace std;
-//[이세민] [오후 8:34] 192.168.219.31
 char* SERVERIP = (char*)"127.0.0.1";
-//char* SERVERIP = (char*)"192.168.100.116";
-//char* SERVERIP = (char*)"192.168.141.42";
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -59,9 +56,7 @@ SOCKET sock;		// 소켓
 
 
 vector<Platform> Platforms;
-//vector<Coin> Coins;
 
-int monsterTotal = 1;	// semin, 몬스터 몇 마리인지 
 
 Player player;
 
@@ -121,8 +116,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
 
 
-	//가온 - 플랫폼 데이터 일단 받기 - 테스트용 int 한개만 받고 잘 오는지확인용
-
 	int temp[2];
 
 
@@ -131,12 +124,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		Platforms.push_back(Platform(temp[0], temp[1], &platformImg));
 	}
 
-	//for (int i{ 0 }; i < COINNUM; ++i) {
-	//	//retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
-	//	//Coins.push_back(Coin(temp[0], temp[1], &coinImg));
-	//}
-
-	//char buf[BUFSIZE + 1];
 
 
 	while (1) {
@@ -238,19 +225,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	background.Image = &backgroundImg;	
 
 	static CImage playerImg;
-
-
 	player.myImage = &playerImg;		
 
-	//일단 코인한개만 그려보겠슴니다 - 가온(찾을때편하려고 이름 씀~~)
-	static Coin coin;
-	coin.myImage = &coinImg;
 
 
 	// W 몬스터 생성
 	static CMonster monster;
 	monster.SetMonNum(1);
 	monster.myImage= &monsterImg;
+
+	Coin coin;
 
 
 	// W 열쇠 생성
@@ -435,33 +419,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			
-			//가온-코인그리기 
-			//TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - bgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
-
 			//가온 - 플랫폼 - 위치 서버에서 바꿔줘야함 걍 대충 바갑가ㅏㅏ함
 			for (Platform& temp : Platforms) {
-				temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
+				platformImg.Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
 			}
 
 
-			//// semin, 몬스터
-			//for (int i = 0; i < MONSTERNUM; i++) {
-			//	monster.myImage->TransparentBlt(mem1dc, Monsters[i].send.iXpos - bgMove / 2, Monsters[i].send.iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2, 0 + monster.GetWidth() * Monsters[i].send.uSpriteX, 0 + monster.GetHeight() * Monsters[i].send.uSpriteY, monster.GetWidth(), monster.GetHeight(), RGB(0, 255, 0));
-			//}
-
-			for (int i{ 0 }; i < MONSTERNUM;++i) {
-				monster.myImage->TransparentBlt(mem1dc, GameData.monsters[i].iXpos- bgMove / 2, GameData.monsters[i].iYpos,monster.GetWidth() / 2, monster.GetHeight() / 2,
+		
+			for (int i{ 0 }; i < MONSTERNUM; ++i) {
+				monsterImg.TransparentBlt(mem1dc, GameData.monsters[i].iXpos - bgMove / 2, GameData.monsters[i].iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2,
 					0 + monster.GetWidth() * GameData.monsters[i].uSpriteX, 0 + monster.GetHeight() * GameData.monsters[i].uSpriteY, monster.GetWidth(), monster.GetHeight(), RGB(0, 255, 0));
 			}
 
 			// 코인
-			//for (Coin& temp : Coins) {
-			//	temp.myImage->Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0 + temp.GetWidth() * temp.GetSpriteX(), 0 + temp.GetHeight() * temp.GetSpriteY(), temp.GetWidth(), temp.GetHeight());
-			//}
+		
 
 			for (int i{ 0 }; i < COINNUM; ++i) {
-				coin.myImage->TransparentBlt(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, coin.GetWidth() / 1.5, coin.GetHeight() / 1.5,
+				coinImg.TransparentBlt(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, coin.GetWidth() / 1.5, coin.GetHeight() / 1.5,
 					0 + coin.GetWidth() * GameData.coins[i].uSpriteX, 0 + coin.GetHeight() * GameData.coins[i].uSpriteY, coin.GetWidth(), coin.GetHeight(), RGB(255, 255, 0));
 			}
 
@@ -495,9 +469,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 					monsterBox[i].top = GameData.monsters[i].aabb.top;
 				}
 					
-				//RECT CoinBox = TestCoin.GetAABB();
-				//RECT platformbox = TestPlatform[0].GetAABB();
-				//RECT platformbox1 = TestPlatform[1].GetAABB();
 				RECT* coinBox;
 				coinBox = new RECT[COINNUM];
 				for (int i = 0; i < COINNUM; i++) {
@@ -636,24 +607,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_TIMER:
 		switch (wParam) {
-		case 1:		// Sprite 의 교체 속도(업데이트 속도)를 담당하는 타이머
-			//player.ChangeSprite(&spriteCnt);
-			//player.UpdatePlayerLocation();					// Player 의 Move 함수는 이동을 담당
-			//background.Update();
-			//player.Jump(curSpriteCnt);
-			//frame_time = time(NULL) - current_time;
-			//frame_rate = 1.0 / frame_time;
-			//current_time += frame_time;
-
-			//monster.ChangeSprite(&spriteCnt);
-			//monster.UpdateMonsterLocation();
-
-			//TestCoin.ChangeSprite();
-
-
-			//for (Coin& temp : Coins) {
-			//	temp.ChangeSprite();
-			//}
+		case 1:		
 
 			heart.ChangeSprite(&heartSpriteCnt);
 			portal.ChangeSprite(&spriteCnt);
@@ -697,7 +651,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			PlayerData.Input.bLeft = TRUE;
 			PlayerData.Up.bLeft = FALSE;
 			PlayerData.Up.bRight = FALSE;
-			//bgMove = std::clamp(bgMove, -200, 4000);
 
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);

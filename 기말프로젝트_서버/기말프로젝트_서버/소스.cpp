@@ -27,17 +27,12 @@ bool				bThirdSelected = FALSE;
 Player				users[3];
 
 vector<Platform>	platform;
-//vector<Coin>		coins;
-//vector<CMonster>	monsters;
 
 Coin				coins[COINNUM];
 CMonster			cmonsters[MONSTERNUM];
 
 int					backgroundMove;
 int					eventCnt;	// 접속 유저들의 스레드 중 한 개만 event를 하기 위함
-
-//int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
-//int	MonsterSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 ServerToClient		SendData;
 
@@ -54,7 +49,6 @@ void InitPlatform()
 
 	for (int i = 0; i < PLATFORMNUM; ++i) {
 		platform.push_back(Platform(i+10, i * 50));
-		//printf("%d %d\n", platform[i].send.iXpos, platform[i].send.iYpos);
 	}
 
 
@@ -64,10 +58,8 @@ void InitCoin()
 {
 
 	for (int i = 0; i < COINNUM; ++i) {
-		//coins.push_back(Coin(i *i, i * 50-30));
 		coins[i].send.iXpos = i * 100 - 200;
 		coins[i].send.iYpos = 650;
-		//printf("%d %d\n", coins[i].send.iXpos, coins[i].send.iYpos);
 		coins[i].CoinUpdate();
 	}
 }
@@ -80,26 +72,22 @@ void InitMonster()
 	// 합치는 게 나을 것이라 판단
 
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		// monsters.push_back(CMonster(i * i, i));
 		cmonsters[i].send.iXpos = i * 50 - 200;
 		cmonsters[i].send.iYpos = 620;
 		cmonsters[i].updateRange();
 		cmonsters[i].SetMonNum(i);
-		//printf("%d %d    %d %d\n", cmonsters[i].send.iXpos, cmonsters[i].send.iYpos, cmonsters[i].iMaxX, cmonsters[i].iMinX);
 	}
 }
 
 void InitPlayer(int num, Player* p)
 {
 	if (num == 0) {
-		// p->SetHeart(5);
 		p->Send.uHeart = 5;
 		p->SetRunSpeed(p->GetRunSpeed() * 0.75);
 
 		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 0.75);
 	}
 	else if (num == 1) {
-		// p->SetHeart(4);
 		p->Send.uHeart = 4;
 		p->SetRunSpeed(p->GetRunSpeed());
 
@@ -107,7 +95,6 @@ void InitPlayer(int num, Player* p)
 
 	}
 	else if (num == 2) {
-		// p->SetHeart(3);
 		p->Send.uHeart = 3;
 		p->SetRunSpeed(p->GetRunSpeed() * 1.25);
 		printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 0.75);
@@ -195,15 +182,15 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
+
 		// 몬스터 충돌
 		for (int i = 0; i < MONSTERNUM; i++) 
 			users[index].IsCollidedMonster(cmonsters[i]);
+
 		// 코인 충돌
 		for (int i = 0; i < COINNUM; i++)
 			users[index].IsCollidedCoin(&coins[i]);
 
-		//ChangePlayerSprite(&(users[index]), &playerSpriteCnt); ->이거 update로 옮김
-		//UpdateMonsters();
 
 		Sleep(16);
 		SendData.player[index] = users[index].Send;
@@ -320,16 +307,6 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
 		 printf("\n접속한 Player의 인덱스: %d\n", index);
 
-		 //printf("bLeft: %s\n", recvData->Input.bLeft ? "true" : "false");
-		 //printf("bRight: %s\n", recvData->Input.bRight ? "true" : "false");
-		 //printf("bSpace: %s\n", recvData->Input.bSpace ? "true" : "false");
-
-
-		 //printf("bLeft: %s\n", users[index].input.bLeft ? "true" : "false");
-		 //printf("bRight: %s\n", users[index].input.bRight ? "true" : "false");
-		 //printf("bSpace: %s\n", users[index].input.bSpace ? "true" : "false");
-
-		
 
 	}
 	printf("\n#No.%d '%ws' Recv_Thread COMPLATE\n", client_sock, recvData->wId);
@@ -380,8 +357,6 @@ void ChangeMonsterSprite(int* count)
 void UpdateMonsters()
 {
 	static int i{ 0 };
-	//몬스터 위치그거 하겠슴다. 
-	//완료햇슴다
 
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
 		cmonsters[i].UpdateMonsterLocation(&SendData.monsters[i]);
@@ -460,21 +435,11 @@ int main(int argc, char* argv[])
 
 
 
-		//가온 - 한번보내고 안보낼 데이터 여기서 스레드생성전에 전송
-		//일단 발판 개수 전송- 고정길이
-
 
 		for (int i{ 0 }; i < PLATFORMNUM; ++i) {
 			retval = send(client_sock, (char*)&platform[i].send.iXpos, sizeof(int)*2, 0);
 
 		}
-
-
-		//for (int i{ 0 }; i < COINNUM; ++i) {
-		//	retval = send(client_sock, (char*)&coins[i].send.iXpos, sizeof(int) * 2, 0);
-
-		//}
-
 
 
 
@@ -505,4 +470,3 @@ int main(int argc, char* argv[])
 
 
 
-//발판 초기화 함수
