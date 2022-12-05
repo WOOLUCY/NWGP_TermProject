@@ -1,6 +1,8 @@
 #pragma comment(lib, "winmm")
 #include "Common.h"
 #include "global.h"
+#include <string>
+#include <sstream>
 
 #include <atlImage.h>
 #include <mmsystem.h>
@@ -14,6 +16,8 @@
 #include "Collision.h"
 #include "Portal.h"
 #include "Key.h"
+#include "Button.h"
+#include "Heart.h"
 #include "SendRecvData.h"
 
 #include "Coin.h"
@@ -69,6 +73,9 @@ CImage platformImg;
 CImage coinImg;
 CImage monsterImg;
 CImage playersImag[3];
+
+std::wstring s2ws(const std::string& s);
+
 
 void LoadImg()
 {
@@ -132,7 +139,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	//char buf[BUFSIZE + 1];
 
 
-
 	while (1) {
 		retval = recv(sock, (char*)&GameData, sizeof(GameData), 0);
 		if (retval == SOCKET_ERROR) {
@@ -189,7 +195,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-
+	CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 
 	while (GetMessage(&Message, NULL, 0, 0)) {
@@ -223,7 +229,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static Background selectBackground;
 	static CImage selectBackgroundImg;
 	selectBackground.Image = &selectBackgroundImg;
-	
+
+	static CImage readyImg;
+	static Button readyButton;
+	readyButton.myImage = &readyImg;
 
 	startBackground.Image = &startbackgroundImg;
 	background.Image = &backgroundImg;	
@@ -254,10 +263,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static Portal portal;
 	portal.myImage = &PortalImg;
 
+	// W 하트 생성
+	static CImage HeartImg;
+	static Heart heart;
+	heart.myImage = &HeartImg;
+
 	time_t frame_time{};
 	time_t current_time = time(NULL);
 	time_t frame_rate;
 	static int spriteCnt = 0;
+	static int heartSpriteCnt = 0;
 	static USHORT curSpriteCnt = 0;
 
 	// ID
@@ -267,6 +282,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	// W character selection
 	static bool bReady = FALSE;	// 캐릭터 선택 후 게임 시작 판단용
+	// W
+	static bool bIsPlaying = FALSE;	// 다른 접속자들이 모두 선택을 했는지 확인
+	static bool bFirstSelected = FALSE;
+	static bool bSecondSelected = FALSE;
+	static bool bThirdSelected = FALSE;
 
 	// semin, Background
 	static int bgMove = 0;
@@ -287,11 +307,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		selectBackground.setHeight(selectBackground.Image->GetWidth());
 		selectBackground.SetWidth(selectBackground.Image->GetWidth());
 
+		readyImg.Load(L"Image/Ready.png");
+
 		// W load key image
 		KeyImg.Load(L"Image/key.png");
-		
+
 		// W load portal image
 		PortalImg.Load(L"Image/Portal2.png");
+
+		// W load heart image
+		HeartImg.Load(L"Image/heart.png");
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -319,6 +344,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				myCharacter = i;
 			}
 		}
+		
+		// W 캐릭터 선택 정보
+		// 데이터 전송하는 시점을 창 띄우자마자로 바꿀 수 있는지
+		bIsPlaying = GameData.bIsPlaying;
+		for (int i = 0; i < 3; ++i)
+		{
+			if (GameData.player[i].charNum + 1 == 1) {
+				bFirstSelected = TRUE;
+			}
+			if (GameData.player[i].charNum + 1 == 2) {
+				bSecondSelected = TRUE;
+			}
+			if (GameData.player[i].charNum + 1 == 3) {
+				bThirdSelected = TRUE;
+			}
+		}
 
 		if (enterID == FALSE) {
 			startBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
@@ -329,12 +370,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				890, 505, 80, 40, hWnd, (HMENU)CHILD_BUTTON, hInst, NULL);
 		}
 		// W render character selection window
-		else if (enterID == TRUE && bReady == FALSE) {
+		else if (enterID == TRUE &&	bReady == FALSE) {
+			// 조건문에 bReady == FALSE 대신 bIsPlaying == FALSE 해두면 3명 접속해야지 실행
 			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
+			if (bFirstSelected) {
+				readyButton.myImage->Draw(mem1dc, 45, 638, readyButton.GetWidth(), readyButton.GetHeight(), 0, 0, readyButton.GetWidth(), readyButton.GetHeight());
+			}
+			if (bSecondSelected) {
+				readyButton.myImage->Draw(mem1dc, 463, 638, readyButton.GetWidth(), readyButton.GetHeight(), 0, 0, readyButton.GetWidth(), readyButton.GetHeight());
+			}
+			if (bThirdSelected) {
+				readyButton.myImage->Draw(mem1dc, 883, 638, readyButton.GetWidth(), readyButton.GetHeight(), 0, 0, readyButton.GetWidth(), readyButton.GetHeight());
+			}
+
 		}
 		else {
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + bgMove, 220, 2560, 1600);
-			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);r
+			//ground.Draw(mem1dc, 0, 690, rect.right, rect.bottom, 0, 0, 2560, 1600);
 			//player.myImage[0]->Draw(mem1dc, player.iXpos, player.iYpos, player.GetWidth() / 2, player.GetHeight() / 2, 0 + player.GetWidth() * player.GetSpriteX(), 0 + player.GetHeight() * player.GetSpriteY(), 170, 148);
 			
 			//playerImg.Draw
@@ -373,6 +425,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			//portal.myImage->Draw(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206);
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 			
+			// W 체력창 출력
+			heart.myImage->Draw(mem1dc, 1000, 10, heart.GetWidth() / 5, heart.GetHeight() / 5, 0 + heart.GetWidth() * heart.GetSpriteX(), 0 + heart.GetHeight() * heart.GetSpriteY(), heart.GetWidth(), heart.GetHeight());
+
 			
 			//가온-코인그리기 
 			//TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - bgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
@@ -438,13 +493,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				//RECT platformbox1 = TestPlatform[1].GetAABB();
 				RECT* coinBox;
 				coinBox = new RECT[COINNUM];
-				for (int i = 0; i < MONSTERNUM; i++) {
-					if (GameData.coins[i].bIsCrush == FALSE) {
-						coinBox[i].bottom = GameData.coins[i].aabb.bottom;
-						coinBox[i].left = GameData.coins[i].aabb.left;
-						coinBox[i].right = GameData.coins[i].aabb.right;
-						coinBox[i].top = GameData.coins[i].aabb.top;
-					}
+				for (int i = 0; i < COINNUM; i++) {
+					coinBox[i].bottom = GameData.coins[i].aabb.bottom;
+					coinBox[i].left = GameData.coins[i].aabb.left;
+					coinBox[i].right = GameData.coins[i].aabb.right;
+					coinBox[i].top = GameData.coins[i].aabb.top;
 				}
 
 				HPEN MyPen, OldPen;
@@ -466,8 +519,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
 				for ( int i = 0; i < MONSTERNUM; i++ )
 					Rectangle(mem1dc, monsterBox[i].left - bgMove /2, monsterBox[i].top, monsterBox[i].right - bgMove / 2, monsterBox[i].bottom);
-				for (int i = 0; i < COINNUM; i++)
-					Rectangle(mem1dc, coinBox[i].left - bgMove / 2, coinBox[i].top, coinBox[i].right - bgMove / 2, coinBox[i].bottom);
+				for (int i = 0; i < COINNUM; i++) {
+					if (GameData.coins[i].bIsCrush == FALSE)
+						Rectangle(mem1dc, coinBox[i].left - bgMove / 2, coinBox[i].top, coinBox[i].right - bgMove / 2, coinBox[i].bottom);
+				}
 
 				if (player.IsCollidedCoin(coin))
 				{
@@ -496,6 +551,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 					}
 				}
 			}
+
+			// W 시간 출력
+			// https://ebebeb111.tistory.com/76
+			AddFontResourceA("CookieRun Bold.ttf");
+			wstringstream wss;
+			wss << (int)GameData.ServerTime / CLOCKS_PER_SEC;
+			HFONT hFont, OldFont;
+			hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("CookieRun Bold"));
+			OldFont = (HFONT)SelectObject(mem1dc, hFont);
+			TextOut(mem1dc, 30, 10, wss.str().c_str(), wcslen(wss.str().c_str()));
+			SelectObject(mem1dc, OldFont);
+			DeleteObject(hFont);
+
 		}
 
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);
@@ -511,13 +579,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		// W
 		// 첫번째 캐릭터 선택 시: 달빛술사 쿠키
-		if (bReady == FALSE && MouseX >= 80 && MouseX <= 344 && MouseY >= 637 && MouseY <= 719) {
+		if (bReady == FALSE && MouseX >= 80 && MouseX <= 344 && MouseY >= 637 && MouseY <= 719 && bFirstSelected == FALSE) {
 			player.SetIsReady(TRUE);
 			player.SetCharNum(1);
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
-
-			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
@@ -527,13 +593,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		// 두번째 캐릭터 선택 시: 치즈케이크맛 쿠키
-		else if (bReady == FALSE && MouseX >= 510 && MouseX <= 760 && MouseY >= 646 && MouseY <= 720) {
+		else if (bReady == FALSE && MouseX >= 510 && MouseX <= 760 && MouseY >= 646 && MouseY <= 720 && bSecondSelected == FALSE) {
 			player.SetIsReady(TRUE);
 			player.SetCharNum(2);
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
 
-				CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
 			if (retval == SOCKET_ERROR) {
@@ -542,13 +607,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		// 세번째 캐릭터 선택 시: 벚꽃맛 쿠키
-		else if (bReady == FALSE && MouseX >= 922 && MouseX <= 1184 && MouseY >= 643 && MouseY <= 743) {
+		else if (bReady == FALSE && MouseX >= 922 && MouseX <= 1184 && MouseY >= 643 && MouseY <= 743 && bThirdSelected == FALSE) {
 			player.SetIsReady(TRUE);
 			player.SetCharNum(3);
 			bReady = TRUE;
 			PlayerData.uCharNum = player.GetCharNum();
-
-			CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 
 			retval = send(sock, (const char*)&PlayerData, sizeof(ClientToServer), 0);
@@ -582,7 +645,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			//	temp.ChangeSprite();
 			//}
 
+			heart.ChangeSprite(&heartSpriteCnt);
 			portal.ChangeSprite(&spriteCnt);
+
 
 			break;
 		}
@@ -757,4 +822,16 @@ char* UTF8ToANSI(char* pszCode)
 	WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, pszAnsi, nLength, NULL, NULL);
 	SysFreeString(bstrWide);
 	return pszAnsi;
+}
+
+std::wstring s2ws(const std::string& s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
 }

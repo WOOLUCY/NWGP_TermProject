@@ -145,9 +145,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="global.h" />
+    <ClCompile Include="Heart.cpp" />
     <ClCompile Include="Key.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -156,9 +158,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="CMonster.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Common.h" />
+    <ClInclude Include="Heart.h" />
     <ClInclude Include="Key.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />

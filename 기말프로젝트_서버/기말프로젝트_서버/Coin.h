@@ -23,7 +23,7 @@ public:
 
 //	RECT	aabb; //충돌처리도 서버에서 하니까 일단 넣음
 
-	bool	bIsCrush = false;//충돌되었는지 아닌지 변수 이름 바꿔도됨
+	bool	bIsCrush = FALSE;//충돌되었는지 아닌지 변수 이름 바꿔도됨
 
 	int		iWidth = 30;
 	int		iHeight = 30;
