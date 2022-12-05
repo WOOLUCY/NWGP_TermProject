@@ -17,6 +17,7 @@
 #include "Portal.h"
 #include "Key.h"
 #include "Button.h"
+#include "Heart.h"
 #include "SendRecvData.h"
 
 #include "Coin.h"
@@ -264,10 +265,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static Portal portal;
 	portal.myImage = &PortalImg;
 
+	// W 하트 생성
+	static CImage HeartImg;
+	static Heart heart;
+	heart.myImage = &HeartImg;
+
 	time_t frame_time{};
 	time_t current_time = time(NULL);
 	time_t frame_rate;
 	static int spriteCnt = 0;
+	static int heartSpriteCnt = 0;
 	static USHORT curSpriteCnt = 0;
 
 	// ID
@@ -309,6 +316,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		// W load portal image
 		PortalImg.Load(L"Image/Portal2.png");
+
+		// W load heart image
+		HeartImg.Load(L"Image/heart.png");
 
 		startBackground.setHeight(startBackground.Image->GetWidth());
 		startBackground.setHeight(startBackground.Image->GetHeight());
@@ -417,6 +427,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			//portal.myImage->Draw(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 2, portal.GetHeight() / 2, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206);
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 			
+			// W 체력창 출력
+			heart.myImage->Draw(mem1dc, 1000, 10, heart.GetWidth() / 5, heart.GetHeight() / 5, 0 + heart.GetWidth() * heart.GetSpriteX(), 0 + heart.GetHeight() * heart.GetSpriteY(), heart.GetWidth(), heart.GetHeight());
+
 			
 			//가온-코인그리기 
 			TestCoin.myImage->Draw(mem1dc, TestCoin.iXpos - bgMove / 2, TestCoin.iYpos, TestCoin.GetWidth() / 2, TestCoin.GetHeight() / 2, 0 + TestCoin.GetWidth() * TestCoin.GetSpriteX(), 0 + TestCoin.GetHeight() * TestCoin.GetSpriteY(), TestCoin.GetWidth(), TestCoin.GetHeight());
@@ -614,7 +627,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				temp.ChangeSprite();
 			}
 
+			heart.ChangeSprite(&heartSpriteCnt);
 			portal.ChangeSprite(&spriteCnt);
+
 
 			break;
 		}
