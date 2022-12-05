@@ -118,9 +118,8 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		WaitForSingleObject(hEventHandle, INFINITE);
 		// 몬스터 스프라이트 업데이트 ( 이동도 여기서 하면 될 듯 )
 		ChangeMonsterSprite(&MonsterSpriteCnt);
-		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
-		UpdateMonsters();
+	//	UpdateMonsters();
 
 		// semin, 게임 시간
 		if (index == 2) {	// 마지막 접속한 사람의 thread에서 계산함
@@ -174,32 +173,12 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	while (1) {
 		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
-	//	ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
+		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
 		//ChangePlayerSprite(&(users[index]), &playerSpriteCnt); ->이거 update로 옮김
 		//UpdateMonsters();
 
 
-//여기부터
-		WaitForSingleObject(hEventHandle, INFINITE);
-		// 몬스터 스프라이트 업데이트 ( 이동도 여기서 하면 될 듯 )
-		ChangeMonsterSprite(&MonsterSpriteCnt);
-		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
-		UpdateMonsters();
-
-		// semin, 게임 시간
-		if (index == 2) {	// 마지막 접속한 사람의 thread에서 계산함
-			pre = clock();
-			time = (pre - start);
-			printf("%f 초 \n", time / CLOCKS_PER_SEC);
-			if ((double)(time) / CLOCKS_PER_SEC >= 120) {	// 120초(2분) 지나면 게임 끝
-				printf("게임 끝났음\n");
-				SendData.bIsPlaying = FALSE;
-			}
-			SendData.ServerTime = time;	// time / CLOCKS_PER_SEC 하면 초 단위로 나온다
-		}
-		SetEvent(hEventHandle);
-//여긱까지
 
 		Sleep(16);
 		SendData.player[index] = users[index].Send;
@@ -531,7 +510,7 @@ int main(int argc, char* argv[])
 		// 스레드 생성
 		hThread[0] = CreateThread(NULL, 0, Recv_Thread, (LPVOID)client_sock, 0, NULL);
 		hThread[1] = CreateThread(NULL, 0, Send_Thread, (LPVOID)client_sock, 0, NULL);
-		//hThread[2] = CreateThread(NULL, 0, Update_Thread, (LPVOID)client_sock, 0, NULL);
+		hThread[2] = CreateThread(NULL, 0, Update_Thread, (LPVOID)client_sock, 0, NULL);
 
 
 
