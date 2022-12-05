@@ -1,6 +1,8 @@
 #pragma comment(lib, "winmm")
 #include "Common.h"
 #include "global.h"
+#include <string>
+#include <sstream>
 
 #include <atlImage.h>
 #include <mmsystem.h>
@@ -72,6 +74,9 @@ CImage platformImg;
 CImage coinImg;
 CImage monsterImg;
 CImage playersImag[3];
+
+std::wstring s2ws(const std::string& s);
+
 
 void LoadImg()
 {
@@ -301,7 +306,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		// W load key image
 		KeyImg.Load(L"Image/key.png");
-		
+
 		// W load portal image
 		PortalImg.Load(L"Image/Portal2.png");
 
@@ -331,7 +336,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				myCharacter = i;
 			}
 		}
-
+		
 		// W 캐릭터 선택 정보
 		// 데이터 전송하는 시점을 창 띄우자마자로 바꿀 수 있는지
 		bIsPlaying = GameData.bIsPlaying;
@@ -357,7 +362,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				890, 505, 80, 40, hWnd, (HMENU)CHILD_BUTTON, hInst, NULL);
 		}
 		// W render character selection window
-		else if (enterID == TRUE && bIsPlaying == FALSE) {
+		else if (enterID == TRUE &&	bReady == FALSE) {
 			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 			if (bFirstSelected) {
 				readyButton.myImage->Draw(mem1dc, 45, 638, readyButton.GetWidth(), readyButton.GetHeight(), 0, 0, readyButton.GetWidth(), readyButton.GetHeight());
@@ -514,6 +519,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 					}
 				}
 			}
+
+			// W 시간 출력
+
+			wstringstream wss;
+			wss << (int)GameData.ServerTime / CLOCKS_PER_SEC;
+			HFONT hFont, OldFont;
+			hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("바탕"));
+			OldFont = (HFONT)SelectObject(mem1dc, hFont);
+			TextOut(mem1dc, 100, 100, wss.str().c_str(), wcslen(wss.str().c_str()));
+			SelectObject(mem1dc, OldFont);
+			DeleteObject(hFont);
+
 		}
 
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);
@@ -773,4 +790,16 @@ char* UTF8ToANSI(char* pszCode)
 	WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, pszAnsi, nLength, NULL, NULL);
 	SysFreeString(bstrWide);
 	return pszAnsi;
+}
+
+std::wstring s2ws(const std::string& s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
 }
