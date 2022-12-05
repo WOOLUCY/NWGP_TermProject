@@ -31,8 +31,8 @@ CMonster			cmonsters[MONSTERNUM];
 int					backgroundMove;
 int					eventCnt;	// 접속 유저들의 스레드 중 한 개만 event를 하기 위함
 
-int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
-int	MonsterSpriteCnt = 0;	// 스프라이트 카운트 변수
+//int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
+//int	MonsterSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 ServerToClient		SendData;
 
@@ -111,6 +111,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 	if (TotalClient == 3)
 		clock_t start = clock();
 	// 클라이언트와 데이터 통신
+	int	MonsterSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 	while (1) {
 		if (users[index].GetCharNum() == 10000) break;
@@ -135,9 +136,11 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		SetEvent(hEventHandle);
 
 		Sleep(16);
+
 	}
 
 	SendData.player[index].charNum = 999;
+
 	return 0;
 
 }
@@ -167,6 +170,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	if (TotalClient == 3)
 		clock_t start = clock();
 
+	int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 	// 클라이언트와 데이터 통신
 
