@@ -27,9 +27,7 @@
 #define MONSTERNUM 10
 
 using namespace std;
-//char* SERVEkRIP = (char*)"192.168.101.85";
 char* SERVERIP = (char*)"127.0.0.1";
-//char* SERVERIP = (char*)"192.168.42.191";
 
 #define SERVERPORT 9000
 #define BUFSIZE    128

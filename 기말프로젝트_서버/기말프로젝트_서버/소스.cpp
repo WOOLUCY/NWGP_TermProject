@@ -55,11 +55,37 @@ void UpdateMonsters();
 
 void InitPlatform()
 {
+	//일단 10개임
 	//일단 100,200,300,400, 이렇게 때려넣겠음
+	//맨위층
+	//윈도우사이즈 - 1280, 800
+	//바닥 = 800-336
 
-	for (int i = 0; i < PLATFORMNUM; ++i) {
-		platform.push_back(Platform(i+10, i * 50));
-	}
+	//**플랫폼추가하려면 서버,클라 
+
+	int height = 120;
+	int width = 250;
+
+	int floor = 800;
+
+	
+	//1층
+	platform.push_back(Platform(0, floor - height*2));
+	platform.push_back(Platform(width*3, floor - height*2));
+	platform.push_back(Platform(width * 5, floor - height * 2));
+
+	//2층
+	platform.push_back(Platform(width, floor - height*3));
+	platform.push_back(Platform(width*2, floor - height*3));
+	platform.push_back(Platform(width*4, floor - height*3));
+
+	//3층
+	platform.push_back(Platform(-100, floor - height*4));
+	platform.push_back(Platform(width*5.5, floor - height*4));
+
+	//4충
+	platform.push_back(Platform(600, floor - height*5));
+	platform.push_back(Platform(700, floor - height*5));
 
 
 }
@@ -146,10 +172,8 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
 			//여기서 몬스터충돌시하는거 업테이트 하면될듯
 			MonCollide.iscrush = false;
-			//printf("여기서 멈추는거니??1번\n");
 
 			ResetEvent(hWriteEvent);
-			//printf("여기서 멈추는거니??2번\n");
 		}
 
 
