@@ -17,7 +17,6 @@
 
 // 이벤트 생성
 HANDLE hWriteEvent;
-HANDLE hCollideEvent;
 
 int TotalClient;
 
@@ -83,7 +82,7 @@ void InitMonster()
 	// 합치는 게 나을 것이라 판단
 
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		cmonsters[i].send.iXpos = i * 50 - 200;
+		cmonsters[i].send.iXpos = i * 120 - 200;
 		cmonsters[i].send.iYpos = 620;
 		cmonsters[i].updateRange();
 		cmonsters[i].SetMonNum(i);
@@ -94,21 +93,21 @@ void InitPlayer(int num, Player* p)
 {
 	if (num == 0) {
 		p->Send.uHeart = 5;
-		p->SetRunSpeed(p->GetRunSpeed() * 0.75);
+		p->SetRunSpeed(p->GetRunSpeed() * 1);
 
-		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 0.75);
+		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1);
 	}
 	else if (num == 1) {
 		p->Send.uHeart = 4;
-		p->SetRunSpeed(p->GetRunSpeed());
+		p->SetRunSpeed(p->GetRunSpeed()*1.25);
 
-		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 0.75);
+		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1.25);
 
 	}
 	else if (num == 2) {
 		p->Send.uHeart = 3;
-		p->SetRunSpeed(p->GetRunSpeed() * 1.25);
-		printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 0.75);
+		p->SetRunSpeed(p->GetRunSpeed() * 1.5);
+		printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 1.5);
 
 
 	}
@@ -137,16 +136,20 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 
 		if (CoinCollide.iscrush) {
 			printf("%d번코임충돌\n",CoinCollide.crushnum);
-			//SendData.player[CoinCollide.index].여기서 코인점수 업테이트 해야할듯
+			SendData.player[CoinCollide.index].uScore += 100;//여기서 코인점수 업테이트 해야할듯
 			CoinCollide.iscrush = false;
 			ResetEvent(hWriteEvent);
+
 		}
 
 		if (MonCollide.iscrush) {
 			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
 			//여기서 몬스터충돌시하는거 업테이트 하면될듯
 			MonCollide.iscrush = false;
+			//printf("여기서 멈추는거니??1번\n");
+
 			ResetEvent(hWriteEvent);
+			//printf("여기서 멈추는거니??2번\n");
 		}
 
 
@@ -173,7 +176,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			}
 			SendData.ServerTime = time;	// time / CLOCKS_PER_SEC 하면 초 단위로 나온다
 		}
-		//Sleep(16);
+		Sleep(16);
 	}
 
 
@@ -220,6 +223,8 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 				MonCollide.iscrush = true;
 				MonCollide.crushnum = i;
 				MonCollide.index = index;
+
+				
 				SetEvent(hWriteEvent);
 			}
 		}
@@ -229,6 +234,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 				CoinCollide.iscrush = true;
 				CoinCollide.crushnum = i;
 				CoinCollide.index = index;
+
 				SetEvent(hWriteEvent);
 			
 
@@ -461,7 +467,6 @@ int main(int argc, char* argv[])
 
 	// 이벤트 생성
 	hWriteEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
-	hCollideEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
 
 
 	hThread[2] = CreateThread(NULL, 0, Update_Thread,NULL, 0, NULL);
