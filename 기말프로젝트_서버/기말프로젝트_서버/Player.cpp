@@ -9,7 +9,7 @@ Player::Player()
 	//일단 걍다 0으로 초기화함 
 	Send.iXpos = 640;
 	Send.iYpos = 620;
-	Send.uCoin = 0;
+	Send.uScore = 0;
 
 	// W AABB initialization
 	Send.aabb.bottom = Send.iYpos + (iHeight / 2);
@@ -39,7 +39,7 @@ Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel
 	//이미지 설정하기 
 
 	Send.charNum = uCharNum;
-	Send.uCoin = coin;
+	Send.uScore = coin;
 	Send.iXpos = position.x;
 	Send.iYpos = position.y;
 	Send.uSpriteX = uSpriteX;
@@ -238,7 +238,7 @@ bool Player::IsCollidedCoin(Coin* coin)
 		//uCoin += 100;
 		coin->SetIsCrush(TRUE);
 		coin->send.bIsCrush = TRUE;
-		printf("\n코인 먹었당 %d\n", Send.uCoin);
+		printf("\n코인 먹었당 %d\n", Send.uScore);
 
 	}
 	return true;

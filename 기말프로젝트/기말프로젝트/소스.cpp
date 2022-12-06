@@ -27,10 +27,10 @@
 #define MONSTERNUM 10
 
 using namespace std;
-char* SERVERIP = (char*)"127.0.0.1";
+char* SERVERIP = (char*)"192.168.101.85";
 
 #define SERVERPORT 9000
-#define BUFSIZE    512
+#define BUFSIZE    128
 
 #define	CHILD_BUTTON	111		// 컨트롤박스용
 #define	CHILD_ID_EDIT	112

@@ -50,7 +50,7 @@ public:
 		wchar_t wID[21] = { '\0' };
 		RECT	aabb;
 		USHORT	uHeart;
-		USHORT	uCoin;
+		USHORT	uScore;
 
 	};
 
@@ -110,8 +110,8 @@ public:
 	//USHORT GetHeart() { return sHeart; }
 	//void SetHeart(USHORT in) { sHeart = in; }
 
-	USHORT GetCoin() { return Send.uCoin; }
-	void SetCoin(USHORT in) { Send.uCoin = in; }
+	USHORT GetCoin() { return Send.uScore; }
+	void SetCoin(USHORT in) { Send.uScore = in; }
 
 	bool GetFind() { return bFind; }
 	void SetFind(bool in) { bFind = in; }
