@@ -548,18 +548,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			// W 텍스트 출력
 			// https://ebebeb111.tistory.com/76
 			AddFontResourceA("CookieRun Bold.ttf");
-			wstringstream wss;
-			wss << (int)GameData.ServerTime / CLOCKS_PER_SEC;
+			wstringstream time;
+			wstringstream score;
+			time << (int)GameData.ServerTime / CLOCKS_PER_SEC;
 			HFONT hFont, OldFont;
 			hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("CookieRun Bold"));
 			OldFont = (HFONT)SelectObject(mem1dc, hFont);
 			SetTextColor(mem1dc, RGB(0, 0, 0));
-			TextOut(mem1dc, 1280/2 + 3, 13, L"SCORE", strlen("SCORE"));
-			TextOut(mem1dc, 30 + 3, 13, wss.str().c_str(), wcslen(wss.str().c_str()));
+
+
+			for (int i = 0; i < 3; i++) {
+				if (PlayerData.uCharNum == GameData.player[i].charNum + 1) {
+					score << GameData.player[i].uScore;
+				}
+			}
+
+			//TextOut(mem1dc, 1280/2 + 3, 13, L"SCORE", strlen("SCORE"));
+			TextOut(mem1dc, 1280 / 2 + 3, 13, score.str().c_str(), wcslen(score.str().c_str()));
+			TextOut(mem1dc, 30 + 3, 13, time.str().c_str(), wcslen(time.str().c_str()));
 
 			SetTextColor(mem1dc, RGB(255, 255, 255));
-			TextOut(mem1dc, 1280 / 2, 10, L"SCORE", strlen("SCORE"));
-			TextOut(mem1dc, 30, 10, wss.str().c_str(), wcslen(wss.str().c_str()));
+			//TextOut(mem1dc, 1280 / 2, 10, L"SCORE", strlen("SCORE"));
+			TextOut(mem1dc, 1280 / 2, 10, score.str().c_str(), wcslen(score.str().c_str()));
+			TextOut(mem1dc, 30, 10, time.str().c_str(), wcslen(time.str().c_str()));
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
 

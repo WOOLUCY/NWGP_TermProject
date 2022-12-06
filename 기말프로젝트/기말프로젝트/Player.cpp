@@ -9,7 +9,7 @@ Player::Player()
 	myImage = nullptr;
 
 
-	Send.uCoin = 0;
+	Send.uScore	= 0;
 	// W AABB initialization
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
@@ -31,7 +31,7 @@ Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel
 	:wId(id), uSpriteX(sprite), uCharNum(charnum), iXpos(position.x), iYpos(position.y), pVel(Vel), bFind(find)
 {
 	//이미지 설정하기 
-	Send.uCoin = 0;
+	Send.uScore = 0;
 	switch (uCharNum)
 	{
 	case 0:
