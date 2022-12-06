@@ -8,7 +8,7 @@
 #include "Coin.h"
 
 #define SERVERPORT 9000
-#define BUFSIZE    512
+#define BUFSIZE    128
 
 #define PLATFORMNUM 10
 #define COINNUM 10

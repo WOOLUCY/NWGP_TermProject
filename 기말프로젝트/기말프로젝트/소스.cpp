@@ -27,10 +27,11 @@
 #define MONSTERNUM 10
 
 using namespace std;
+//char* SERVEkRIP = (char*)"192.168.101.85";
 char* SERVERIP = (char*)"127.0.0.1";
 
 #define SERVERPORT 9000
-#define BUFSIZE    512
+#define BUFSIZE    128
 
 #define	CHILD_BUTTON	111		// 컨트롤박스용
 #define	CHILD_ID_EDIT	112
@@ -230,10 +231,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 
 	// W Coin effect
-	static CoinEffect ce;
+	static CoinEffect ce[COINNUM];
 	static CImage ceImg;
-	ce.myImage = &ceImg;
-
+	for (int i = 0; i < COINNUM; ++i)
+	{
+		ce[i].myImage = &ceImg;
+	}
 
 	// W 몬스터 생성
 	static CMonster monster;
@@ -263,7 +266,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	time_t frame_rate;
 	static int spriteCnt = 0;
 	static int heartSpriteCnt = 0;
-	static int ceSpriteCnt = 0;
+	static int ceSpriteCnt[COINNUM] = {};
 	static USHORT curSpriteCnt = 0;
 
 	// ID
@@ -302,6 +305,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		// W load coin effect image
 		ceImg.Load(L"Image/coin effect.png");
+
 
 		// W load key image
 		KeyImg.Load(L"Image/key.png");
@@ -380,7 +384,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 		else {
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + bgMove, 220, 2560, 1600);
-			
+
 			//playerImg.Draw
 			for (int i = 0; i < 3; ++i) {
 				if (GameData.player[i].charNum < 3) {
@@ -398,8 +402,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 
 			// W Monster Draw	
-			
-																																																									
+
+
 																																																								// W Key Draw
 			if (!player.GetHasKey())
 			{
@@ -409,13 +413,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 			// 포탈
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
-			
+
 			// W 내 캐릭터에 대해 맞는 체력창 출력
 			for (int i = 0; i < 3; i++) {
 				if (PlayerData.uCharNum == GameData.player[i].charNum + 1) {
 					USHORT uHeartNum = GameData.player[i].uHeart;
 					for (int j = 0; j < uHeartNum; ++j) {
-						heart.myImage->Draw(mem1dc, 1200 - (j * (heart.GetWidth() / 6  + 5)), 10, heart.GetWidth() / 6, heart.GetHeight() / 6, 0 + heart.GetWidth() * heart.GetSpriteX(), 0 + heart.GetHeight() * heart.GetSpriteY(), heart.GetWidth(), heart.GetHeight());
+						heart.myImage->Draw(mem1dc, 1200 - (j * (heart.GetWidth() / 6 + 5)), 10, heart.GetWidth() / 6, heart.GetHeight() / 6, 0 + heart.GetWidth() * heart.GetSpriteX(), 0 + heart.GetHeight() * heart.GetSpriteY(), heart.GetWidth(), heart.GetHeight());
 					}
 				}
 			}
@@ -426,20 +430,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 
-		
+
 			for (int i{ 0 }; i < MONSTERNUM; ++i) {
 				monsterImg.TransparentBlt(mem1dc, GameData.monsters[i].iXpos - bgMove / 2, GameData.monsters[i].iYpos, monster.GetWidth() / 2, monster.GetHeight() / 2,
 					0 + monster.GetWidth() * GameData.monsters[i].uSpriteX, 0 + monster.GetHeight() * GameData.monsters[i].uSpriteY, monster.GetWidth(), monster.GetHeight(), RGB(0, 255, 0));
 			}
 
 			// 코인
-		
-
 			for (int i{ 0 }; i < COINNUM; ++i) {
-				coinImg.TransparentBlt(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, coin.GetWidth() / 1.5, coin.GetHeight() / 1.5,
-					0 + coin.GetWidth() * GameData.coins[i].uSpriteX, 0 + coin.GetHeight() * GameData.coins[i].uSpriteY, coin.GetWidth(), coin.GetHeight(), RGB(255, 255, 0));
+				if (GameData.coins[i].bIsCrush == FALSE)
+					coinImg.TransparentBlt(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, coin.GetWidth() / 1.5, coin.GetHeight() / 1.5,
+						0 + coin.GetWidth() * GameData.coins[i].uSpriteX, 0 + coin.GetHeight() * GameData.coins[i].uSpriteY, coin.GetWidth(), coin.GetHeight(), RGB(255, 255, 0));
 			}
 
+			// W Coin - Player Collision
+			for (int i = 0; i < COINNUM; i++) {
+				// 코인 위치에 출력
+				if (GameData.coins[i].bIsCrush == TRUE && ce[i].GetDone() == FALSE) {
+				ce[i].myImage->TransparentBlt(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, ce[i].GetWidth(), ce[i].GetHeight(),
+					0 + ce[i].GetWidth() * ce[i].GetSpriteX(), 0 + ce[i].GetHeight() * ce[i].GetSpriteY(), ce[i].GetWidth(), ce[i].GetHeight(), RGB(255, 0, 0));
+
+			}
+		}
 
 			// W Key - Player Collision
 			if (player.IsCollidedKey(key))
@@ -447,13 +459,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				player.SetHasKey(TRUE);
 			}
 			//ce.myImage->Draw(mem1dc, 800, 500, ce.GetWidth(), ce.GetHeight(), 0 + ce.GetWidth() * ce.GetSpriteX(), 0 + ce.GetHeight() * ce.GetSpriteY(), ce.GetWidth(), coin.GetHeight());
-
-			// W Coin - Player Collision
-			for (int i = 0; i < COINNUM; i++) {
-				if (GameData.coins[i].bIsCrush == TRUE)
-					ce.myImage->Draw(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, ce.GetWidth(), ce.GetHeight(),
-						0 + ce.GetWidth() * ce.GetSpriteX(), 0 + ce.GetHeight() * ce.GetSpriteY(), ce.GetWidth(), coin.GetHeight());
-			}
 
 			
 			// W Collision Box Test
@@ -624,7 +629,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 			heart.ChangeSprite(&heartSpriteCnt);
 			portal.ChangeSprite(&spriteCnt);
-			ce.ChangeSprite(&ceSpriteCnt);
+			for (int i = 0; i < COINNUM; ++i)
+			{
+				if (GameData.coins[i].bIsCrush == TRUE)
+				ce[i].ChangeSprite(&ceSpriteCnt[i]);
+			}
 
 
 			break;
