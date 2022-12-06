@@ -8,6 +8,7 @@ class CoinEffect
 private:
 	int		iWidth = 40;	// draw 에 필요한 width, height 추가
 	int		iHeight = 32;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
+	bool	bDone = FALSE;
 
 public:
 	CImage* myImage;
@@ -34,6 +35,9 @@ public:
 
 	USHORT GetSpriteY() { return uSpriteY; }
 	void SetSpriteY(USHORT in) { uSpriteY = in; }
+
+	bool GetDone() { return bDone; }
+	void SetDone(bool in) { bDone = in; }
 
 public:
 	//생성자

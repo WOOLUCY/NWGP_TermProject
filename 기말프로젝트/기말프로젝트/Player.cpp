@@ -9,7 +9,7 @@ Player::Player()
 	myImage = nullptr;
 
 
-	Send.uScore = 0;
+	Send.uScore	= 0;
 	// W AABB initialization
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;

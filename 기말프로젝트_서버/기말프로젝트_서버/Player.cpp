@@ -232,10 +232,10 @@ bool Player::IsCollidedCoin(Coin* coin)
 	if (A.left > B.right) return 0;
 	if (A.top > B.bottom) return 0;
 
-	coin->send.iXpos = 4000;
-	coin->send.iYpos = 4000;
+	//coin->send.iXpos = 4000;
+	//coin->send.iYpos = 4000;
 	if (coin->send.bIsCrush == FALSE) {
-		//uCoin += 100;
+		Send.uScore += 100;
 		coin->SetIsCrush(TRUE);
 		coin->send.bIsCrush = TRUE;
 		printf("\n코인 먹었당 %d\n", Send.uScore);

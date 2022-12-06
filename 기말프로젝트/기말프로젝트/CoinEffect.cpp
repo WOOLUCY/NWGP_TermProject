@@ -29,11 +29,13 @@ void CoinEffect::ChangeSprite(int* count)
 	//}
 	//++uSpriteX;
 
+	if (uSpriteX + 1 == 5) {
+		SetDone(TRUE);
+	}
+
 	if (*count == 3) {
 		uSpriteX = (uSpriteX + 1) % 5;
 		*count = 0;
-		iXpos = -1000;
-		iYpos = -1000;
 	}
 	*count += 1;
 }
