@@ -4,11 +4,12 @@
 #include <algorithm>
 
 Player::Player()
-	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(999), pVel(0, 0), uCoin(0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
+	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(999), pVel(0, 0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
 {
 	//일단 걍다 0으로 초기화함 
 	Send.iXpos = 640;
 	Send.iYpos = 620;
+	Send.uCoin = 0;
 
 	// W AABB initialization
 	Send.aabb.bottom = Send.iYpos + (iHeight / 2);
@@ -33,12 +34,12 @@ Player::Player()
 }
 
 Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)
-	:wId(id), uSpriteX(sprite), uCharNum(charnum), pVel(Vel), uCoin(coin), bFind(find)
+	:wId(id), uSpriteX(sprite), uCharNum(charnum), pVel(Vel), bFind(find)
 {
 	//이미지 설정하기 
 
 	Send.charNum = uCharNum;
-
+	Send.uCoin = coin;
 	Send.iXpos = position.x;
 	Send.iYpos = position.y;
 	Send.uSpriteX = uSpriteX;
@@ -237,7 +238,7 @@ bool Player::IsCollidedCoin(Coin* coin)
 		//uCoin += 100;
 		coin->SetIsCrush(TRUE);
 		coin->send.bIsCrush = TRUE;
-		printf("\n코인 먹었당 %d\n", uCoin);
+		printf("\n코인 먹었당 %d\n", Send.uCoin);
 
 	}
 	return true;

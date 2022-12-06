@@ -28,7 +28,7 @@ private:
 	USHORT	MaxJump;		// 쿠키의 최대 점프력
 
 
-	USHORT	uCoin;
+	//USHORT	uCoin;
 
 	bool	bFind;
 
@@ -50,6 +50,7 @@ public:
 		wchar_t wID[21] = { '\0' };
 		RECT	aabb;
 		USHORT	uHeart;
+		USHORT	uCoin;
 
 	};
 
@@ -109,8 +110,8 @@ public:
 	//USHORT GetHeart() { return sHeart; }
 	//void SetHeart(USHORT in) { sHeart = in; }
 
-	USHORT GetCoin() { return uCoin; }
-	void SetCoin(USHORT in) { uCoin = in; }
+	USHORT GetCoin() { return Send.uCoin; }
+	void SetCoin(USHORT in) { Send.uCoin = in; }
 
 	bool GetFind() { return bFind; }
 	void SetFind(bool in) { bFind = in; }
