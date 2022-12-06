@@ -32,7 +32,6 @@ char* SERVERIP = (char*)"127.0.0.1";
 #define SERVERPORT 9000
 #define BUFSIZE    128
 
-#define	CHILD_BUTTON	111		// 컨트롤박스용
 #define	CHILD_ID_EDIT	112
 
 
@@ -48,7 +47,6 @@ char* UTF8ToANSI(char* pszCode);
 
 HINSTANCE hInst;	// 인스턴스 핸들
 HWND hEdit;			// 에디트 컨트롤
-HWND hButtonEdit;	// 에디트 컨트롤
 
 
 
@@ -198,6 +196,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc, mem1dc;
 	PAINTSTRUCT ps;
+	HFONT hFont2;
 
 	static int MouseX, MouseY;
 	static RECT rect;
@@ -284,6 +283,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	// semin, Background
 	static int bgMove = 0;
 	static int myCharacter = 0;
+	
 
 
 	switch (iMsg) {
@@ -321,6 +321,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		background.setHeight(background.Image->GetHeight());
 
 		// 플레이어의 Width, Height 크기는 170, 148 로 고정이라 구하지 않음
+
 
 		GetClientRect(hWnd, &rect);
 		break;
@@ -361,10 +362,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		if (enterID == FALSE) {
 			startBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
 
+			AddFontResourceA("Rix고딕B.ttf");
 			hEdit = CreateWindow(L"edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL | ES_LEFT,
 				895, 385, 130, 30, hWnd, (HMENU)CHILD_ID_EDIT, hInst, NULL);
-			hButtonEdit = CreateWindow(L"button", L"접속", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-				890, 505, 80, 40, hWnd, (HMENU)CHILD_BUTTON, hInst, NULL);
+			hFont2 = CreateFont(18, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 3, 2, 1,
+				VARIABLE_PITCH | FF_ROMAN, L"Rix고딕 B");
+			SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont2, (LPARAM)FALSE);
 		}
 		// W render character selection window
 		else if (enterID == TRUE &&	bReady == FALSE) {
@@ -532,25 +535,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			// semin, 닉네임 출력~ 제일 위에 하려고 맨 밑에 코드 씀
 			SetTextAlign(mem1dc, TA_CENTER);
 			SetBkMode(mem1dc, TRANSPARENT);
+
+			HFONT hFont, OldFont;
+			hFont = CreateFont(16, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("Rix고딕 B"));
+			OldFont = (HFONT)SelectObject(mem1dc, hFont);
 			for (int i = 0; i < 3; i++) {
 				if (GameData.player[i].charNum < 3) {
 					if (i == myCharacter)
 						TextOut(mem1dc, GameData.player[i].iXpos + player.GetWidth() / 4,
-							GameData.player[i].iYpos - 35, GameData.player[i].wID, wcslen((GameData.player[i].wID)));
+							GameData.player[i].iYpos - 30, GameData.player[i].wID, wcslen((GameData.player[i].wID)));
 					else {
 						TextOut(mem1dc, GameData.player[i].iXpos + player.GetWidth() / 4 - GameData.player[myCharacter].iBgMove / 2 + GameData.player[i].iBgMove / 2,
-							GameData.player[i].iYpos - 35, GameData.player[i].wID, wcslen((GameData.player[i].wID)));
+							GameData.player[i].iYpos - 30, GameData.player[i].wID, wcslen((GameData.player[i].wID)));
 					}
 				}
 			}
 
 			// W 텍스트 출력
-			// https://ebebeb111.tistory.com/76
-			AddFontResourceA("CookieRun Bold.ttf");
+			AddFontResourceA("CookieRun Bold.ttf"); 
 			wstringstream time;
 			wstringstream score;
 			time << (int)GameData.ServerTime / CLOCKS_PER_SEC;
-			HFONT hFont, OldFont;
+			//HFONT hFont, OldFont;
 			hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("CookieRun Bold"));
 			OldFont = (HFONT)SelectObject(mem1dc, hFont);
 			SetTextColor(mem1dc, RGB(0, 0, 0));
@@ -586,6 +592,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 		MouseX = LOWORD(lParam);
 		MouseY = HIWORD(lParam);
+
+		// semin, 접속 버튼
+		if (enterID == FALSE && MouseX >= 902 && MouseX <= 982 && MouseY >= 526 && MouseY <= 577) {
+			char id_send[BUFSIZE];
+			GetWindowText(hEdit, wID, 20);
+			wcscpy(PlayerData.wId, wID);
+			ConvertWCtoC(PlayerData.wId);
+
+			enterID = TRUE;
+			DestroyWindow(hEdit);
+			SetTimer(hWnd, 1, 16, NULL);
+		}
 
 		// W
 		// 첫번째 캐릭터 선택 시: 달빛술사 쿠키
@@ -637,16 +655,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_TIMER:
 		switch (wParam) {
 		case 1:		
-
 			heart.ChangeSprite(&heartSpriteCnt);
 			portal.ChangeSprite(&spriteCnt);
 			for (int i = 0; i < COINNUM; ++i)
 			{
-				if (GameData.coins[i].bIsCrush == TRUE)
-				ce[i].ChangeSprite(&ceSpriteCnt[i]);
+				//if (GameData.coins[i].bIsCrush == TRUE)
+				//ce[i].ChangeSprite(&ceSpriteCnt[i]);
 			}
-
-
 			break;
 		}
 		InvalidateRect(hWnd, NULL, FALSE);
@@ -654,19 +669,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case CHILD_BUTTON:
-			if (HIWORD(wParam) == BN_CLICKED) {
-				char id_send[BUFSIZE];
-				GetWindowText(hEdit, wID, 20);
-				wcscpy(PlayerData.wId, wID);
-				ConvertWCtoC(PlayerData.wId);
-
-				enterID = TRUE;
-				DestroyWindow(hEdit);
-				DestroyWindow(hButtonEdit);
-				SetTimer(hWnd, 1, 16, NULL);
-			}
-			break;
 		case CHILD_ID_EDIT:
 			if (LOWORD(wParam) == EN_CHANGE) {
 				GetWindowText(hEdit, wID, 20);
