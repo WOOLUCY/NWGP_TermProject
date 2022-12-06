@@ -236,7 +236,9 @@ bool Player::IsCollidedCoin(Coin* coin)
 	if (coin->send.bIsCrush == FALSE) {
 		//uCoin += 100;
 		coin->SetIsCrush(TRUE);
+		coin->send.bIsCrush = TRUE;
 		printf("\n코인 먹었당 %d\n", uCoin);
+
 	}
 	return true;
 }

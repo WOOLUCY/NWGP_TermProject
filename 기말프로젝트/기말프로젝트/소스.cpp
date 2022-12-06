@@ -19,6 +19,7 @@
 #include "Button.h"
 #include "Heart.h"
 #include "SendRecvData.h"
+#include "CoinEffect.h"
 
 #include "Coin.h"
 #include <time.h>
@@ -228,6 +229,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	player.myImage = &playerImg;		
 
 
+	// W Coin effect
+	static CoinEffect ce;
+	static CImage ceImg;
+	ce.myImage = &ceImg;
+
 
 	// W 몬스터 생성
 	static CMonster monster;
@@ -257,6 +263,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	time_t frame_rate;
 	static int spriteCnt = 0;
 	static int heartSpriteCnt = 0;
+	static int ceSpriteCnt = 0;
 	static USHORT curSpriteCnt = 0;
 
 	// ID
@@ -292,6 +299,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		selectBackground.SetWidth(selectBackground.Image->GetWidth());
 
 		readyImg.Load(L"Image/Ready.png");
+
+		// W load coin effect image
+		ceImg.Load(L"Image/coin effect.png");
 
 		// W load key image
 		KeyImg.Load(L"Image/key.png");
@@ -436,6 +446,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			{
 				player.SetHasKey(TRUE);
 			}
+			//ce.myImage->Draw(mem1dc, 800, 500, ce.GetWidth(), ce.GetHeight(), 0 + ce.GetWidth() * ce.GetSpriteX(), 0 + ce.GetHeight() * ce.GetSpriteY(), ce.GetWidth(), coin.GetHeight());
+
+			// W Coin - Player Collision
+			for (int i = 0; i < COINNUM; i++) {
+				if (GameData.coins[i].bIsCrush == TRUE)
+					ce.myImage->Draw(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, ce.GetWidth(), ce.GetHeight(),
+						0 + ce.GetWidth() * ce.GetSpriteX(), 0 + ce.GetHeight() * ce.GetSpriteY(), ce.GetWidth(), coin.GetHeight());
+			}
+
 			
 			// W Collision Box Test
 			if (IsDebugMode) {
@@ -529,9 +548,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			HFONT hFont, OldFont;
 			hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("CookieRun Bold"));
 			OldFont = (HFONT)SelectObject(mem1dc, hFont);
+			SetTextColor(mem1dc, RGB(0, 0, 0));
+			TextOut(mem1dc, 1280/2 + 3, 13, L"SCORE", strlen("SCORE"));
+			TextOut(mem1dc, 30 + 3, 13, wss.str().c_str(), wcslen(wss.str().c_str()));
+
 			SetTextColor(mem1dc, RGB(255, 255, 255));
-			SetBkColor(mem1dc, RGB(0, 0, 0));
-			TextOut(mem1dc, 1280/2, 10, L"SCORE", strlen("SCORE"));
+			TextOut(mem1dc, 1280 / 2, 10, L"SCORE", strlen("SCORE"));
 			TextOut(mem1dc, 30, 10, wss.str().c_str(), wcslen(wss.str().c_str()));
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
@@ -602,6 +624,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 			heart.ChangeSprite(&heartSpriteCnt);
 			portal.ChangeSprite(&spriteCnt);
+			ce.ChangeSprite(&ceSpriteCnt);
 
 
 			break;
