@@ -15,7 +15,9 @@
 #define MONSTERNUM 10
 
 
-HANDLE hEventHandle;
+// 이벤트 생성
+HANDLE hWriteEvent;
+HANDLE hCollideEvent;
 
 int TotalClient;
 
@@ -32,9 +34,17 @@ Coin				coins[COINNUM];
 CMonster			cmonsters[MONSTERNUM];
 
 int					backgroundMove;
-int					eventCnt;	// 접속 유저들의 스레드 중 한 개만 event를 하기 위함
 
 ServerToClient		SendData;
+
+struct collidedef {
+	bool iscrush = false;
+	int crushnum;
+	int index;
+};
+
+collidedef CoinCollide;
+collidedef MonCollide;
 
 
 void UpdatePlayerLocation(Player* p);
@@ -42,6 +52,7 @@ void ChangePlayerSprite(Player* p, int* count);
 void ChangeMonsterSprite(int* count);
 void ChangeCoinSprite(int* count);
 void UpdateMonsters();
+
 
 void InitPlatform()
 {
@@ -58,7 +69,7 @@ void InitCoin()
 {
 
 	for (int i = 0; i < COINNUM; ++i) {
-		coins[i].send.iXpos = i * 100 - 200;
+		coins[i].send.iXpos = i * 100 - 400;
 		coins[i].send.iYpos = 650;
 		coins[i].CoinUpdate();
 	}
@@ -104,34 +115,55 @@ void InitPlayer(int num, Player* p)
 }
 
 
+int	MonsterSpriteCnt = 0;	// 스프라이트 카운트 변수
+int CoinSpriteCnt = 0;
 
 DWORD WINAPI Update_Thread(LPVOID arg)
 {
-	const int index = TotalClient - 1;
 	clock_t start = clock(), pre = clock();
 	double time = 0;
 	if (TotalClient == 3)
 		clock_t start = clock();
+
+
 	// 클라이언트와 데이터 통신
-	int	MonsterSpriteCnt = 0;	// 스프라이트 카운트 변수
-	int CoinSpriteCnt = 0;
 
 	while (1) {
-		if (users[index].GetCharNum() == 10000) break;
 
-		WaitForSingleObject(hEventHandle, INFINITE);
+
+
+
+		WaitForSingleObject(hWriteEvent, INFINITE);
+
+		if (CoinCollide.iscrush) {
+			printf("%d번코임충돌\n",CoinCollide.crushnum);
+			//SendData.player[CoinCollide.index].여기서 코인점수 업테이트 해야할듯
+			CoinCollide.iscrush = false;
+			ResetEvent(hWriteEvent);
+		}
+
+		if (MonCollide.iscrush) {
+			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
+			//여기서 몬스터충돌시하는거 업테이트 하면될듯
+			MonCollide.iscrush = false;
+			ResetEvent(hWriteEvent);
+		}
+
+
+
 		// 몬스터 스프라이트 업데이트 ( 이동도 여기서 하면 될 듯 )
+		printf("UpdateThread불림\n");
 		ChangeMonsterSprite(&MonsterSpriteCnt);
 		ChangeCoinSprite(&CoinSpriteCnt);
-
 		UpdateMonsters();
+
 
 		// W, 게임 시작 여부
 		if (bFirstSelected && bSecondSelected && bThirdSelected) {
 			SendData.bIsPlaying = TRUE;
 		}
 		// semin, 게임 시간
-		if (index == 2) {	// 마지막 접속한 사람의 thread에서 계산함
+		if (TotalClient == 3) {	// 마지막 접속한 사람의 thread에서 계산함
 			pre = clock();
 			time = (pre - start);
 			//printf("%f 초 \n", time / CLOCKS_PER_SEC);
@@ -141,13 +173,9 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			}
 			SendData.ServerTime = time;	// time / CLOCKS_PER_SEC 하면 초 단위로 나온다
 		}
-		Sleep(16);
-		SetEvent(hEventHandle);
-
-
+		//Sleep(16);
 	}
 
-	SendData.player[index].charNum = 999;
 
 	return 0;
 
@@ -172,27 +200,44 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
 
-	//const int index = TotalClient - 1;
 
 	int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 	// 클라이언트와 데이터 통신
 
 	while (1) {
+		printf("[%d]번째 sendThread\n", index);
 		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
 		// 몬스터 충돌
-		for (int i = 0; i < MONSTERNUM; i++) 
-			users[index].IsCollidedMonster(cmonsters[i]);
+		for (int i = 0; i < MONSTERNUM; i++) {
 
+
+			if (0 != users[index].IsCollidedMonster(cmonsters[i])) {
+
+				MonCollide.iscrush = true;
+				MonCollide.crushnum = i;
+				MonCollide.index = index;
+				SetEvent(hWriteEvent);
+			}
+		}
 		// 코인 충돌
-		for (int i = 0; i < COINNUM; i++)
-			users[index].IsCollidedCoin(&coins[i]);
+		for (int i = 0; i < COINNUM; i++) {
+			if (coins[i].send.bIsCrush == FALSE&&users[index].IsCollidedCoin(&coins[i])) {
+				CoinCollide.iscrush = true;
+				CoinCollide.crushnum = i;
+				CoinCollide.index = index;
+				SetEvent(hWriteEvent);
+			
 
+			}
 
-		Sleep(16);
+		}
+
+		if(index==TotalClient-1) SetEvent(hWriteEvent);
+
 		SendData.player[index] = users[index].Send;
 		wcscpy(SendData.player[index].wID, users[index].Send.wID);
 		for (int i = 0; i < MONSTERNUM; i++) {
@@ -208,6 +253,8 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 			err_display("recv()");
 			break;
 		}
+
+		Sleep(16);
 
 	}
 	SendData.player[index].charNum = 999;
@@ -370,6 +417,9 @@ void UpdatePlayerLocation(Player* p)
 }
 
 
+
+
+
 int main(int argc, char* argv[])
 {
 
@@ -410,7 +460,12 @@ int main(int argc, char* argv[])
 	HANDLE hThread[3];
 
 	// 이벤트 생성
-	hEventHandle = CreateEvent(NULL, FALSE, TRUE, NULL);
+	hWriteEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	hCollideEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+
+
+	hThread[2] = CreateThread(NULL, 0, Update_Thread,NULL, 0, NULL);
+
 
 	while (1) {
 		// accept()
@@ -446,7 +501,6 @@ int main(int argc, char* argv[])
 		// 스레드 생성
 		hThread[0] = CreateThread(NULL, 0, Recv_Thread, (LPVOID)client_sock, 0, NULL);
 		hThread[1] = CreateThread(NULL, 0, Send_Thread, (LPVOID)client_sock, 0, NULL);
-		hThread[2] = CreateThread(NULL, 0, Update_Thread, (LPVOID)client_sock, 0, NULL);
 
 
 
@@ -457,7 +511,7 @@ int main(int argc, char* argv[])
 	}
 
 	// 이벤트 제거
-	CloseHandle(hEventHandle);
+	CloseHandle(hWriteEvent);
 
 	// 소켓 닫기
 	closesocket(listen_sock);
