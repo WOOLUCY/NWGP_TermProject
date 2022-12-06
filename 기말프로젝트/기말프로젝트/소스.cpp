@@ -29,6 +29,7 @@
 using namespace std;
 //char* SERVEkRIP = (char*)"192.168.101.85";
 char* SERVERIP = (char*)"127.0.0.1";
+//char* SERVERIP = (char*)"192.168.42.191";
 
 #define SERVERPORT 9000
 #define BUFSIZE    128
@@ -563,14 +564,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			//TextOut(mem1dc, 1280/2 + 3, 13, L"SCORE", strlen("SCORE"));
-			TextOut(mem1dc, 1280 / 2 + 3, 13, score.str().c_str(), wcslen(score.str().c_str()));
+			TextOut(mem1dc, 1280 / 2 + 3 - 50, 13, L"SCORE", strlen("SCORE"));
+			TextOut(mem1dc, 1280 / 2 + 3 + 50, 13, score.str().c_str(), wcslen(score.str().c_str()));
 			TextOut(mem1dc, 30 + 3, 13, time.str().c_str(), wcslen(time.str().c_str()));
 
 			SetTextColor(mem1dc, RGB(255, 255, 255));
-			//TextOut(mem1dc, 1280 / 2, 10, L"SCORE", strlen("SCORE"));
-			TextOut(mem1dc, 1280 / 2, 10, score.str().c_str(), wcslen(score.str().c_str()));
+			TextOut(mem1dc, 1280 / 2 - 50, 10, L"SCORE", strlen("SCORE"));
 			TextOut(mem1dc, 30, 10, time.str().c_str(), wcslen(time.str().c_str()));
+			SetTextColor(mem1dc, RGB(0, 0, 100));
+			TextOut(mem1dc, 1280 / 2 + 50, 10, score.str().c_str(), wcslen(score.str().c_str()));
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
 
