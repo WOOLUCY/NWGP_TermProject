@@ -74,7 +74,7 @@ std::wstring s2ws(const std::string& s);
 void LoadImg()
 {
 	
-	platformImg.Load(L"Image/platform3.png");
+	platformImg.Load(L"Image/platform5.png");
 	coinImg.Load(L"Image/coin3.png");
 	monsterImg.Load(L"Image/Monster2.png");
 
@@ -209,6 +209,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 
 	static CImage startbackgroundImg;
+	static CImage endingImg;
 	static CImage backgroundImg;
 	static CImage ground;
 
@@ -291,6 +292,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		setlocale(LC_ALL, "KOREAN");
 		// PlaySound(L"start.wav", NULL, SND_ASYNC);	// 듣기 싫어서 사운드 막아둠 ㅎㅎ
 		startbackgroundImg.Load(L"Image/ID입력창.png");
+		endingImg.Load(L"Image/gameClear.png");
 		backgroundImg.Load(L"Image/background.jpg");
 		ground.Load(L"Image/ground2.png");
 		playerImg.Load(L"Image/Cookies3.png");
@@ -362,7 +364,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		if (enterID == FALSE) {
 			startBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
 
-			AddFontResourceA("Rix고딕B.ttf");
+			AddFontResourceA("Rix고딕 B.ttf");
 			hEdit = CreateWindow(L"edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL | ES_LEFT,
 				895, 385, 130, 30, hWnd, (HMENU)CHILD_ID_EDIT, hInst, NULL);
 			hFont2 = CreateFont(18, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 3, 2, 1,
@@ -384,7 +386,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 		}
-		else {
+		else if ( GameData.bGameEnd == FALSE ) {
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + bgMove, 220, 2560, 1600);
 
 			//playerImg.Draw
@@ -428,7 +430,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 			//가온 - 플랫폼 - 위치 서버에서 바꿔줘야함 걍 대충 바갑가ㅏㅏ함
 			for (Platform& temp : Platforms) {
-				platformImg.Draw(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight());
+				platformImg.TransparentBlt(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight(), RGB(255,255,0));
 			}
 
 
@@ -495,6 +497,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 					coinBox[i].top = GameData.coins[i].aabb.top;
 				}
 
+				RECT* platformBox;
+				platformBox = new RECT[PLATFORMNUM];
+				for (int i = 0; i < PLATFORMNUM; i++) {
+					platformBox[i].bottom = GameData.platforms[i].aabb.bottom;
+					platformBox[i].left = GameData.platforms[i].aabb.left;
+					platformBox[i].right = GameData.platforms[i].aabb.right;
+					platformBox[i].top = GameData.platforms[i].aabb.top;
+				}
+
 				HPEN MyPen, OldPen;
 				HBRUSH MyBrush, OldBrush;
 
@@ -512,17 +523,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 				//Rectangle(hdc, player.GetXPos(), player.GetYPos(), player.GetXPos() + player.GetWidth() / 2, player.GetYPos() + player.GetHeight() / 2);
 				Rectangle(mem1dc, playerBox.left, playerBox.top, playerBox.right, playerBox.bottom);
-				for ( int i = 0; i < MONSTERNUM; i++ )
-					Rectangle(mem1dc, monsterBox[i].left - bgMove /2, monsterBox[i].top, monsterBox[i].right - bgMove / 2, monsterBox[i].bottom);
+				for (int i = 0; i < MONSTERNUM; i++) {
+					if ( GameData.monsters[i].isDeath == FALSE )
+						Rectangle(mem1dc, monsterBox[i].left - bgMove / 2, monsterBox[i].top, monsterBox[i].right - bgMove / 2, monsterBox[i].bottom);
+				}
 				for (int i = 0; i < COINNUM; i++) {
 					if (GameData.coins[i].bIsCrush == FALSE)
 						Rectangle(mem1dc, coinBox[i].left - bgMove / 2, coinBox[i].top, coinBox[i].right - bgMove / 2, coinBox[i].bottom);
 				}
-
-				if (player.IsCollidedCoin(coin))
-				{
-
+				for (int i = 0; i < PLATFORMNUM; i++) {
+					Rectangle(mem1dc, platformBox[i].left - bgMove / 2, platformBox[i].top, platformBox[i].right - bgMove / 2, platformBox[i].bottom);
 				}
+
 				//Rectangle(mem1dc, CoinBox.left, CoinBox.top, CoinBox.right, CoinBox.bottom);
 				//Rectangle(mem1dc, platformbox.left, platformbox.top, platformbox.right, platformbox.bottom);
 
@@ -580,6 +592,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
 
+		}
+
+		else if (GameData.bGameEnd == TRUE) {
+			endingImg.Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
+			for (int i = 0; i < 3; i++) {
+				// 닉네임도 
+				if (GameData.player[i].uRank == 1) {	// semin, 내림차순으로 해서 3이 1등임... 귀찮아서 이렇게 구현함
+					playersImag[GameData.player[i].charNum].TransparentBlt(mem1dc, 548, 430, player.GetWidth(), player.GetHeight(),
+							player.GetWidth() * GameData.player[i].uSpriteX, player.GetHeight() * GameData.player[i].uSpriteY, 170, 148, RGB(255, 0, 255));
+					TextOut(mem1dc, 548 + player.GetWidth() / 2, 456 - 60,
+						GameData.player[i].wID, wcslen((GameData.player[i].wID)));
+				}
+				if (GameData.player[i].uRank == 2) {
+					playersImag[GameData.player[i].charNum].TransparentBlt(mem1dc, 365, 490, player.GetWidth(), player.GetHeight(),
+						player.GetWidth() * GameData.player[i].uSpriteX, player.GetHeight() * GameData.player[i].uSpriteY, 170, 148, RGB(255, 0, 255));
+					TextOut(mem1dc, 365 + player.GetWidth() / 2, 521 - 60,
+						GameData.player[i].wID, wcslen((GameData.player[i].wID)));
+				}
+				if (GameData.player[i].uRank == 3) {
+					playersImag[GameData.player[i].charNum].TransparentBlt(mem1dc, 729, 490, player.GetWidth(), player.GetHeight(),
+						player.GetWidth()* GameData.player[i].uSpriteX, player.GetHeight()* GameData.player[i].uSpriteY, 170, 148, RGB(255, 0, 255));
+					TextOut(mem1dc, 729 + player.GetWidth() / 2, 521 - 60,
+						GameData.player[i].wID, wcslen((GameData.player[i].wID)));
+				}
+			}
 		}
 
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, mem1dc, 0, 0, SRCCOPY);

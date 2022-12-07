@@ -1,13 +1,14 @@
 #include "Platform.h"
+#include <stdio.h>
 
 Platform::Platform()
 	:iXpos(0), iYpos(0)
 
 {
-	aabb.bottom = iYpos + (iHeight / 2);
-	aabb.left = iXpos;
-	aabb.right = iXpos + (iWidth / 2);
-	aabb.top = iYpos;
+	send.aabb.bottom = iYpos + (iHeight / 2);
+	send.aabb.left = iXpos;
+	send.aabb.right = iXpos + (iWidth / 2);
+	send.aabb.top = iYpos + 3;
 
 
 	send.iXpos = iXpos;
@@ -19,13 +20,15 @@ Platform::Platform()
 Platform::Platform(int x, int y) 
 	:iXpos(x),iYpos(y)
 {
-
-	aabb.bottom = iYpos + (iHeight / 2);
-	aabb.left = iXpos;
-	aabb.right = iXpos + (iWidth / 2);
-	aabb.top = iYpos;
-
 	send.iXpos = iXpos;
 	send.iYpos = iYpos;
+
+	send.aabb.bottom = iYpos + (iHeight / 2);
+	send.aabb.left = iXpos;
+	send.aabb.right = iXpos + (iWidth / 2);
+	send.aabb.top = iYpos + 3;
+
 	send.bIsCrush = bIsCrush;
+	printf("platform aabb: %d, %d, %d, %d\n", send.aabb.left, send.aabb.right,
+		send.aabb.top, send.aabb.bottom);
 }

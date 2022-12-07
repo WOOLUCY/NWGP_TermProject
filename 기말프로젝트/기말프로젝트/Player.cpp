@@ -144,7 +144,7 @@ bool Player::IsCollidedKey(Key key)
 }
 
 bool Player::IsCollidedPortal(Portal portal)
-{
+{ 
 	RECT A = aabb;
 	RECT B = portal.GetAABB();
 

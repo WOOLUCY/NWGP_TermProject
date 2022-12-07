@@ -2,6 +2,7 @@
 #include "global.h"
 #include "CMonster.h"
 #include "Coin.h"
+#include "Platform.h"
 #include <atlImage.h>
 
 struct KeyInput {
@@ -46,7 +47,7 @@ public:
 		RECT	aabb; 
 		USHORT	uHeart;
 		USHORT	uScore;
-
+		USHORT	uRank;
 	};
 
 	SendData Send;
@@ -64,7 +65,12 @@ public:
 	float	JumpHeight;
 	KeyInput input;
 	KeyInput up;
+	bool	killMonster = FALSE;	// 몬스터 죽였을 때 튕겨나가기 위해 둠
 	int curSpriteCnt;
+	double	invincibleTime	= 3.f; // 무적 시간
+	time_t	iTimeStart;		// 무적 시간 재는 시작 시간
+	time_t	iTimePre;		// 무적 시간 재는 현재 시간
+	bool	timeRecord = FALSE; // 무적 시간 기록 시작했는지
 
 public:
 	LPCWCHAR GetId() { return wId; }
@@ -128,9 +134,11 @@ public:
 	void ChangeSprite(int* count);
 	void UpdatePlayerLocation();
 
-	// W collsion
-	int IsCollidedMonster(CMonster monster);
+	// W collsion, semin collision
+	int IsCollidedMonster(CMonster* monster);
 	bool IsCollidedCoin(Coin* coin);
+	bool IsCollidedPlatform(Platform platform);
+	bool IsNotCollidedPlatform(Platform platform);
 };
 
 

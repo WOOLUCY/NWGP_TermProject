@@ -16,6 +16,7 @@ struct ClientToServer {
 
 struct ServerToClient {
 	double          ServerTime;	 // semin, clock_t -> double 자료형 바꿈
+	bool			bGameEnd = FALSE;
 	bool            bWin;
 	bool            bIsPlaying = FALSE;
 	
@@ -23,6 +24,7 @@ struct ServerToClient {
 	Player::SendData player[3];
 	CMonster::SendData monsters[MONSTERNUM];
 	Coin::SendData coins[COINNUM];
+	Platform::SendData platforms[PLATFORMNUM];
 
 
 };

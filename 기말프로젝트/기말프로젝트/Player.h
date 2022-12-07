@@ -51,7 +51,7 @@ public:
 		RECT	aabb;
 		USHORT	uHeart;
 		USHORT	uScore;
-
+		USHORT	uRank;
 	};
 
 	SendData Send;

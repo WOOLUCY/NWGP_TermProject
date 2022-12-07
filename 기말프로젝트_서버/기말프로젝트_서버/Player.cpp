@@ -13,8 +13,8 @@ Player::Player()
 
 	// W AABB initialization
 	Send.aabb.bottom = Send.iYpos + (iHeight / 2);
-	Send.aabb.left = Send.iXpos;
-	Send.aabb.right = Send.iXpos + (iWidth / 2);
+	Send.aabb.left = Send.iXpos + iWidth / 8;
+	Send.aabb.right = Send.iXpos + (iWidth / 4);
 	Send.aabb.top = Send.iYpos;
 	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.3);		// 플레이어 기본 속도는 이것
 
@@ -23,7 +23,7 @@ Player::Player()
 	input = { 0 };
 
 	bJumpKeyPressed = FALSE;
-	fJumpPower = 4.f;
+	fJumpPower = 4.5f;
 	fJumpTime = 0.01;
 	JumpHeight = 0;
 
@@ -70,17 +70,22 @@ void Player::Jump(USHORT spriteCnt)
 	velocity.y = (fJumpTime * fJumpTime - fJumpPower * fJumpTime) * 4; //	4로 나눈이유는, 너무 높이 뛰어서. 값을 낮추기 위해.
 	fJumpTime += 0.2f;		//	시간의 흐름을 표현하기 위해서.
 
-	if (fJumpTime > fJumpPower * 2)	//	착지했다면의 의미로, 각 변수 초기화.
-	{
-		SetSpriteY(spriteCnt);
-		fJumpTime = 0;
-		velocity.y = 0;
-		bJumpKeyPressed = false;
-		input.bSpace = false;
-
-
-
+	// 너무 점프 폭이 커지면 플랫폼 무시하고 떨어져버려서 최대 점프 폭 만듬
+	if (velocity.y >= 20.f) {
+		velocity.y = 20.f;
 	}
+
+	//if (fJumpTime > fJumpPower * 2)	//	착지했다면의 의미로, 각 변수 초기화.
+	//{
+	//	SetSpriteY(spriteCnt);
+	//	fJumpTime = 0;
+	//	velocity.y = 0;
+	//	bJumpKeyPressed = false;
+	//	input.bSpace = false;
+
+
+
+	//}
 
 	if (Send.iYpos > 620) { //이거 바닥?
 		SetSpriteY(spriteCnt);
@@ -90,7 +95,7 @@ void Player::Jump(USHORT spriteCnt)
 		input.bSpace = false;
 
 		bJumpKeyPressed = false;
-
+		killMonster = FALSE;
 
 	}
 }
@@ -184,8 +189,8 @@ void Player::UpdatePlayerLocation()
 
 	// W update collision box
 	Send.aabb.bottom = Send.iYpos + (iHeight / 2);
-	Send.aabb.left = Send.iXpos;
-	Send.aabb.right = Send.iXpos + (iWidth / 2);
+	Send.aabb.left = Send.iXpos + iWidth / 8;
+	Send.aabb.right = Send.iXpos + (iWidth / 8 * 3);
 	Send.aabb.top = Send.iYpos;
 
 	//printf("player: %d %d %d %d\n", Send.aabb.bottom, Send.aabb.left, Send.aabb.right, Send.aabb.left);
@@ -204,19 +209,43 @@ void Player::ChangeSprite(int* count)
 }
 
 // 충돌 시 플레이어와 충돌한 몬스터의 일련번호 반환. 0이면 충돌하지 않았다는 뜻.
-int Player::IsCollidedMonster(CMonster monster)
+int Player::IsCollidedMonster(CMonster* monster)
 {
 	RECT A = Send.aabb;
 	A.left += Send.iBgMove /2;
 	A.right += Send.iBgMove /2;
-	RECT B = monster.GetAABB();
+	RECT B = monster->GetAABB();
 
 	if (A.bottom < B.top) return 0;
 	if (A.right < B.left) return 0;
 	if (A.left > B.right) return 0;
 	if (A.top > B.bottom) return 0;
 
-	uRecCollidedMon = monster.GetMonNum();
+	if (A.bottom <= B.bottom - GetHeight() / 3) {	// 플레이어 y 위치가 더 높을 경우
+		monster->send.isDeath = TRUE;				// 몬스터가 죽는다
+		monster->SetSpriteY(1);
+		printf("몬스터 죽임\n");
+		killMonster = TRUE;
+		Send.uScore += 2;
+		fJumpTime = 1;
+	}	
+
+	else {	// 그게 아니면 플레이어 하트가 사라진다.
+		if (timeRecord == FALSE) {	// 시간 기록 중이 아니라면 
+			iTimeStart = clock();	// 시간 기록 시작
+			timeRecord = TRUE;
+			Send.uHeart--;
+			printf("한대 맞았다\n");
+		}
+		iTimePre = clock();
+		if ((double)(iTimePre - iTimeStart) / CLOCKS_PER_SEC >= invincibleTime) {
+			// 무적 시간보다 시간이 길어진다면 무적 효과 끝
+			timeRecord = FALSE;
+			printf("시간 레코드 끝\n");
+		}
+
+	}
+	uRecCollidedMon = monster->GetMonNum();
 	return uRecCollidedMon;
 }
 
@@ -244,3 +273,54 @@ bool Player::IsCollidedCoin(Coin* coin)
 	return true;
 }
 
+
+bool Player::IsCollidedPlatform(Platform platform)
+{
+	RECT A = Send.aabb;
+	A.left += Send.iBgMove / 2;
+	A.right += Send.iBgMove / 2;
+	RECT B = platform.GetAABB();
+
+	if (A.bottom < B.top) return 0;
+	if (A.right < B.left) return 0;
+	if (A.left > B.right) return 0;
+	if (A.top > B.bottom) return 0;
+
+	if (A.bottom <= B.bottom) {	// 플레이어 y 위치가 더 높을 경우
+		if (curSpriteCnt == 1)
+			SetSpriteY(2);
+		else if (curSpriteCnt == 3)
+			SetSpriteY(5);
+		else if (curSpriteCnt == 0)
+			SetSpriteY(2);
+		else if (curSpriteCnt == 4)
+			SetSpriteY(5);
+		fJumpTime = 0;
+		velocity.y = 0;
+		Send.iYpos = B.top - GetHeight() / 2 - 1;		// 플랫폼 위에 올라간다
+		//Send.iYpos = 620;
+		input.bSpace = false;
+
+		bJumpKeyPressed = false;
+	}
+
+	
+
+	return true;
+}
+
+
+bool Player::IsNotCollidedPlatform(Platform platform)
+{
+	RECT A = Send.aabb;
+	A.left += Send.iBgMove / 2;
+	A.right += Send.iBgMove / 2;
+	RECT B = platform.GetAABB();
+
+	if (A.bottom + 10 < B.top - 10) return 0;
+	if (A.right < B.left) return 0;
+	if (A.left > B.right) return 0;
+	if (A.top > B.bottom) return 0;
+
+	return true;
+}

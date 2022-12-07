@@ -26,6 +26,7 @@ public:
 		USHORT	uSpriteX = 0;
 		USHORT	uSpriteY = 0;
 		RECT	aabb;
+		bool	isDeath = FALSE;
 
 	};
 

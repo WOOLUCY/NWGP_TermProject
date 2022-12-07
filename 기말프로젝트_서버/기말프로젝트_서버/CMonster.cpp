@@ -79,8 +79,8 @@ void CMonster::UpdateMonsterLocation(SendData* d)
 
 	// AABB update
 	send.aabb.bottom = send.iYpos + (iHeight / 2);
-	send.aabb.left = send.iXpos;
-	send.aabb.right = send.iXpos + (iWidth / 2);
+	send.aabb.left = send.iXpos + iWidth / 8;
+	send.aabb.right = send.iXpos + (iWidth / 4);
 	send.aabb.top = send.iYpos;
 
 	//d->iXpos = iXpos;
@@ -90,11 +90,24 @@ void CMonster::UpdateMonsterLocation(SendData* d)
 
 }
 
+void CMonster::DeathMonster()
+{
+	send.uSpriteY = 1;
+}
+
 void CMonster::ChangeSprite(int* count)
 {
 	if (*count == 3) {
 		send.uSpriteX = (send.uSpriteX + 1) % 8;
-		*count = 0;
+		if (send.isDeath == FALSE) {
+			*count = 0;
+		}
+		else {
+			if (send.uSpriteX >= 6) {
+				send.iXpos = 4000;
+				send.iYpos = 4000;
+			}
+		}
 	}
 	*count += 1;
 }

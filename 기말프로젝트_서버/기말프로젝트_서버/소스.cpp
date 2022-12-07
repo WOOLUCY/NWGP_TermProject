@@ -10,9 +10,9 @@
 #define SERVERPORT 9000
 #define BUFSIZE    128
 
-#define PLATFORMNUM 10
-#define COINNUM 10
-#define MONSTERNUM 10
+//#define PLATFORMNUM 10
+//#define COINNUM 10
+//#define MONSTERNUM 10
 
 
 // 이벤트 생성
@@ -27,7 +27,8 @@ bool				bThirdSelected = FALSE;
 
 Player				users[3];
 
-vector<Platform>	platform;
+//vector<Platform>	platform;
+Platform			platform[PLATFORMNUM];
 
 Coin				coins[COINNUM];
 CMonster			cmonsters[MONSTERNUM];
@@ -51,6 +52,7 @@ void ChangePlayerSprite(Player* p, int* count);
 void ChangeMonsterSprite(int* count);
 void ChangeCoinSprite(int* count);
 void UpdateMonsters();
+void WhosWinner();
 
 
 void InitPlatform()
@@ -69,23 +71,24 @@ void InitPlatform()
 	int floor = 800;
 
 	
-	//1층
-	platform.push_back(Platform(0, floor - height*2));
-	platform.push_back(Platform(width*3, floor - height*2));
-	platform.push_back(Platform(width * 5, floor - height * 2));
+	//1층 
+	platform[0] = Platform(0, floor - height * 2);
+	platform[1] = Platform(0, floor - height*2);
+	platform[2] = Platform(width*3, floor - height*2);
+	platform[3] = Platform(width * 5, floor - height * 2);
 
 	//2층
-	platform.push_back(Platform(width, floor - height*3));
-	platform.push_back(Platform(width*2, floor - height*3));
-	platform.push_back(Platform(width*4, floor - height*3));
+	platform[4] = Platform(width, floor - height*3);
+	platform[5] = Platform(width*2, floor - height*3);
+	platform[6] = Platform(width*4, floor - height*3);
 
 	//3층
-	platform.push_back(Platform(-100, floor - height*4));
-	platform.push_back(Platform(width*5.5, floor - height*4));
+	platform[7] = Platform(-100, floor - height*4);
+	platform[8] = Platform(width*5.5, floor - height*4);
 
 	//4충
-	platform.push_back(Platform(600, floor - height*5));
-	platform.push_back(Platform(700, floor - height*5));
+	platform[9] = Platform(600, floor - height*5);
+	//platform[10] = (Platform(700, floor - height*5));
 
 
 }
@@ -108,7 +111,7 @@ void InitMonster()
 	// 합치는 게 나을 것이라 판단
 
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		cmonsters[i].send.iXpos = i * 120 - 200;
+		cmonsters[i].send.iXpos = i * 150 - 200;
 		cmonsters[i].send.iYpos = 620;
 		cmonsters[i].updateRange();
 		cmonsters[i].SetMonNum(i);
@@ -150,18 +153,20 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 	if (TotalClient == 3)
 		clock_t start = clock();
 
-
 	// 클라이언트와 데이터 통신
+	int cnt = 0;
 
 	while (1) {
 
-
-
-
 		WaitForSingleObject(hWriteEvent, INFINITE);
 
+		if (cnt == 0 && TotalClient == 3) {
+			start = clock();
+			cnt++;
+		}
+
 		if (CoinCollide.iscrush) {
-			printf("%d번코임충돌\n",CoinCollide.crushnum);
+			//printf("%d번코임충돌\n",CoinCollide.crushnum);
 			SendData.player[CoinCollide.index].uScore += 100;//여기서 코인점수 업테이트 해야할듯
 			CoinCollide.iscrush = false;
 			ResetEvent(hWriteEvent);
@@ -169,7 +174,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		}
 
 		if (MonCollide.iscrush) {
-			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
+			//printf("%d번몬스터충돌함\n", MonCollide.crushnum);
 			//여기서 몬스터충돌시하는거 업테이트 하면될듯
 			MonCollide.iscrush = false;
 
@@ -179,7 +184,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 
 
 		// 몬스터 스프라이트 업데이트 ( 이동도 여기서 하면 될 듯 )
-		printf("UpdateThread불림\n");
+		//printf("UpdateThread불림\n");
 		ChangeMonsterSprite(&MonsterSpriteCnt);
 		ChangeCoinSprite(&CoinSpriteCnt);
 		UpdateMonsters();
@@ -196,7 +201,8 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			//printf("%f 초 \n", time / CLOCKS_PER_SEC);
 			if ((double)(time) / CLOCKS_PER_SEC >= 120 ) {	// 120초(2분) 지나면 게임 끝
 				//printf("게임 끝났음\n");
-				SendData.bIsPlaying = FALSE;
+				WhosWinner();
+				SendData.bGameEnd = TRUE;
 			}
 			SendData.ServerTime = time;	// time / CLOCKS_PER_SEC 하면 초 단위로 나온다
 		}
@@ -233,22 +239,23 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	// 클라이언트와 데이터 통신
 
 	while (1) {
-		printf("[%d]번째 sendThread\n", index);
+		//printf("[%d]번째 sendThread\n", index);
 		if (users[index].GetCharNum() == 10000) break;;
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
+		if (users[index].Send.uHeart == 0) {
+			users[index].Send.uHeart = 4;
+			//InitPlayer(users[index].Send.charNum, &users[index]);
+		}
+
 		// 몬스터 충돌
 		for (int i = 0; i < MONSTERNUM; i++) {
-
-
-			if (0 != users[index].IsCollidedMonster(cmonsters[i])) {
-
+			if (0 != users[index].IsCollidedMonster(&cmonsters[i])) {
 				MonCollide.iscrush = true;
 				MonCollide.crushnum = i;
 				MonCollide.index = index;
 
-				
 				SetEvent(hWriteEvent);
 			}
 		}
@@ -260,21 +267,42 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 				CoinCollide.index = index;
 
 				SetEvent(hWriteEvent);
-			
-
 			}
 
+		}
+		// 플랫폼 충돌
+		for (int i = 0; i < PLATFORMNUM; i++) {
+			users[index].IsCollidedPlatform(platform[i]);
+			users[index].killMonster = FALSE;
+		}
+		// 만약 플랫폼 충돌이 아닐 때 낙하
+		bool check = false;
+		for (int i = 0; i < PLATFORMNUM; i++) {
+			if (users[index].IsNotCollidedPlatform(platform[i])) {
+				check = true;
+			}
+		}
+		if (users[index].killMonster == FALSE && users[index].bJumpKeyPressed == FALSE && check == false && !(users[index].Send.iYpos > 610)) {
+			users[index].velocity.y = 20.f ;
+		}
+		// 620보다 더 낙하하면 더이상 추락하지 않도록 막음
+		if (users[index].Send.iYpos > 620) {
+			users[index].fJumpTime = 0;
+			users[index].velocity.y = 0;
+			users[index].Send.iYpos = 620;
 		}
 
 		if(index==TotalClient-1) SetEvent(hWriteEvent);
 
 		SendData.player[index] = users[index].Send;
 		wcscpy(SendData.player[index].wID, users[index].Send.wID);
-		for (int i = 0; i < MONSTERNUM; i++) {
+
+		for (int i = 0; i < MONSTERNUM; i++)
 			SendData.monsters[i] = cmonsters[i].send;
-		}
 		for (int i = 0; i < COINNUM; i++)
 			SendData.coins[i] = coins[i].send;
+		for (int i = 0; i < PLATFORMNUM; i++)
+			SendData.platforms[i] = platform[i].send;
 		
 		retval = send(client_sock, (char*)&SendData, sizeof(SendData), 0);
 
@@ -359,9 +387,6 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 users[index].SetId(recvData->wId);
 		 wcscpy(users[index].Send.wID, recvData->wId);
 
-		 if (users[index].Send.uHeart == 0) {
-			 InitPlayer(users[index].Send.charNum, &users[index]);
-		 }
 		 
 
 
@@ -380,9 +405,9 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 }
 
 
-		 printf("\n접속한 Player의 ID: %ws", users[index].Send.wID);
-		 printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
-		 printf("\n접속한 Player의 인덱스: %d\n", index);
+		 //printf("\n접속한 Player의 ID: %ws", users[index].Send.wID);
+		 //printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
+		 //printf("\n접속한 Player의 인덱스: %d\n", index);
 
 
 	}
@@ -421,10 +446,17 @@ void ChangeCoinSprite(int* count) {
 
 void ChangeMonsterSprite(int* count)
 {
-	if (*count == 3) {
+	if (*count == 5) {
 		for (int i = 0; i < MONSTERNUM; i++) {
 			cmonsters[i].send.uSpriteX = (cmonsters[i].send.uSpriteX + 1) % 8;
 			*count = 0;
+			if (cmonsters[i].send.isDeath == TRUE) {
+				if (cmonsters[i].send.uSpriteX >= 6) {
+					cmonsters[i].send.iXpos = 4000;
+					cmonsters[i].send.iYpos = 4000;
+					cmonsters[i].send.aabb = { 4000, 4000, 4000, 4000 };
+				}
+			}
 		}
 	}
 	*count += 1;
@@ -436,7 +468,9 @@ void UpdateMonsters()
 	static int i{ 0 };
 
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		cmonsters[i].UpdateMonsterLocation(&SendData.monsters[i]);
+		if (cmonsters[i].send.isDeath != TRUE) {
+			cmonsters[i].UpdateMonsterLocation(&SendData.monsters[i]);
+		}
 	}
 }
 
@@ -447,7 +481,31 @@ void UpdatePlayerLocation(Player* p)
 }
 
 
+void WhosWinner() {
+	int num[3] = { users[0].Send.uScore, users[1].Send.uScore, users[2].Send.uScore};
+	int i, j;
+	int minIndex;
+	for (i = 0; i < 3 - 1; i++) {
+		minIndex = i;
+		for (j = i + 1; j < 3; j++)
+			if (num[j] < num[minIndex])
+				minIndex = j;
 
+		int temp = num[i];
+		num[i] = num[minIndex];
+		num[minIndex] = temp;
+	}
+	printf("1: %d, 2: %d, 3: %d\n", num[0], num[1], num[2]);
+	for (int i = 0; i < 3; i++) {
+		if (num[0] == users[i].Send.uScore)
+			users[i].Send.uRank = 3;
+		if (num[1] == users[i].Send.uScore)
+			users[i].Send.uRank = 2;
+		if (num[2] == users[i].Send.uScore)
+			users[i].Send.uRank = 1;
+	}
+
+}
 
 
 int main(int argc, char* argv[])

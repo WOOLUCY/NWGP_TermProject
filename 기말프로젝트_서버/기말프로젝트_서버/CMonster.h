@@ -23,6 +23,7 @@ public:
 		USHORT	uSpriteX = 0;
 		USHORT	uSpriteY = 0;
 		RECT	aabb;
+		bool	isDeath = FALSE;
 
 	};
 
@@ -80,6 +81,7 @@ public:
 
 	void ChangeSprite(int* count);
 	void UpdateMonsterLocation(SendData* d);
+	void DeathMonster();
 };
 
 
