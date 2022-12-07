@@ -96,7 +96,6 @@ void InitCoin()
 		coins[i].CoinUpdate();
 	}
 }
-
 void InitMonster()
 {
 	// semin, 몬스터 벡터 -> 배열 바꾸면서 send 방법도 바꿈. 
@@ -111,7 +110,6 @@ void InitMonster()
 		cmonsters[i].SetMonNum(i);
 	}
 }
-
 void InitPlayer(int num, Player* p)
 {
 	if (num == 0) {
@@ -160,8 +158,9 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		}
 
 		if (CoinCollide.iscrush) {
-			//printf("%d번코임충돌\n",CoinCollide.crushnum);
 			SendData.player[CoinCollide.index].uScore += 100;//여기서 코인점수 업테이트 해야할듯
+			printf("[%d]번코임충돌,코인점수 [%d]\n",CoinCollide.index, SendData.player[CoinCollide.index].uScore);
+
 			CoinCollide.iscrush = false;
 			ResetEvent(hWriteEvent);
 
@@ -207,7 +206,6 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 	return 0;
 
 }
-
 
 DWORD WINAPI Send_Thread(LPVOID arg)
 {
@@ -467,6 +465,8 @@ void UpdateMonsters()
 	}
 }
 
+
+//여기다
 void UpdatePlayerLocation(Player* p)
 {
 	p->UpdatePlayerLocation();

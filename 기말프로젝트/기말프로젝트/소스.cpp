@@ -630,7 +630,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		MouseY = HIWORD(lParam);
 
 		// semin, 접속 버튼
-		if (enterID == FALSE && MouseX >= 902 && MouseX <= 982 && MouseY >= 526 && MouseY <= 577) {
+		if (enterID == FALSE && MouseX >= 902 && MouseX <= 982 && MouseY >= 506 && MouseY <= 587) {
 			char id_send[BUFSIZE];
 			GetWindowText(hEdit, wID, 20);
 			wcscpy(PlayerData.wId, wID);
