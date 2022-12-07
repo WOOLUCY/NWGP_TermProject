@@ -10,9 +10,6 @@
 #define SERVERPORT 9000
 #define BUFSIZE    128
 
-//#define PLATFORMNUM 10
-//#define COINNUM 10
-//#define MONSTERNUM 10
 
 
 // 이벤트 생성
@@ -57,13 +54,10 @@ void WhosWinner();
 
 void InitPlatform()
 {
-	//일단 10개임
-	//일단 100,200,300,400, 이렇게 때려넣겠음
-	//맨위층
 	//윈도우사이즈 - 1280, 800
 	//바닥 = 800-336
 
-	//**플랫폼추가하려면 서버,클라 
+	//**플랫폼추가하려면 서버,클라 #define 상수 고치기
 
 	int height = 120;
 	int width = 250;
@@ -240,8 +234,10 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 	while (1) {
 		//printf("[%d]번째 sendThread\n", index);
-		if (users[index].GetCharNum() == 10000) break;;
+
+		if (users[index].GetCharNum() == 10000) break;
 		UpdatePlayerLocation(&(users[index]));
+
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
 		if (users[index].Send.uHeart == 0) {
@@ -301,9 +297,6 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 			SendData.monsters[i] = cmonsters[i].send;
 		for (int i = 0; i < COINNUM; i++)
 			SendData.coins[i] = coins[i].send;
-		for (int i = 0; i < PLATFORMNUM; i++)
-			SendData.platforms[i] = platform[i].send;
-		
 		retval = send(client_sock, (char*)&SendData, sizeof(SendData), 0);
 
 

@@ -14,7 +14,6 @@ private:
 	int		iHeight = 60;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
 	int		iRange;
 
-	RECT	aabb;
 
 	int		iMaxX;
 	int		iMinX;
@@ -27,6 +26,9 @@ public:
 		bool	bIsCrush;
 		RECT	aabb;
 	};
+
+	RECT	aabb;
+
 
 	CImage* myImage;//; //이거로 스프라이트 가리키면 될것같은데 
 	// 자주 참조할 것 같고 값이 변해도 상관 없는 애들은 public 으로 뺌

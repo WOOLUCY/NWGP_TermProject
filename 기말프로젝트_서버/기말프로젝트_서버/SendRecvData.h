@@ -24,7 +24,6 @@ struct ServerToClient {
 	Player::SendData player[3];
 	CMonster::SendData monsters[MONSTERNUM];
 	Coin::SendData coins[COINNUM];
-	Platform::SendData platforms[PLATFORMNUM];
 
 
 };

@@ -24,7 +24,6 @@
 #include "Coin.h"
 #include <time.h>
 
-#define MONSTERNUM 10
 
 using namespace std;
 char* SERVERIP = (char*)"127.0.0.1";
@@ -500,10 +499,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				RECT* platformBox;
 				platformBox = new RECT[PLATFORMNUM];
 				for (int i = 0; i < PLATFORMNUM; i++) {
-					platformBox[i].bottom = GameData.platforms[i].aabb.bottom;
-					platformBox[i].left = GameData.platforms[i].aabb.left;
-					platformBox[i].right = GameData.platforms[i].aabb.right;
-					platformBox[i].top = GameData.platforms[i].aabb.top;
+					platformBox[i].bottom =	Platforms[i].aabb.bottom;
+					platformBox[i].left =	Platforms[i].aabb.left;
+					platformBox[i].right=	Platforms[i].aabb.right;
+					platformBox[i].top =	Platforms[i].aabb.top;
 				}
 
 				HPEN MyPen, OldPen;
