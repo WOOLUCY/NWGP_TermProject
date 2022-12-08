@@ -416,10 +416,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			// W Monster Draw	
-
-
-																																																								// W Key Draw
+			// W Monster Draw																																																			// W Key Draw
 			if (!player.GetHasKey())
 			{
 				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
@@ -707,8 +704,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			portal.ChangeSprite(&spriteCnt);
 			for (int i = 0; i < COINNUM; ++i)
 			{
-				//if (GameData.coins[i].bIsCrush == TRUE)
-				//ce[i].ChangeSprite(&ceSpriteCnt[i]);
+				if (GameData.coins[i].bIsCrush == TRUE)
+				ce[i].ChangeSprite(&ceSpriteCnt[i]);
 			}
 			break;
 		}
