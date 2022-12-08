@@ -48,6 +48,7 @@ public:
 		USHORT	uHeart;
 		USHORT	uScore;
 		USHORT	uRank;
+		bool	timeRecord = FALSE; // 무적 시간 기록 시작했는지
 	};
 
 	SendData Send;
@@ -70,7 +71,7 @@ public:
 	double	invincibleTime	= 3.f; // 무적 시간
 	time_t	iTimeStart;		// 무적 시간 재는 시작 시간
 	time_t	iTimePre;		// 무적 시간 재는 현재 시간
-	bool	timeRecord = FALSE; // 무적 시간 기록 시작했는지
+
 
 public:
 	LPCWCHAR GetId() { return wId; }

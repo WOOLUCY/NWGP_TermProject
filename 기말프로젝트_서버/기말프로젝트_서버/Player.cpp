@@ -231,16 +231,16 @@ int Player::IsCollidedMonster(CMonster* monster)
 	}	
 
 	else {	// 그게 아니면 플레이어 하트가 사라진다.
-		if (timeRecord == FALSE) {	// 시간 기록 중이 아니라면 
+		if (Send.timeRecord == FALSE) {	// 시간 기록 중이 아니라면 
 			iTimeStart = clock();	// 시간 기록 시작
-			timeRecord = TRUE;
+			Send.timeRecord = TRUE;
 			Send.uHeart--;
 			printf("한대 맞았다\n");
 		}
 		iTimePre = clock();
 		if ((double)(iTimePre - iTimeStart) / CLOCKS_PER_SEC >= invincibleTime) {
 			// 무적 시간보다 시간이 길어진다면 무적 효과 끝
-			timeRecord = FALSE;
+			Send.timeRecord = FALSE;
 			printf("시간 레코드 끝\n");
 		}
 

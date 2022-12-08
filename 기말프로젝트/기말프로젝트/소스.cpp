@@ -65,7 +65,7 @@ ServerToClient GameData;
 CImage platformImg;
 CImage coinImg;
 CImage monsterImg;
-CImage playersImag[3];
+CImage playersImag[6];
 
 std::wstring s2ws(const std::string& s);
 
@@ -81,8 +81,10 @@ void LoadImg()
 	playersImag[1].Load(L"Image/Cookies2-2.png");
 	playersImag[2].Load(L"Image/Cookies4-1.png");
 
-
-
+	// 무적상태일 때
+	playersImag[3].Load(L"Image/Cookies3-3.png");
+	playersImag[4].Load(L"Image/Cookies2-3.png");
+	playersImag[5].Load(L"Image/Cookies4-2.png");
 }
 
 DWORD WINAPI ClientMain(LPVOID arg)
@@ -397,8 +399,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 					}
 
 					if (i == myCharacter) {
-						playersImag[GameData.player[myCharacter].charNum].TransparentBlt(mem1dc, GameData.player[myCharacter].iXpos, GameData.player[myCharacter].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
-							0 + player.GetWidth() * GameData.player[myCharacter].uSpriteX, 0 + player.GetHeight() * GameData.player[myCharacter].uSpriteY, 170, 148, RGB(255, 0, 255));
+						if (GameData.player[i].timeRecord == TRUE)
+						{
+							playersImag[GameData.player[myCharacter].charNum+3].TransparentBlt(mem1dc, GameData.player[myCharacter].iXpos, GameData.player[myCharacter].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+								0 + player.GetWidth() * GameData.player[myCharacter].uSpriteX, 0 + player.GetHeight() * GameData.player[myCharacter].uSpriteY, 170, 148, RGB(255, 0, 255));
+
+						}
+						else
+						{
+							playersImag[GameData.player[myCharacter].charNum].TransparentBlt(mem1dc, GameData.player[myCharacter].iXpos, GameData.player[myCharacter].iYpos, player.GetWidth() / 2, player.GetHeight() / 2,
+								0 + player.GetWidth() * GameData.player[myCharacter].uSpriteX, 0 + player.GetHeight() * GameData.player[myCharacter].uSpriteY, 170, 148, RGB(255, 0, 255));
+
+						}
 					}
 				}
 			}
