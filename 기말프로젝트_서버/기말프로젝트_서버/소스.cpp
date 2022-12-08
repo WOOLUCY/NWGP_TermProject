@@ -142,9 +142,6 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 {
 	clock_t start = clock(), pre = clock();
 	double time = 0;
-	if (TotalClient == 3)
-		clock_t start = clock();
-
 	// 클라이언트와 데이터 통신
 	int cnt = 0;
 
@@ -158,7 +155,8 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		}
 
 		if (CoinCollide.iscrush) {
-			SendData.player[CoinCollide.index].uScore += 100;//여기서 코인점수 업테이트 해야할듯
+			users[CoinCollide.index].Send.uScore += 1;
+			SendData.player[CoinCollide.index].uScore= users[CoinCollide.index].Send.uScore;//여기서 코인점수 업테이트 해야할듯
 			printf("[%d]번코임충돌,코인점수 [%d]\n",CoinCollide.index, SendData.player[CoinCollide.index].uScore);
 
 			CoinCollide.iscrush = false;
@@ -167,7 +165,10 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		}
 
 		if (MonCollide.iscrush) {
-			//printf("%d번몬스터충돌함\n", MonCollide.crushnum);
+			users[MonCollide.index].Send.uScore += 2;
+			SendData.player[MonCollide.index].uScore = users[MonCollide.index].Send.uScore; //여기서 코인점수 업테이트 해야할듯
+
+			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
 			//여기서 몬스터충돌시하는거 업테이트 하면될듯
 			MonCollide.iscrush = false;
 

@@ -226,7 +226,6 @@ int Player::IsCollidedMonster(CMonster* monster)
 		monster->SetSpriteY(1);
 		printf("몬스터 죽임\n");
 		killMonster = TRUE;
-		Send.uScore += 2;
 		fJumpTime = 1;
 	}	
 
@@ -261,10 +260,7 @@ bool Player::IsCollidedCoin(Coin* coin)
 	if (A.left > B.right) return 0;
 	if (A.top > B.bottom) return 0;
 
-	//coin->send.iXpos = 4000;
-	//coin->send.iYpos = 4000;
 	if (coin->send.bIsCrush == FALSE) {
-	//	Send.uScore += 1;
 		coin->SetIsCrush(TRUE);
 		coin->send.bIsCrush = TRUE;
 		printf("\n코인 먹었당 %d\n", Send.uScore);
