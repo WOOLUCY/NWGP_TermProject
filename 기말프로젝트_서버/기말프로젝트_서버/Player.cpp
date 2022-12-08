@@ -216,19 +216,29 @@ int Player::IsCollidedMonster(CMonster* monster)
 	A.right += Send.iBgMove /2;
 	RECT B = monster->GetAABB();
 
+	if (Send.timeRecord == TRUE) {
+		iTimePre = clock();
+		if ((double)(iTimePre - iTimeStart) / CLOCKS_PER_SEC >= invincibleTime) {
+			// 무적 시간보다 시간이 길어진다면 무적 효과 끝
+			Send.timeRecord = FALSE;
+		}
+	}
+
 	if (A.bottom < B.top) return 0;
 	if (A.right < B.left) return 0;
 	if (A.left > B.right) return 0;
 	if (A.top > B.bottom) return 0;
 
-	if (A.bottom <= B.bottom - GetHeight() / 3) {	// 플레이어 y 위치가 더 높을 경우
+	if (A.bottom <= B.bottom - GetHeight() / 6 ) {	// 플레이어 y 위치가 더 높을 경우
 		monster->send.isDeath = TRUE;				// 몬스터가 죽는다
 		monster->SetSpriteY(1);
+		monster->send.aabb = { 4000, 4000, 4000, 4000 };
 		printf("몬스터 죽임\n");
 		killMonster = TRUE;
 		Send.uScore += 2;
 		fJumpTime = 1;
-	}	
+		return 0; 
+	}
 
 	else {	// 그게 아니면 플레이어 하트가 사라진다.
 		if (Send.timeRecord == FALSE) {	// 시간 기록 중이 아니라면 
@@ -237,14 +247,8 @@ int Player::IsCollidedMonster(CMonster* monster)
 			Send.uHeart--;
 			printf("한대 맞았다\n");
 		}
-		iTimePre = clock();
-		if ((double)(iTimePre - iTimeStart) / CLOCKS_PER_SEC >= invincibleTime) {
-			// 무적 시간보다 시간이 길어진다면 무적 효과 끝
-			Send.timeRecord = FALSE;
-			printf("시간 레코드 끝\n");
-		}
-
 	}
+
 	uRecCollidedMon = monster->GetMonNum();
 	return uRecCollidedMon;
 }
