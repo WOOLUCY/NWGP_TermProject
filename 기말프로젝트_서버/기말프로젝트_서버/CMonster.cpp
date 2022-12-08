@@ -78,10 +78,18 @@ void CMonster::UpdateMonsterLocation(SendData* d)
 	}
 
 	// AABB update
-	send.aabb.bottom = send.iYpos + (iHeight / 2);
-	send.aabb.left = send.iXpos + iWidth / 8;
-	send.aabb.right = send.iXpos + (iWidth / 4);
-	send.aabb.top = send.iYpos;
+	if (send.isDeath == FALSE) {
+		send.aabb.bottom = send.iYpos + (iHeight / 2);
+		send.aabb.left = send.iXpos + iWidth / 8;
+		send.aabb.right = send.iXpos + (iWidth / 4);
+		send.aabb.top = send.iYpos;
+	}
+	else {
+		send.aabb.bottom = 4000;
+		send.aabb.top = 4000;
+		send.aabb.right = 4000;
+		send.aabb.left = 4000;
+	}
 
 	//d->iXpos = iXpos;
 	//d->iYpos = iYpos;

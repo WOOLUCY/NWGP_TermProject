@@ -247,6 +247,9 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		// 몬스터 충돌
 		for (int i = 0; i < MONSTERNUM; i++) {
 			if (0 != users[index].IsCollidedMonster(&cmonsters[i])) {
+				if (cmonsters[i].send.isDeath == TRUE) {
+
+				}
 				MonCollide.iscrush = true;
 				MonCollide.crushnum = i;
 				MonCollide.index = index;
@@ -438,22 +441,41 @@ void ChangeCoinSprite(int* count) {
 
 void ChangeMonsterSprite(int* count)
 {
+	static int deathCnt = 0;
+	static bool death = 0;
 	if (*count == 5) {
 		for (int i = 0; i < MONSTERNUM; i++) {
 			cmonsters[i].send.uSpriteX = (cmonsters[i].send.uSpriteX + 1) % 8;
-			*count = 0;
 			if (cmonsters[i].send.isDeath == TRUE) {
-				if (cmonsters[i].send.uSpriteX >= 6) {
+				death = TRUE;
+				if (cmonsters[i].send.uSpriteX >= 7) {
 					cmonsters[i].send.iXpos = 4000;
 					cmonsters[i].send.iYpos = 4000;
-					cmonsters[i].send.aabb = { 4000, 4000, 4000, 4000 };
+					cmonsters[i].send.isDeath = FALSE;
+					deathCnt = 0;
 				}
 			}
+			*count = 0;
 		}
 	}
 	*count += 1;
+	if (death == TRUE) {
+		deathCnt++;
+	}
 }
 
+void changeMonsterDeathSprite(CMonster* cmonster) {
+	static int deathCnt = 0;
+	if (deathCnt == 5) {
+		cmonster->send.uSpriteX = (cmonster->send.uSpriteX + 1) % 8;
+		if (cmonster->send.uSpriteX >= 6) {
+			cmonster->send.iXpos = 4000;
+			cmonster->send.iYpos = 4000;
+			deathCnt = 0;
+		}
+	}
+	deathCnt++;
+}
 
 void UpdateMonsters()
 {
@@ -465,7 +487,6 @@ void UpdateMonsters()
 		}
 	}
 }
-
 
 //여기다
 void UpdatePlayerLocation(Player* p)
