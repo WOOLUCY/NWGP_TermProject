@@ -26,7 +26,7 @@
 
 
 using namespace std;
-char* SERVERIP = (char*)"192.168.140.47";
+char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 12:40] 192.168.140.47
 
 #define SERVERPORT 9000
@@ -417,7 +417,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			// W Monster Draw																																																			// W Key Draw
 			if (!player.GetHasKey())
 			{
 				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
@@ -425,6 +424,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 
 			// 포탈
+			
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 
 			// W 내 캐릭터에 대해 맞는 체력창 출력

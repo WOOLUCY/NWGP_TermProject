@@ -123,7 +123,6 @@ public:
 	float GetRunSpeed() { return RUN_SPEED_PPS; }
 	void SetRunSpeed(float in) { RUN_SPEED_PPS = in; }
 
-
 public:
 	//»ý¼ºÀÚ
 	Player();
@@ -140,6 +139,9 @@ public:
 	bool IsCollidedCoin(Coin* coin);
 	bool IsCollidedPlatform(Platform platform);
 	bool IsNotCollidedPlatform(Platform platform);
+	void CheckLocationCollideMonster(CMonster* monster);
+
+
 };
 
 

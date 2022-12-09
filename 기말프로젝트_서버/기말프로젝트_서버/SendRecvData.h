@@ -19,6 +19,7 @@ struct ServerToClient {
 	bool			bGameEnd = FALSE;
 	bool            bWin;
 	bool            bIsPlaying = FALSE;
+	int				iTotalCoinNum;
 	
 
 	Player::SendData player[3];

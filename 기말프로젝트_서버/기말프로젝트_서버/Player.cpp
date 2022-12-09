@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 
+
 Player::Player()
 	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(999), pVel(0, 0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
 {
@@ -16,7 +17,7 @@ Player::Player()
 	Send.aabb.left = Send.iXpos + iWidth / 8;
 	Send.aabb.right = Send.iXpos + (iWidth / 4);
 	Send.aabb.top = Send.iYpos;
-	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.3);		// 플레이어 기본 속도는 이것
+	RUN_SPEED_PPS = (10.0 / 60.0) * (10.0 / 0.25);		// 플레이어 기본 속도는 이것
 
 	velocity = { 0, 0 };
 	dir = 0;
@@ -229,28 +230,42 @@ int Player::IsCollidedMonster(CMonster* monster)
 	if (A.left > B.right) return 0;
 	if (A.top > B.bottom) return 0;
 
-	if (A.bottom <= B.bottom - GetHeight() / 6 ) {	// 플레이어 y 위치가 더 높을 경우
+	uRecCollidedMon = monster->GetMonNum();
+	return uRecCollidedMon;
+}
+
+void Player::CheckLocationCollideMonster(CMonster* monster)
+{
+	//여기다가 몬스터 충돌 어쩌구 했으면 좋겠는데 기다려바
+	RECT A = Send.aabb;
+	A.left += Send.iBgMove / 2;
+	A.right += Send.iBgMove / 2;
+	RECT B = monster->GetAABB();
+
+
+	if (A.bottom <= B.bottom - GetHeight() / 6) {	// 플레이어 y 위치가 더 높을 경우
+		Send.uScore += 2;
 		monster->send.isDeath = TRUE;				// 몬스터가 죽는다
 		monster->SetSpriteY(1);
 		monster->send.aabb = { 4000, 4000, 4000, 4000 };
-		printf("몬스터 죽임\n");
+		//printf("몬스터 죽임\n");
 		killMonster = TRUE;
 		fJumpTime = 1;
-		return 0; 
 	}
 
 	else {	// 그게 아니면 플레이어 하트가 사라진다.
 		if (Send.timeRecord == FALSE) {	// 시간 기록 중이 아니라면 
 			iTimeStart = clock();	// 시간 기록 시작
 			Send.timeRecord = TRUE;
-			Send.uHeart--;
+			//여기 막아놈~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~***
+			//--Send.uHeart;
 			printf("한대 맞았다\n");
 		}
 	}
 
-	uRecCollidedMon = monster->GetMonNum();
-	return uRecCollidedMon;
+
 }
+
 
 bool Player::IsCollidedCoin(Coin* coin)
 {
@@ -267,7 +282,6 @@ bool Player::IsCollidedCoin(Coin* coin)
 	if (coin->send.bIsCrush == FALSE) {
 		coin->SetIsCrush(TRUE);
 		coin->send.bIsCrush = TRUE;
-		printf("\n코인 먹었당 %d\n", Send.uScore);
 
 	}
 	return true;

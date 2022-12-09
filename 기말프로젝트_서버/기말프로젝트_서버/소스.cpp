@@ -24,7 +24,6 @@ bool				bThirdSelected = FALSE;
 
 Player				users[3];
 
-//vector<Platform>	platform;
 Platform			platform[PLATFORMNUM];
 
 Coin				coins[COINNUM];
@@ -68,20 +67,22 @@ void InitPlatform()
 	//1층 
 	platform[0] = Platform(0, floor - height * 2);
 	platform[1] = Platform(0, floor - height*2);
-	platform[2] = Platform(width*3, floor - height*2);
-	platform[3] = Platform(width * 5, floor - height * 2);
+	platform[2] = Platform(width*3+100, floor - height*2);
+	platform[3] = Platform(width * 5+150, floor - height * 2);
 
 	//2층
-	platform[4] = Platform(width, floor - height*3);
-	platform[5] = Platform(width*2, floor - height*3);
-	platform[6] = Platform(width*4, floor - height*3);
+	platform[4] = Platform(width+50, floor - height*3);
+	platform[5] = Platform(width*2+50, floor - height*3);
+	platform[6] = Platform(width*4+100, floor - height*3);
 
 	//3층
 	platform[7] = Platform(-100, floor - height*4);
-	platform[8] = Platform(width*5.5, floor - height*4);
+	platform[8] = Platform(width*5.5+100, floor - height*4);
 
 	//4충
 	platform[9] = Platform(600, floor - height*5);
+	platform[1] = Platform(width * 4,  floor - height * 5);
+
 	//platform[10] = (Platform(700, floor - height*5));
 
 
@@ -98,10 +99,6 @@ void InitCoin()
 }
 void InitMonster()
 {
-	// semin, 몬스터 벡터 -> 배열 바꾸면서 send 방법도 바꿈. 
-	// 여기서 recv 하는 게 아니라 send_thread 에서 처음 init 데이터도 보냄.
-	// 어차피 몬스터는 이동하면서 계속 보내질 것이기 때문에 send_thread 에 
-	// 합치는 게 나을 것이라 판단
 
 	for (int i{ 0 }; i < MONSTERNUM; ++i) {
 		cmonsters[i].send.iXpos = i * 150 - 200;
@@ -142,7 +139,6 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 {
 	clock_t start = clock(), pre = clock();
 	double time = 0;
-	// 클라이언트와 데이터 통신
 	int cnt = 0;
 
 	while (1) {
@@ -155,9 +151,12 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		}
 
 		if (CoinCollide.iscrush) {
+
+			++SendData.iTotalCoinNum;
+			printf("총 먹은 갯수 : [%d]\n",SendData.iTotalCoinNum);
 			users[CoinCollide.index].Send.uScore += 1;
 			SendData.player[CoinCollide.index].uScore= users[CoinCollide.index].Send.uScore;//여기서 코인점수 업테이트 해야할듯
-			printf("[%d]번코임충돌,코인점수 [%d]\n",CoinCollide.index, SendData.player[CoinCollide.index].uScore);
+	//		printf("[%d]번코임충돌,코인점수 [%d]\n",CoinCollide.index, SendData.player[CoinCollide.index].uScore);
 
 			CoinCollide.iscrush = false;
 			ResetEvent(hWriteEvent);
@@ -165,20 +164,14 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		}
 
 		if (MonCollide.iscrush) {
-			users[MonCollide.index].Send.uScore += 2;
-			SendData.player[MonCollide.index].uScore = users[MonCollide.index].Send.uScore; //여기서 코인점수 업테이트 해야할듯
 
-			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
-			//여기서 몬스터충돌시하는거 업테이트 하면될듯
+			users[MonCollide.index].CheckLocationCollideMonster(&cmonsters[MonCollide.crushnum]);
+		//	printf("%d번몬스터충돌함\n", MonCollide.crushnum);
 			MonCollide.iscrush = false;
 
 			ResetEvent(hWriteEvent);
 		}
 
-
-
-		// 몬스터 스프라이트 업데이트 ( 이동도 여기서 하면 될 듯 )
-		//printf("UpdateThread불림\n");
 		ChangeMonsterSprite(&MonsterSpriteCnt);
 		ChangeCoinSprite(&CoinSpriteCnt);
 		UpdateMonsters();
@@ -226,7 +219,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
 
-
+	
 	int	playerSpriteCnt = 0;	// 스프라이트 카운트 변수
 
 	// 클라이언트와 데이터 통신
@@ -236,25 +229,18 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 		if (users[index].GetCharNum() == 10000) break;
 		UpdatePlayerLocation(&(users[index]));
-
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
-		if (users[index].Send.uHeart == 0) {
-			users[index].Send.uHeart = 4;
-			//InitPlayer(users[index].Send.charNum, &users[index]);
-		}
 
 		// 몬스터 충돌
 		for (int i = 0; i < MONSTERNUM; i++) {
-			if (0 != users[index].IsCollidedMonster(&cmonsters[i])) {
-				if (cmonsters[i].send.isDeath == TRUE) {
-
-				}
+			if (cmonsters[i].send.isDeath == FALSE && 0 != users[index].IsCollidedMonster(&cmonsters[i])) {
 				MonCollide.iscrush = true;
 				MonCollide.crushnum = i;
 				MonCollide.index = index;
 
 				SetEvent(hWriteEvent);
+
 			}
 		}
 		// 코인 충돌
@@ -334,6 +320,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 	int addrlen;
 	char addr[INET_ADDRSTRLEN];
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
+	bool first = true;
 	
 	ClientToServer* recvData;
 
@@ -350,6 +337,15 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		// ID recv
 		retval = recv(client_sock, buf, sizeof(ClientToServer), MSG_WAITALL);
 		
+		if ( first && users[index].Send.uHeart == 0  ) {
+
+			InitPlayer(users[index].Send.charNum, &users[index]);
+
+		}
+		else {
+			first = false;
+		}
+
 		
 		buf[retval] = '\0';
 
@@ -400,12 +396,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		 }
 
 
-		 //printf("\n접속한 Player의 ID: %ws", users[index].Send.wID);
-		 //printf("\n접속한 Player의 캐릭터: %d\n", recvData->uCharNum);
-		 //printf("\n접속한 Player의 인덱스: %d\n", index);
-
-
-	}
+		}
 	printf("\n#No.%d '%ws' Recv_Thread COMPLATE\n", client_sock, recvData->wId);
 	// 소켓 닫기
 	//closesocket(client_sock);
@@ -488,7 +479,6 @@ void UpdateMonsters()
 	}
 }
 
-//여기다
 void UpdatePlayerLocation(Player* p)
 {
 	p->UpdatePlayerLocation();
