@@ -417,7 +417,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			if (!player.GetHasKey())
+			if (!player.GetHasKey() && GameData.iTotalCoinNum==5)
 			{
 				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
 			}
