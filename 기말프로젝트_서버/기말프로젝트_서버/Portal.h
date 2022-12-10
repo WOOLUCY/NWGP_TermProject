@@ -9,7 +9,7 @@ public:
 	int		iHeight = 206;	// 고정 크기로 sprite 제작할 것이라서 고정해 둠
 
 	RECT	aabb;
-
+	
 	bool	bIsCrush;
 
 	struct SendData {
@@ -56,7 +56,7 @@ public:
 public:
 	//생성자
 	Portal();
-	Portal(int xpos, int ypos, CImage* img);
+	Portal(int xpos, int ypos);
 
 	~Portal();
 

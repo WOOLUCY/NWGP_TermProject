@@ -24,4 +24,5 @@ struct ServerToClient {
 	CMonster::SendData monsters[MONSTERNUM];
 	Coin::SendData coins[COINNUM];
 	Key::SendData key;
+	Portal::SendData portal;
 };

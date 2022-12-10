@@ -5,7 +5,7 @@
 
 
 Player::Player()
-	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(999), pVel(0, 0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0)
+	:wId(0), uSpriteX(0), uSpriteY(0), uCharNum(999), pVel(0, 0), bFind(0), MaxJump(4), JumpHeight(0), uRecCollidedMon(0), bHasKey(FALSE)
 {
 	//일단 걍다 0으로 초기화함 
 	Send.iXpos = 640;
@@ -36,7 +36,7 @@ Player::Player()
 }
 
 Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)
-	:wId(id), uSpriteX(sprite), uCharNum(charnum), pVel(Vel), bFind(find)
+	:wId(id), uSpriteX(sprite), uCharNum(charnum), pVel(Vel), bFind(find), bHasKey(FALSE)
 {
 	//이미지 설정하기 
 
@@ -249,6 +249,21 @@ bool Player::IsCollidedKey(Key key)
 
 	if (key.send.bIsVisible)
 		return true;
+}
+
+bool Player::IsCollidedPortal(Portal portal)
+{
+	RECT A = Send.aabb;
+	A.left += Send.iBgMove / 2;
+	A.right += Send.iBgMove / 2;
+	RECT B = portal.GetAABB();
+
+	if (A.bottom < B.top) return 0;
+	if (A.right < B.left) return 0;
+	if (A.left > B.right) return 0;
+	if (A.top > B.bottom) return 0;
+
+	return true;
 }
 
 void Player::CheckLocationCollideMonster(CMonster* monster)

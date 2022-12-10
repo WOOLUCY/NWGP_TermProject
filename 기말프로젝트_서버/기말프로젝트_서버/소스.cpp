@@ -7,6 +7,7 @@
 #include "Platform.h"
 #include "Coin.h"
 #include "Key.h"
+#include "Portal.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    128
@@ -27,6 +28,7 @@ Player				users[3];
 
 Platform			platform[PLATFORMNUM];
 Key					key;
+Portal				portal;
 
 Coin				coins[COINNUM];
 CMonster			cmonsters[MONSTERNUM];
@@ -56,6 +58,11 @@ void InitKey()
 {
 	// 키 기본 위치
 	key = Key(300, 300);
+}
+
+void InitPortal()
+{
+	portal = Portal(1500, 400);
 }
 
 
@@ -197,6 +204,12 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		if (bFirstSelected && bSecondSelected && bThirdSelected) {
 			SendData.bIsPlaying = TRUE;
 		}
+		// W, 포탈 충돌 종료 판정
+		if (portal.bIsCrush)
+		{
+			WhosWinner();
+			SendData.bGameEnd = TRUE;
+		}
 		// semin, 게임 시간
 		if (TotalClient == 3) {	// 마지막 접속한 사람의 thread에서 계산함
 			pre = clock();
@@ -293,22 +306,28 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 		// key 충돌
 		//SendData.key.bIsVisible = key.send.bIsVisible;
-
 		if (key.send.bIsVisible)
 		{
 			if (users[index].IsCollidedKey(key) && !key.bIsCrush)
 			{
 				key.bIsCrush = TRUE;
 				SendData.key.bIsCrush = TRUE;
+				users[index].bHasKey = TRUE;
 				users[index].Send.bHasKey = TRUE;
 				users[index].Send.uScore += 5;
 				printf("%d번 플레이어가 열쇠를 가짐\n", users[index].Send.charNum);
 			}
 		}
-
 		SendData.key = key.send;
 
-
+		// portal 충돌
+		if (users[index].bHasKey == TRUE)
+		{
+			if (users[index].IsCollidedPortal(portal))
+			{
+				portal.bIsCrush = TRUE;
+			}
+		}
 		if(index==TotalClient-1) SetEvent(hWriteEvent);
 
 		SendData.player[index] = users[index].Send;
@@ -553,6 +572,7 @@ int main(int argc, char* argv[])
 	InitCoin();
 	InitMonster();
 	InitKey();
+	InitPortal();
 
 	int retval;
 	setlocale(LC_ALL, "KOREAN");
@@ -622,6 +642,8 @@ int main(int argc, char* argv[])
 		}
 
 		retval = send(client_sock, (char*)&key.send.iXpos, sizeof(int) * 2, 0);
+
+		retval = send(client_sock, (char*)&portal.send.iXpos, sizeof(int) * 2, 0);
 
 
 

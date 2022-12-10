@@ -56,7 +56,7 @@ SOCKET sock;		// 소켓
 
 vector<Platform> Platforms;
 Key key;
-
+Portal portal;
 
 Player player;
 
@@ -69,6 +69,7 @@ CImage coinImg;
 CImage monsterImg;
 CImage playersImag[6];
 CImage KeyImg;
+CImage PortalImg;
 
 std::wstring s2ws(const std::string& s);
 
@@ -131,6 +132,10 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	retval = recv(sock, (char*)keyTemp, sizeof(int) * 2, 0);
 	key = Key(keyTemp[0], keyTemp[1], &KeyImg);
 
+	int portalTemp[2];
+	retval = recv(sock, (char*)portalTemp, sizeof(int) * 2, 0);
+	portal = Portal(portalTemp[0], portalTemp[1], &PortalImg);
+
 
 	while (1) {
 		retval = recv(sock, (char*)&GameData, sizeof(GameData), 0);
@@ -185,6 +190,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	);
 
 	LoadImg();
+
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -251,11 +257,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	Coin coin;
 
-	// W 포탈 생성
-	static CImage PortalImg;
-	static Portal portal;
-	portal.myImage = &PortalImg;
-
 	// W 하트 생성
 	static CImage HeartImg;
 	static Heart heart;
@@ -291,7 +292,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	switch (iMsg) {
 	case WM_CREATE:
 		setlocale(LC_ALL, "KOREAN");
-		// PlaySound(L"start.wav", NULL, SND_ASYNC);	// 듣기 싫어서 사운드 막아둠 ㅎㅎ
+		PlaySound(L"OST.wav", NULL, SND_ASYNC);
 		startbackgroundImg.Load(L"Image/ID입력창.png");
 		endingImg.Load(L"Image/gameClear.png");
 		backgroundImg.Load(L"Image/background.jpg");
@@ -416,7 +417,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			// 포탈			
+			// W 포탈	
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 
 			// W 내 캐릭터에 대해 맞는 체력창 출력
@@ -438,7 +439,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			if (GameData.key.bIsVisible && !GameData.player[0].bHasKey && !GameData.player[1].bHasKey && !GameData.player[2].bHasKey)
 				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
 
-			//W KEY
+			// W KEY
 			//if (!player.GetHasKey() && GameData.iTotalCoinNum==5)
 			//{
 			//	key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
@@ -571,6 +572,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 						TextOut(mem1dc, GameData.player[i].iXpos + player.GetWidth() / 4 - GameData.player[myCharacter].iBgMove / 2 + GameData.player[i].iBgMove / 2,
 							GameData.player[i].iYpos - 30, GameData.player[i].wID, wcslen((GameData.player[i].wID)));
 					}
+				}
+			}
+
+			// W key
+			for (int i = 0; i < 3; i++) {
+				if (PlayerData.uCharNum == GameData.player[i].charNum + 1) {
+					if(GameData.player[i].bHasKey)
+						key.myImage->Draw(mem1dc, 1200, 60, key.GetWidth() / 4, key.GetHeight() / 4, 0, 0, 163, 148);
 				}
 			}
 

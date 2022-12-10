@@ -4,7 +4,7 @@
 #include "global.h"
 
 Portal::Portal()
-	:iXpos(1000), iYpos(500)
+	:iXpos(1000), iYpos(500), bIsCrush(FALSE)
 {
 	aabb.bottom = iYpos + (iHeight / 2);
 	aabb.left = iXpos;
@@ -21,20 +21,24 @@ Portal::Portal()
 	send.bIsCrush = bIsCrush;
 }
 
-Portal::Portal(int xpos, int ypos, CImage* img)
-	:iXpos(xpos), iYpos(ypos), myImage(img)
+Portal::Portal(int xpos, int ypos)
+	:iXpos(xpos), iYpos(ypos), bIsCrush(FALSE)
 {
 	send.iXpos = iXpos;
 	send.iYpos = iYpos;
 
-	send.aabb.bottom = iYpos + (iHeight / 2);
-	send.aabb.left = iXpos;
-	send.aabb.right = iXpos + (iWidth / 2);
-	send.aabb.top = iYpos + 3;
+	aabb.bottom = iYpos + (iHeight / 2);
+	aabb.left = iXpos;
+	aabb.right = iXpos + (iWidth / 2);
+	aabb.top = iYpos;
+
+	send.aabb.bottom = aabb.bottom;
+	send.aabb.left = aabb.left;
+	send.aabb.right = aabb.right;
+	send.aabb.top = aabb.top;
 
 	send.bIsCrush = bIsCrush;
-	printf("portal aabb: %d, %d, %d, %d\n", send.aabb.left, send.aabb.right,
-		send.aabb.top, send.aabb.bottom);
+	printf("portal aabb: %d, %d, %d, %d\n", send.aabb.left, send.aabb.right, send.aabb.top, send.aabb.bottom);
 }
 
 Portal::~Portal()

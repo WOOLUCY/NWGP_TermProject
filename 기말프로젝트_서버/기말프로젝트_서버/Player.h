@@ -5,6 +5,7 @@
 #include "Platform.h"
 #include "Key.h"
 #include <atlImage.h>
+#include "Portal.h"
 
 struct KeyInput {
 	bool            bRight = 0;
@@ -36,7 +37,7 @@ private:
 	USHORT	uRecCollidedMon;
 
 public:
-
+	bool	bHasKey;
 	struct SendData {
 		int		charNum = 999;
 		int		iXpos;	
@@ -139,6 +140,7 @@ public:
 	// W collsion, semin collision
 	int IsCollidedMonster(CMonster* monster);
 	bool IsCollidedKey(Key key);
+	bool IsCollidedPortal(Portal portal);
 	bool IsCollidedCoin(Coin* coin);
 	bool IsCollidedPlatform(Platform platform);
 	bool IsNotCollidedPlatform(Platform platform);

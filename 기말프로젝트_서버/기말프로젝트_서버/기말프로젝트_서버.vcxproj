@@ -145,6 +145,7 @@
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Key.cpp" />
     <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="Portal.cpp" />
     <ClCompile Include="소스.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="Key.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Portal.h" />
     <ClInclude Include="SendRecvData.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
