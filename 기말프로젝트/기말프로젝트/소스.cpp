@@ -26,8 +26,10 @@
 
 
 using namespace std;
-char* SERVERIP = (char*)"127.0.0.1";
+//char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 12:40] 192.168.140.47
+char* SERVERIP = (char*)"192.168.0.213";
+
 
 #define SERVERPORT 9000
 #define BUFSIZE    128
@@ -292,7 +294,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	switch (iMsg) {
 	case WM_CREATE:
 		setlocale(LC_ALL, "KOREAN");
-		PlaySound(L"OST.wav", NULL, SND_ASYNC);
+		//PlaySound(L"OST.wav", NULL, SND_ASYNC);
 		startbackgroundImg.Load(L"Image/ID입력창.png");
 		endingImg.Load(L"Image/gameClear.png");
 		backgroundImg.Load(L"Image/background.jpg");
@@ -374,7 +376,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont2, (LPARAM)FALSE);
 		}
 		// W render character selection window
-		else if (enterID == TRUE &&	bReady == FALSE) {
+		else if (enterID == TRUE &&	bIsPlaying == FALSE) {
 			// 조건문에 bReady == FALSE 대신 bIsPlaying == FALSE 해두면 3명 접속해야지 실행
 			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 			if (bFirstSelected) {
