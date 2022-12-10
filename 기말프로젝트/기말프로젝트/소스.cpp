@@ -20,6 +20,7 @@
 #include "Heart.h"
 #include "SendRecvData.h"
 #include "CoinEffect.h"
+#include "Clock.h"
 
 #include "Coin.h"
 #include <time.h>
@@ -264,11 +265,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static Heart heart;
 	heart.myImage = &HeartImg;
 
+	static CImage clockImg;
+	static Clock clock;
+	clock.myImage = &clockImg;
+
 	time_t frame_time{};
 	time_t current_time = time(NULL);
 	time_t frame_rate;
 	static int spriteCnt = 0;
 	static int heartSpriteCnt = 0;
+	static int clockSpriteCnt = 0;
 	static int ceSpriteCnt[COINNUM] = {};
 	static USHORT curSpriteCnt = 0;
 
@@ -311,6 +317,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		// W load coin effect image
 		ceImg.Load(L"Image/coin effect.png");
 
+		clockImg.Load(L"Image/clock.png");
 
 		// W load key image
 		KeyImg.Load(L"Image/key.png");
@@ -376,7 +383,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont2, (LPARAM)FALSE);
 		}
 		// W render character selection window
-		else if (enterID == TRUE &&	bIsPlaying == FALSE) {
+		else if (enterID == TRUE && bReady == FALSE) {
 			// 조건문에 bReady == FALSE 대신 bIsPlaying == FALSE 해두면 3명 접속해야지 실행
 			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 			if (bFirstSelected) {
@@ -602,13 +609,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
+			// W clock
+			//clockImg.Draw(mem1dc, 15, 13, 205 /7 , 275 / 7, 0, 0, 205, 275);
+			clock.myImage->Draw(mem1dc, 15, 13, clock.GetWidth() / 7, clock.GetHeight() / 7, 0 + clock.GetWidth() * clock.GetSpriteX(), 0 + clock.GetHeight() * clock.GetSpriteY(), clock.GetWidth(), clock.GetHeight());
+
+
 			TextOut(mem1dc, 1280 / 2 + 3 - 50, 13, L"SCORE", strlen("SCORE"));
 			TextOut(mem1dc, 1280 / 2 + 3 + 50, 13, score.str().c_str(), wcslen(score.str().c_str()));
-			TextOut(mem1dc, 30 + 3, 13, time.str().c_str(), wcslen(time.str().c_str()));
+			TextOut(mem1dc, 85 + 3, 13, time.str().c_str(), wcslen(time.str().c_str()));
 
 			SetTextColor(mem1dc, RGB(255, 255, 255));
 			TextOut(mem1dc, 1280 / 2 - 50, 10, L"SCORE", strlen("SCORE"));
-			TextOut(mem1dc, 30, 10, time.str().c_str(), wcslen(time.str().c_str()));
+			TextOut(mem1dc, 85, 10, time.str().c_str(), wcslen(time.str().c_str()));
 			SetTextColor(mem1dc, RGB(0, 0, 100));
 			TextOut(mem1dc, 1280 / 2 + 50, 10, score.str().c_str(), wcslen(score.str().c_str()));
 			SelectObject(mem1dc, OldFont);
@@ -715,6 +727,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		switch (wParam) {
 		case 1:		
 			heart.ChangeSprite(&heartSpriteCnt);
+			clock.ChangeSprite(&clockSpriteCnt);
 			portal.ChangeSprite(&spriteCnt);
 			for (int i = 0; i < COINNUM; ++i)
 			{
