@@ -6,6 +6,7 @@
 #include <locale.h>
 #include "Platform.h"
 #include "Coin.h"
+#include "Key.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    128
@@ -25,6 +26,7 @@ bool				bThirdSelected = FALSE;
 Player				users[3];
 
 Platform			platform[PLATFORMNUM];
+Key					key;
 
 Coin				coins[COINNUM];
 CMonster			cmonsters[MONSTERNUM];
@@ -49,6 +51,12 @@ void ChangeMonsterSprite(int* count);
 void ChangeCoinSprite(int* count);
 void UpdateMonsters();
 void WhosWinner();
+
+void InitKey()
+{
+	// 키 기본 위치
+	key = Key(300, 300);
+}
 
 
 void InitPlatform()
@@ -158,6 +166,12 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			SendData.player[CoinCollide.index].uScore= users[CoinCollide.index].Send.uScore;//여기서 코인점수 업테이트 해야할듯
 	//		printf("[%d]번코임충돌,코인점수 [%d]\n",CoinCollide.index, SendData.player[CoinCollide.index].uScore);
 
+			// W 코인 총 먹은 개수에 따라서 열쇠의 가시성 결정
+			if (SendData.iTotalCoinNum >= 5)
+			{
+				key.send.bIsVisible = TRUE;
+			}
+
 			CoinCollide.iscrush = false;
 			ResetEvent(hWriteEvent);
 
@@ -175,6 +189,8 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		ChangeMonsterSprite(&MonsterSpriteCnt);
 		ChangeCoinSprite(&CoinSpriteCnt);
 		UpdateMonsters();
+
+
 
 
 		// W, 게임 시작 여부
@@ -231,7 +247,6 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
-
 		// 몬스터 충돌
 		for (int i = 0; i < MONSTERNUM; i++) {
 			if (cmonsters[i].send.isDeath == FALSE && 0 != users[index].IsCollidedMonster(&cmonsters[i])) {
@@ -275,6 +290,24 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 			users[index].velocity.y = 0;
 			users[index].Send.iYpos = 620;
 		}
+
+		// key 충돌
+		//SendData.key.bIsVisible = key.send.bIsVisible;
+
+		if (key.send.bIsVisible)
+		{
+			if (users[index].IsCollidedKey(key) && !key.bIsCrush)
+			{
+				key.bIsCrush = TRUE;
+				SendData.key.bIsCrush = TRUE;
+				users[index].Send.bHasKey = TRUE;
+				users[index].Send.uScore += 5;
+				printf("%d번 플레이어가 열쇠를 가짐\n", users[index].Send.charNum);
+			}
+		}
+
+		SendData.key = key.send;
+
 
 		if(index==TotalClient-1) SetEvent(hWriteEvent);
 
@@ -519,6 +552,7 @@ int main(int argc, char* argv[])
 	InitPlatform();
 	InitCoin();
 	InitMonster();
+	InitKey();
 
 	int retval;
 	setlocale(LC_ALL, "KOREAN");
@@ -585,8 +619,9 @@ int main(int argc, char* argv[])
 
 		for (int i{ 0 }; i < PLATFORMNUM; ++i) {
 			retval = send(client_sock, (char*)&platform[i].send.iXpos, sizeof(int)*2, 0);
-
 		}
+
+		retval = send(client_sock, (char*)&key.send.iXpos, sizeof(int) * 2, 0);
 
 
 

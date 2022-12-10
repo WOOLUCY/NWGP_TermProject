@@ -8,7 +8,7 @@ Player::Player()
 	//일단 걍다 0으로 초기화함 
 	myImage = nullptr;
 
-
+	Send.bHasKey = FALSE;
 	Send.uScore	= 0;
 	// W AABB initialization
 	aabb.bottom = iYpos + (iHeight / 2);

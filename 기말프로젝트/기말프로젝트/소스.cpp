@@ -55,6 +55,7 @@ SOCKET sock;		// 소켓
 
 
 vector<Platform> Platforms;
+Key key;
 
 
 Player player;
@@ -67,6 +68,7 @@ CImage platformImg;
 CImage coinImg;
 CImage monsterImg;
 CImage playersImag[6];
+CImage KeyImg;
 
 std::wstring s2ws(const std::string& s);
 
@@ -125,6 +127,9 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		Platforms.push_back(Platform(temp[0], temp[1], &platformImg));
 	}
 
+	int keyTemp[2];
+	retval = recv(sock, (char*)keyTemp, sizeof(int) * 2, 0);
+	key = Key(keyTemp[0], keyTemp[1], &KeyImg);
 
 
 	while (1) {
@@ -245,12 +250,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	monster.myImage= &monsterImg;
 
 	Coin coin;
-
-
-	// W 열쇠 생성
-	static CImage KeyImg;
-	static Key key;
-	key.myImage = &KeyImg;
 
 	// W 포탈 생성
 	static CImage PortalImg;
@@ -417,14 +416,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			if (!player.GetHasKey() && GameData.iTotalCoinNum==5)
-			{
-				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
-			}
-
-
-			// 포탈
-			
+			// 포탈			
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 
 			// W 내 캐릭터에 대해 맞는 체력창 출력
@@ -441,6 +433,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			for (Platform& temp : Platforms) {
 				platformImg.TransparentBlt(mem1dc, temp.iXpos - bgMove / 2, temp.iYpos, temp.GetWidth() / 2, temp.GetHeight() / 2, 0, 0, temp.GetWidth(), temp.GetHeight(), RGB(255,255,0));
 			}
+
+			// W render key
+			if (GameData.key.bIsVisible && !GameData.player[0].bHasKey && !GameData.player[1].bHasKey && !GameData.player[2].bHasKey)
+				key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
+
+			//W KEY
+			//if (!player.GetHasKey() && GameData.iTotalCoinNum==5)
+			//{
+			//	key.myImage->Draw(mem1dc, key.iXpos - bgMove / 2, key.iYpos, key.GetWidth() / 2, key.GetHeight() / 2, 0, 0, 163, 148);
+			//}
 
 
 

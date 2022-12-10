@@ -44,7 +44,7 @@ public:
 public:
 	//»ý¼ºÀÚ
 	Key();
-	Key(int xpos, int ypos, CImage* img);
+	Key(int xpos, int ypos);
 
 	~Key();
 };

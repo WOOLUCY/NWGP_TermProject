@@ -53,6 +53,7 @@ public:
 		USHORT	uScore;
 		USHORT	uRank;
 		bool	timeRecord = FALSE; // 무적 시간 기록 시작했는지
+		bool	bHasKey;
 	};
 
 	SendData Send;

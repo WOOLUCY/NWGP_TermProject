@@ -1,6 +1,4 @@
 #include "Key.h"
-
-
 #include "global.h"
 
 Key::Key()
@@ -22,8 +20,8 @@ Key::Key()
 	send.bIsCrush = bIsCrush;
 }
 
-Key::Key(int xpos, int ypos, CImage* img)
-	:iXpos(xpos), iYpos(ypos), myImage(img)
+Key::Key(int xpos, int ypos)
+	:iXpos(xpos), iYpos(ypos)
 {
 	send.bIsVisible = FALSE;
 	send.iXpos = iXpos;

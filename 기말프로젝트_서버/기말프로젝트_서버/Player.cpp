@@ -11,6 +11,7 @@ Player::Player()
 	Send.iXpos = 640;
 	Send.iYpos = 620;
 	Send.uScore = 0;
+	Send.bHasKey = FALSE;
 
 	// W AABB initialization
 	Send.aabb.bottom = Send.iYpos + (iHeight / 2);
@@ -232,6 +233,22 @@ int Player::IsCollidedMonster(CMonster* monster)
 
 	uRecCollidedMon = monster->GetMonNum();
 	return uRecCollidedMon;
+}
+
+bool Player::IsCollidedKey(Key key)
+{
+	RECT A = Send.aabb;
+	A.left += Send.iBgMove / 2;
+	A.right += Send.iBgMove / 2;
+	RECT B = key.GetAABB();
+
+	if (A.bottom < B.top) return 0;
+	if (A.right < B.left) return 0;
+	if (A.left > B.right) return 0;
+	if (A.top > B.bottom) return 0;
+
+	if (key.send.bIsVisible)
+		return true;
 }
 
 void Player::CheckLocationCollideMonster(CMonster* monster)
