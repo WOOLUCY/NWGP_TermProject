@@ -328,19 +328,19 @@ void InitPlayer(int num, Player* p)
 		p->Send.uHeart = 5;
 		p->SetRunSpeed(6.5f);
 
-		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1);
+		//printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1);
 	}
 	else if (num == 1) {
 		p->Send.uHeart = 4;
 		p->SetRunSpeed(7.f);
 
-		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1.2);
+		//printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1.2);
 
 	}
 	else if (num == 2) {
 		p->Send.uHeart = 3;
 		p->SetRunSpeed(7.5f);
-		printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 1.35);
+		//printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 1.35);
 
 
 	}
@@ -369,7 +369,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		if (CoinCollide.iscrush) {
 
 			++SendData.iTotalCoinNum;
-			printf("총 먹은 갯수 : [%d]\n",SendData.iTotalCoinNum);
+			//printf("총 먹은 갯수 : [%d]\n",SendData.iTotalCoinNum);
 			users[CoinCollide.index].Send.uScore += 1;
 			SendData.player[CoinCollide.index].uScore= users[CoinCollide.index].Send.uScore;//여기서 코인점수 업테이트 해야할듯
 
@@ -387,7 +387,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		if (MonCollide.iscrush) {
 
 			users[MonCollide.index].CheckLocationCollideMonster(&cmonsters[MonCollide.crushnum]);
-			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
+			//printf("%d번몬스터충돌함\n", MonCollide.crushnum);
 			MonCollide.iscrush = false;
 
 			ResetEvent(hWriteEvent);
@@ -422,7 +422,6 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			}
 			SendData.ServerTime = time;	// time / CLOCKS_PER_SEC 하면 초 단위로 나온다
 		}
-		Sleep(16);
 	}
 
 
@@ -517,7 +516,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 				users[index].bHasKey = TRUE;
 				users[index].Send.bHasKey = TRUE;
 				users[index].Send.uScore += 5;
-				printf("%d번 플레이어가 열쇠를 가짐\n", users[index].Send.charNum);
+				//printf("%d번 플레이어가 열쇠를 가짐\n", users[index].Send.charNum);
 			}
 		}
 		SendData.key = key.send;
@@ -766,7 +765,7 @@ void WhosWinner() {
 	//num[1] = users[1].Send.uRank;
 	//num[2] = users[2].Send.uRank;
 
-	printf("1: %d, 2: %d, 3: %d\n", num[0], num[1], num[2]);
+	//printf("1: %d, 2: %d, 3: %d\n", num[0], num[1], num[2]);
 	bool num1 = false;
 	bool num2 = false;
 	bool num3 = false;

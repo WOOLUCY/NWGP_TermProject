@@ -38,7 +38,7 @@ Portal::Portal(int xpos, int ypos)
 	send.aabb.top = aabb.top;
 
 	send.bIsCrush = bIsCrush;
-	printf("portal aabb: %d, %d, %d, %d\n", send.aabb.left, send.aabb.right, send.aabb.top, send.aabb.bottom);
+	//printf("portal aabb: %d, %d, %d, %d\n", send.aabb.left, send.aabb.right, send.aabb.top, send.aabb.bottom);
 }
 
 Portal::~Portal()

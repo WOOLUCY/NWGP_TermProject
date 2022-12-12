@@ -29,6 +29,4 @@ Platform::Platform(int x, int y)
 	send.aabb.top = iYpos + 3;
 
 	send.bIsCrush = bIsCrush;
-	printf("platform aabb: %d, %d, %d, %d\n", send.aabb.left, send.aabb.right,
-		send.aabb.top, send.aabb.bottom);
 }

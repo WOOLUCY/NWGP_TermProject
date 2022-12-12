@@ -38,7 +38,7 @@ Key::Key(int xpos, int ypos)
 	send.aabb.top = aabb.top;
 
 	send.bIsCrush = bIsCrush;
-	printf("key aabb: %d, %d, %d, %d\n", send.aabb.left, send.aabb.right, send.aabb.top, send.aabb.bottom);
+	//printf("key aabb: %d, %d, %d, %d\n", send.aabb.left, send.aabb.right, send.aabb.top, send.aabb.bottom);
 }
 
 Key::~Key()
