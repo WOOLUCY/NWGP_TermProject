@@ -94,8 +94,8 @@ void InitPlatform()
 	platform[8] = Platform(width*5.5+100, floor - height*4);
 
 	//4Ãæ
-	platform[9] = Platform(600, floor - height*5);
-	platform[1] = Platform(width * 4,  floor - height * 5);
+	platform[9] = Platform(600+40, floor - height*5);
+	platform[1] = Platform(width * 4+40,  floor - height * 5);
 
 	//platform[10] = (Platform(700, floor - height*5));
 
