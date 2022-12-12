@@ -414,7 +414,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			pre = clock();
 			time = (pre - start);
 			//printf("%f 초 \n", time / CLOCKS_PER_SEC);
-			if ((double)(time) / CLOCKS_PER_SEC >= 120 && !gameEnd) {	// 120초(2분) 지나면 게임 끝
+			if ((double)(time) / CLOCKS_PER_SEC >= 30 && !gameEnd) {	// 120초(2분) 지나면 게임 끝
 				//printf("게임 끝났음\n");
 				WhosWinner();
 				gameEnd = TRUE;
@@ -550,7 +550,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 		Sleep(16);
 
 	}
-	SendData.player[index].charNum = 999;
+	SendData.player[index].charNum = 7;
 	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, "end");
 	// 소켓 닫기
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
