@@ -41,7 +41,7 @@ private:
 
 public:
 	struct SendData {
-		int		charNum = 999;
+		int		charNum = 7;
 		int		iXpos;
 		int		iYpos;
 		USHORT	uSpriteX;

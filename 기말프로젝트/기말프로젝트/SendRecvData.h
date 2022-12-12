@@ -8,7 +8,7 @@ using namespace std;
 
 struct ClientToServer {
 	 wchar_t		 wId[21] = { '\0' };
-	 USHORT          uCharNum = 0;
+	 USHORT          uCharNum = 7;
 	 KeyInput        Input = { 0 };
 	 KeyInput        Up = { 0 };
 };
