@@ -28,10 +28,9 @@
 using namespace std;
 //char* SERVERIP = (char*)"192.168.143.53";
 //[이세민] [오후 12:40] 192.168.140.47
-//char* SERVERIP = (char*)"127.0.0.1";
+char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 3:32] 192.168.143.53
-char* SERVERIP = (char*)"192.168.143.53";
-
+//char* SERVERIP = (char*)"192.168.103.181";
 #define SERVERPORT 9000
 #define BUFSIZE    512
 

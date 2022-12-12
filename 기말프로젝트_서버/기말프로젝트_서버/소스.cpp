@@ -326,7 +326,7 @@ void InitPlayer(int num, Player* p)
 {
 	if (num == 0) {
 		p->Send.uHeart = 5;
-		p->SetRunSpeed(p->GetRunSpeed() * 1);
+		p->SetRunSpeed(p->GetRunSpeed() * 1.25);
 
 		printf("InitPlayerÈ£ÃâµÊ %d %f\n", 5, p->GetRunSpeed() * 1);
 	}
