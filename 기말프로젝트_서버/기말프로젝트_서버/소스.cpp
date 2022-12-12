@@ -333,6 +333,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 	clock_t start = clock(), pre = clock();
 	double time = 0;
 	int cnt = 0;
+	bool gameEnd = FALSE;
 
 	while (1) {
 
@@ -380,9 +381,10 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			SendData.bIsPlaying = TRUE;
 		}
 		// W, 포탈 충돌 종료 판정
-		if (portal.bIsCrush)
+		if (portal.bIsCrush && !gameEnd)
 		{
 			WhosWinner();
+			gameEnd = TRUE;
 			SendData.bGameEnd = TRUE;
 		}
 		// semin, 게임 시간
@@ -390,9 +392,10 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			pre = clock();
 			time = (pre - start);
 			//printf("%f 초 \n", time / CLOCKS_PER_SEC);
-			if ((double)(time) / CLOCKS_PER_SEC >= 120 ) {	// 120초(2분) 지나면 게임 끝
+			if ((double)(time) / CLOCKS_PER_SEC >= 120 && !gameEnd) {	// 120초(2분) 지나면 게임 끝
 				//printf("게임 끝났음\n");
 				WhosWinner();
+				gameEnd = TRUE;
 				SendData.bGameEnd = TRUE;
 			}
 			SendData.ServerTime = time;	// time / CLOCKS_PER_SEC 하면 초 단위로 나온다

@@ -631,19 +631,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			endingImg.Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
 			for (int i = 0; i < 3; i++) {
 				// 닉네임도 
-				if (GameData.player[i].uRank == 1) {	// semin, 내림차순으로 해서 3이 1등임... 귀찮아서 이렇게 구현함
+				if (GameData.player[i].uRank == 1 && GameData.player[i].charNum != 999) {	// semin, 내림차순으로 해서 3이 1등임... 귀찮아서 이렇게 구현함
 					playersImag[GameData.player[i].charNum].TransparentBlt(mem1dc, 548, 430, player.GetWidth(), player.GetHeight(),
 							player.GetWidth() * GameData.player[i].uSpriteX, player.GetHeight() * GameData.player[i].uSpriteY, 170, 148, RGB(255, 0, 255));
 					TextOut(mem1dc, 548 + player.GetWidth() / 2, 456 - 60,
 						GameData.player[i].wID, wcslen((GameData.player[i].wID)));
 				}
-				if (GameData.player[i].uRank == 2) {
+				if (GameData.player[i].uRank == 2 && GameData.player[i].charNum != 999) {
 					playersImag[GameData.player[i].charNum].TransparentBlt(mem1dc, 365, 490, player.GetWidth(), player.GetHeight(),
 						player.GetWidth() * GameData.player[i].uSpriteX, player.GetHeight() * GameData.player[i].uSpriteY, 170, 148, RGB(255, 0, 255));
 					TextOut(mem1dc, 365 + player.GetWidth() / 2, 521 - 60,
 						GameData.player[i].wID, wcslen((GameData.player[i].wID)));
 				}
-				if (GameData.player[i].uRank == 3) {
+				if (GameData.player[i].uRank == 3 && GameData.player[i].charNum != 999) {
 					playersImag[GameData.player[i].charNum].TransparentBlt(mem1dc, 729, 490, player.GetWidth(), player.GetHeight(),
 						player.GetWidth()* GameData.player[i].uSpriteX, player.GetHeight()* GameData.player[i].uSpriteY, 170, 148, RGB(255, 0, 255));
 					TextOut(mem1dc, 729 + player.GetWidth() / 2, 521 - 60,
