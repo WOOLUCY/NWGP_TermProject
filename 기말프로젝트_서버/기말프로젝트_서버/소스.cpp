@@ -326,20 +326,20 @@ void InitPlayer(int num, Player* p)
 {
 	if (num == 0) {
 		p->Send.uHeart = 5;
-		p->SetRunSpeed(p->GetRunSpeed() * 1.25);
+		p->SetRunSpeed(6.5f);
 
 		printf("InitPlayerÈ£ÃâµÊ %d %f\n", 5, p->GetRunSpeed() * 1);
 	}
 	else if (num == 1) {
 		p->Send.uHeart = 4;
-		p->SetRunSpeed(p->GetRunSpeed()*1.25);
+		p->SetRunSpeed(7.f);
 
 		printf("InitPlayerÈ£ÃâµÊ %d %f\n", 5, p->GetRunSpeed() * 1.2);
 
 	}
 	else if (num == 2) {
 		p->Send.uHeart = 3;
-		p->SetRunSpeed(p->GetRunSpeed() * 1.5);
+		p->SetRunSpeed(7.5f);
 		printf("InitPlayerÈ£ÃâµÊ %d %f\n", 3, p->GetRunSpeed() * 1.35);
 
 
