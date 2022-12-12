@@ -361,7 +361,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 
 		WaitForSingleObject(hWriteEvent, INFINITE);
 
-		if (cnt == 0 && TotalClient == 3) {
+		if (cnt == 0 && TotalClient == 3 && SendData.bIsPlaying == TRUE ) {
 			start = clock();
 			cnt++;
 		}
