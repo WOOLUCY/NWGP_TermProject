@@ -33,14 +33,6 @@ Player::Player()
 	Send.uSpriteX = uSpriteX;
 	Send.uSpriteY = uSpriteY;
 
-	Send.bHasKey = FALSE;
-	Send.charNum = 7;
-	Send.iBgMove = 0;
-	Send.timeRecord = FALSE;
-	Send.uHeart = 3;
-	Send.uRank = 0;
-	Send.uScore = 0;
-
 }
 
 Player::Player(LPCWCHAR id, USHORT sprite, USHORT charnum, POS position, POS Vel, USHORT heart, USHORT coin, bool find)

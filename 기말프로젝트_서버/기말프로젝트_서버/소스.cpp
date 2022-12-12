@@ -615,14 +615,22 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		// W 캐릭터가 모두 선택되었는지 파악
 		if (recvData->uCharNum == 1)
 		{
+			if (bFirstSelected == FALSE)
+				users[index].Send.uHeart = 5;
 			bFirstSelected = TRUE;
 		}
 		if (recvData->uCharNum == 2)
 		{
+			if (bSecondSelected == FALSE)
+				users[index].Send.uHeart = 4;
+
 			bSecondSelected = TRUE;
 		}
 		if (recvData->uCharNum == 3)
 		{
+			if (bThirdSelected == FALSE)
+				users[index].Send.uHeart = 3;
+				
 			bThirdSelected = TRUE;
 		}
 		

@@ -306,6 +306,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static bool bReady = FALSE;	// 캐릭터 선택 후 게임 시작 판단용
 	// W
 	static bool bIsPlaying = FALSE;	// 다른 접속자들이 모두 선택을 했는지 확인
+	static bool bIsDied = FALSE;	// 다른 접속자들이 모두 선택을 했는지 확인
+	static int  diedNum = 0;
 	static bool bFirstSelected = FALSE;
 	static bool bSecondSelected = FALSE;
 	static bool bThirdSelected = FALSE;
@@ -646,13 +648,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
 
+
+			if (GameData.bGameEnd == FALSE && diedNum == 0) {
+				bIsDied = GameData.bGameEnd;
+				diedNum = 1;
+			}
+
+			if (bIsDied ==  FALSE && GameData.player[myCharacter].uHeart == 0 && GameData.player[myCharacter].charNum != 7) {
+				Gameover.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
+			}
+
 		}
 
-		if (GameData.bGameEnd == FALSE && GameData.player[myCharacter].uHeart == 0 && GameData.player[myCharacter].charNum != 7) {
-			Gameover.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
-		}
 
-		else if (GameData.bGameEnd == TRUE) {
+		if (GameData.bGameEnd == TRUE) {
 			SetTextAlign(mem1dc, TA_CENTER);
 			SetBkMode(mem1dc, TRANSPARENT);
 
