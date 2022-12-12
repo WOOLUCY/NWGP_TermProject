@@ -289,9 +289,27 @@ void Player::CheckLocationCollideMonster(CMonster* monster)
 		if (Send.timeRecord == FALSE) {	// 시간 기록 중이 아니라면 
 			iTimeStart = clock();	// 시간 기록 시작
 			Send.timeRecord = TRUE;
-			//여기 막아놈~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~***
 			Send.uHeart -= 1;
-			printf("한대 맞았다\n");
+			if (Send.uHeart == 0) {
+				printf("플레이어 사망 [%d]\n", Send.charNum);
+				switch (Send.charNum)
+				{
+				case 0:
+					Send.uHeart = 5;
+
+					break;
+				case 1:
+					Send.uHeart = 4;
+
+					break;
+				case 2:
+					Send.uHeart = 3;
+
+					break;
+				default:
+					break;
+				}
+			}
 		}
 	}
 

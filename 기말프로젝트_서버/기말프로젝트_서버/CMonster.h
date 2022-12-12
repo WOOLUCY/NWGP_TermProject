@@ -32,10 +32,6 @@ public:
 	CImage* myImage; //이거로 스프라이트 가리키면 될것같은데 
 
 	USHORT	uCharnum;
-	//USHORT	uSpriteX;
-	//USHORT	uSpriteY;
-	//int		iXpos;	// POS 형을 draw 함수에 쓸 수가 없어서 int, int 로 나누었음
-	//int		iYpos;
 	int		dir;
 	POS		velocity = { 0, 0 };
 	int		iMaxX;
@@ -70,7 +66,7 @@ public:
 	int GetRange() { return iRange; }
 	void SetRange(int in) { iRange = in; }
 
-	void updateRange();
+	void updateRange(int range);
 
 public:
 	//생성자

@@ -16,15 +16,11 @@ CMonster::CMonster()
 	send.aabb.right = send.iXpos + (iWidth / 2);
 	send.aabb.top = send.iYpos;
 
-
-	//send.iXpos = iXpos;
-	//send.iYpos = iYpos;
-	//send.uSpriteX = uSpriteX;
-	//send.uSpriteY = uSpriteY;
-
 }
 
-void CMonster::updateRange() {
+void CMonster::updateRange(int range) {
+	//기본 range 일단 10
+	//iRange = range;
 	iMaxX = send.iXpos + iRange;
 	iMinX = send.iXpos - iRange;
 }
@@ -91,11 +87,7 @@ void CMonster::UpdateMonsterLocation(SendData* d)
 		send.aabb.left = 4000;
 	}
 
-	//d->iXpos = iXpos;
-	//d->iYpos = iYpos;
-	//d->uSpriteX = uSpriteX;
-	//send.uSpriteY = uSpriteY;
-
+	
 }
 
 void CMonster::DeathMonster()

@@ -840,11 +840,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		KillTimer(hWnd, 1);
 
 		PostQuitMessage(0);
-
-		// 소켓 닫기
 		closesocket(sock);
 
-		// 윈속 종료
+
 		WSACleanup();
 		return 0;
 		break; }

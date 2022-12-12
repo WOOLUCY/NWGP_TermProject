@@ -239,78 +239,62 @@ void InitCoin()
 }
 void InitMonster()
 {
-	//coins[42].send.iXpos = platform[2].send.iXpos + 40 * 4;
-	//coins[42].send.iYpos = platform[2].send.iYpos - 30;
-	//coins[43].send.iXpos = platform[3].send.iXpos + 40 * 4;
-	//coins[43].send.iYpos = platform[3].send.iYpos - 30;
-	//coins[44].send.iXpos = platform[4].send.iXpos + 40 * 4;
-	//coins[44].send.iYpos = platform[4].send.iYpos - 30;
-	//coins[45].send.iXpos = platform[5].send.iXpos + 40 * 4;
-	//coins[45].send.iYpos = platform[5].send.iYpos - 30;
-	//coins[46].send.iXpos = platform[6].send.iXpos + 40 * 4;
-	//coins[46].send.iYpos = platform[6].send.iYpos - 30;
-	//coins[47].send.iXpos = platform[7].send.iXpos + 40 * 4;
-	//coins[47].send.iYpos = platform[7].send.iYpos - 30;
-	//coins[48].send.iXpos = platform[8].send.iXpos + 40 * 4;
-	//coins[48].send.iYpos = platform[8].send.iYpos - 30;
-	//coins[49].send.iXpos = platform[9].send.iXpos + 40 * 4;
-	//coins[49].send.iYpos = platform[9].send.iYpos - 30;
 
 	cmonsters[0].send.iXpos = platform[0].send.iXpos + 40 * 4;
 	cmonsters[0].send.iYpos = platform[0].send.iYpos - 50;
-	cmonsters[0].updateRange();
-	cmonsters[0].SetMonNum(0);
+	cmonsters[0].updateRange(10);
+	cmonsters[0].SetMonNum(10);
 
 	cmonsters[1].send.iXpos = platform[1].send.iXpos + 40 * 4;
 	cmonsters[1].send.iYpos = platform[1].send.iYpos - 50;
-	cmonsters[1].updateRange();
-	cmonsters[1].SetMonNum(1);
+	cmonsters[1].updateRange(10);
+	cmonsters[1].SetMonNum(5);
 
 
 	cmonsters[2].send.iXpos = platform[2].send.iXpos + 40 * 4;
 	cmonsters[2].send.iYpos = platform[2].send.iYpos - 50;
-	cmonsters[2].updateRange();
-	cmonsters[2].SetMonNum(2);
+	cmonsters[2].updateRange(10);
+	cmonsters[2].SetMonNum(3);
 
 
 	cmonsters[3].send.iXpos = platform[3].send.iXpos + 40 * 4;
 	cmonsters[3].send.iYpos = platform[3].send.iYpos - 50;
-	cmonsters[3].updateRange();
-	cmonsters[3].SetMonNum(3);
+	cmonsters[3].updateRange(10);
+	cmonsters[3].SetMonNum(7);
 
 
 	cmonsters[4].send.iXpos = platform[4].send.iXpos + 40 * 4;
 	cmonsters[4].send.iYpos = platform[4].send.iYpos - 50;
-	cmonsters[4].updateRange();
+	cmonsters[4].updateRange(10);
 	cmonsters[4].SetMonNum(4);
 
 
 	cmonsters[5].send.iXpos = platform[5].send.iXpos + 40 * 4;
 	cmonsters[5].send.iYpos = platform[5].send.iYpos - 50;
-	cmonsters[5].updateRange();
+	cmonsters[5].updateRange(10);
 	cmonsters[5].SetMonNum(5);
 
 	cmonsters[6].send.iXpos = platform[6].send.iXpos + 40 * 4;
 	cmonsters[6].send.iYpos = platform[6].send.iYpos - 50;
-	cmonsters[6].updateRange();
+	cmonsters[6].updateRange(10);
 	cmonsters[6].SetMonNum(6);
 
 
 	cmonsters[7].send.iXpos = platform[7].send.iXpos + 40 * 4;
 	cmonsters[7].send.iYpos = platform[7].send.iYpos - 50;
-	cmonsters[7].updateRange();
+	cmonsters[7].updateRange(10);
 	cmonsters[7].SetMonNum(7);
 
 
 	cmonsters[8].send.iXpos = platform[8].send.iXpos + 40 * 4;
 	cmonsters[8].send.iYpos = platform[8].send.iYpos - 50;
-	cmonsters[8].updateRange();
+	cmonsters[8].updateRange(10);
 	cmonsters[8].SetMonNum(8);
 
 
 	cmonsters[9].send.iXpos = platform[9].send.iXpos + 40 * 4;
 	cmonsters[9].send.iYpos = platform[9].send.iYpos - 50;
-	cmonsters[9].updateRange();
+	cmonsters[9].updateRange(10);
 	cmonsters[9].SetMonNum(9);
 
 
@@ -328,13 +312,13 @@ void InitPlayer(int num, Player* p)
 		p->Send.uHeart = 4;
 		p->SetRunSpeed(p->GetRunSpeed()*1.25);
 
-		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1.25);
+		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1.2);
 
 	}
 	else if (num == 2) {
 		p->Send.uHeart = 3;
 		p->SetRunSpeed(p->GetRunSpeed() * 1.5);
-		printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 1.5);
+		printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 1.35);
 
 
 	}
@@ -365,7 +349,6 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			printf("총 먹은 갯수 : [%d]\n",SendData.iTotalCoinNum);
 			users[CoinCollide.index].Send.uScore += 1;
 			SendData.player[CoinCollide.index].uScore= users[CoinCollide.index].Send.uScore;//여기서 코인점수 업테이트 해야할듯
-	//		printf("[%d]번코임충돌,코인점수 [%d]\n",CoinCollide.index, SendData.player[CoinCollide.index].uScore);
 
 			// W 코인 총 먹은 개수에 따라서 열쇠의 가시성 결정
 			if (SendData.iTotalCoinNum >= 5)
@@ -381,7 +364,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		if (MonCollide.iscrush) {
 
 			users[MonCollide.index].CheckLocationCollideMonster(&cmonsters[MonCollide.crushnum]);
-		//	printf("%d번몬스터충돌함\n", MonCollide.crushnum);
+			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
 			MonCollide.iscrush = false;
 
 			ResetEvent(hWriteEvent);
@@ -390,8 +373,6 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		ChangeMonsterSprite(&MonsterSpriteCnt);
 		ChangeCoinSprite(&CoinSpriteCnt);
 		UpdateMonsters();
-
-
 
 
 		// W, 게임 시작 여부
@@ -545,9 +526,8 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	SendData.player[index].charNum = 999;
 	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, "end");
 	// 소켓 닫기
-	//closesocket(client_sock);
-
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
+
 	return 0;
 
 }
@@ -645,10 +625,10 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		}
 	printf("\n#No.%d '%ws' Recv_Thread COMPLATE\n", client_sock, recvData->wId);
 	// 소켓 닫기
-	//closesocket(client_sock);
 
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
 	--TotalClient;
+	closesocket(client_sock);
 	return 0;
 }
 
