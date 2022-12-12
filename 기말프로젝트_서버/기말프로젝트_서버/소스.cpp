@@ -232,6 +232,28 @@ void InitCoin()
 	coins[49].iYpos = platform[9].send.iYpos - 30;
 
 
+	coins[50].iXpos = platform[0].send.iXpos + 40 * 5;
+	coins[50].iYpos = platform[0].send.iYpos - 30;
+	coins[51].iXpos = platform[1].send.iXpos + 40 * 5;
+	coins[51].iYpos = platform[1].send.iYpos - 30;
+	coins[52].iXpos = platform[2].send.iXpos + 40 * 5;
+	coins[52].iYpos = platform[2].send.iYpos - 30;
+	coins[53].iXpos = platform[3].send.iXpos + 40 * 5;
+	coins[53].iYpos = platform[3].send.iYpos - 30;
+	coins[54].iXpos = platform[4].send.iXpos + 40 * 5;
+	coins[54].iYpos = platform[4].send.iYpos - 30;
+	coins[55].iXpos = platform[5].send.iXpos + 40 * 5;
+	coins[55].iYpos = platform[5].send.iYpos - 30;
+	coins[56].iXpos = platform[6].send.iXpos + 40 * 5;
+	coins[56].iYpos = platform[6].send.iYpos - 30;
+	coins[57].iXpos = platform[7].send.iXpos + 40 * 5;
+	coins[57].iYpos = platform[7].send.iYpos - 30;
+	coins[58].iXpos = platform[8].send.iXpos + 40 * 5;
+	coins[58].iYpos = platform[8].send.iYpos - 30;
+	coins[59].iXpos = platform[9].send.iXpos + 40 * 5;
+	coins[59].iYpos = platform[9].send.iYpos - 30;
+
+
 
 	for (int i = 0; i < COINNUM; ++i) {
 		coins[i].CoinUpdate();
@@ -434,7 +456,9 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	while (1) {
 		//printf("[%d]번째 sendThread\n", index);
 
-		if (users[index].GetCharNum() == 10000) break;
+		if (users[index].GetCharNum() == 10000) { 
+			break;
+		};
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
@@ -631,7 +655,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
 	--TotalClient;
-	closesocket(client_sock);
+	//closesocket(client_sock);
 	return 0;
 }
 
