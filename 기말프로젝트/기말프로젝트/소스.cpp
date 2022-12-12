@@ -28,9 +28,9 @@
 using namespace std;
 //char* SERVERIP = (char*)"192.168.143.53";
 //[이세민] [오후 12:40] 192.168.140.47
-char* SERVERIP = (char*)"127.0.0.1";
+//char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 3:32] 192.168.143.53
-//char* SERVERIP = (char*)"192.168.103.181";
+char* SERVERIP = (char*)"192.168.43.28";
 
 //char* SERVERIP = (char*)"192.168.103.181";
 #define SERVERPORT 9000
@@ -413,7 +413,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 		else if ( GameData.bGameEnd == FALSE ) {
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + bgMove, 220, 2560, 1600);
-
+			// W 포탈	
+			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 			//playerImg.Draw
 			for (int i = 0; i < 3; ++i) {
 				if (GameData.player[i].charNum < 3) {
@@ -438,10 +439,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 					}
 				}
 			}
-
-
-			// W 포탈	
-			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
 
 			// W 내 캐릭터에 대해 맞는 체력창 출력
 			for (int i = 0; i < 3; i++) {
