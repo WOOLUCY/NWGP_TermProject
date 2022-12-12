@@ -33,7 +33,6 @@ char* SERVERIP = (char*)"127.0.0.1";
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
-#define BUFSIZE    256
 
 #define	CHILD_ID_EDIT	112
 
