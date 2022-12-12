@@ -10,7 +10,7 @@
 #include "Portal.h"
 
 #define SERVERPORT 9000
-#define BUFSIZE    128
+#define BUFSIZE    512
 
 
 
@@ -716,6 +716,14 @@ void UpdatePlayerLocation(Player* p)
 
 
 void WhosWinner() {
+	//vector<Player> v{users[0], users[1], users[2]};
+	//std::sort(v.begin(), v.end(), [](const Player& a, const Player& b) {
+	//	return a.Send.uScore >= b.Send.uScore;
+	//	});
+
+	//users[0] = v[0];
+	//users[1] = v[1];
+	//users[2] = v[2];
 	int num[3] = { users[0].Send.uScore, users[1].Send.uScore, users[2].Send.uScore};
 	int i, j;
 	int minIndex;
@@ -729,14 +737,29 @@ void WhosWinner() {
 		num[i] = num[minIndex];
 		num[minIndex] = temp;
 	}
+
+	//num[0] = users[0].Send.uRank;
+	//num[1] = users[1].Send.uRank;
+	//num[2] = users[2].Send.uRank;
+
 	printf("1: %d, 2: %d, 3: %d\n", num[0], num[1], num[2]);
+	bool num1 = false;
+	bool num2 = false;
+	bool num3 = false;
+
 	for (int i = 0; i < 3; i++) {
-		if (num[0] == users[i].Send.uScore)
+		if (num[0] == users[i].Send.uScore && num1 == false) {
 			users[i].Send.uRank = 3;
-		if (num[1] == users[i].Send.uScore)
+			num1 = true;
+		}
+		else if (num[1] == users[i].Send.uScore && num2 == false) {
 			users[i].Send.uRank = 2;
-		if (num[2] == users[i].Send.uScore)
+			num2 = true;
+		}
+		else if (num[2] == users[i].Send.uScore && num3 == false) {
 			users[i].Send.uRank = 1;
+			num3 = true;
+		}
 	}
 
 }

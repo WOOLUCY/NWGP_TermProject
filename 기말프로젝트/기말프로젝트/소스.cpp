@@ -25,8 +25,6 @@
 #include "Coin.h"
 #include <time.h>
 
-#define COINNUM 50
-
 using namespace std;
 char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 12:40] 192.168.140.47
@@ -34,7 +32,7 @@ char* SERVERIP = (char*)"127.0.0.1";
 
 
 #define SERVERPORT 9000
-#define BUFSIZE    128
+#define BUFSIZE    512
 
 #define	CHILD_ID_EDIT	112
 
