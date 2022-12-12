@@ -304,6 +304,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static bool bFirstSelected = FALSE;
 	static bool bSecondSelected = FALSE;
 	static bool bThirdSelected = FALSE;
+	static bool startnum = 0;
 
 	// semin, Background
 	static int bgMove = 0;
@@ -372,7 +373,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		
 		// W 캐릭터 선택 정보
 		// 데이터 전송하는 시점을 창 띄우자마자로 바꿀 수 있는지
-		bIsPlaying = GameData.bIsPlaying;
+		if (GameData.bIsPlaying == TRUE && startnum == 0) {
+			bIsPlaying = GameData.bIsPlaying;
+			startnum = 1;
+		}
 		for (int i = 0; i < 3; ++i)
 		{
 			if (GameData.player[i].charNum + 1 == 1) {
@@ -411,7 +415,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 		}
-		else if ( GameData.bGameEnd == FALSE ) {
+		else if ( GameData.bGameEnd == FALSE && bIsPlaying == TRUE ) {
 			background.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 200 + bgMove, 220, 2560, 1600);
 			// W 포탈	
 			portal.myImage->TransparentBlt(mem1dc, portal.iXpos - bgMove / 2, portal.iYpos, portal.GetWidth() / 1.5, portal.GetHeight() / 1.5, 0 + portal.GetWidth() * portal.GetSpriteX(), 0 + portal.GetHeight() * portal.GetSpriteY(), 182, 206, RGB(0, 0, 255));
