@@ -28,8 +28,10 @@
 using namespace std;
 //char* SERVERIP = (char*)"192.168.143.53";
 //[이세민] [오후 12:40] 192.168.140.47
-char* SERVERIP = (char*)"127.0.0.1";
+//char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 3:32] 192.168.143.53
+char* SERVERIP = (char*)"192.168.103.181";
+
 //char* SERVERIP = (char*)"192.168.103.181";
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -640,6 +642,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		else if (GameData.bGameEnd == TRUE) {
+			SetTextAlign(mem1dc, TA_CENTER);
+			SetBkMode(mem1dc, TRANSPARENT);
+
+			HFONT hFont, OldFont;
+			hFont = CreateFont(16, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("Rix고딕 B"));
+			OldFont = (HFONT)SelectObject(mem1dc, hFont);
 			endingImg.Draw(mem1dc, 0, 0, rect.right, rect.bottom, background.window_left, background.window_bottom, 1280, 800);
 			for (int i = 0; i < 3; i++) {
 				// 닉네임도 
