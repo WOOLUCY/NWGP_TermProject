@@ -649,15 +649,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			DeleteObject(hFont);
 
 
-			if (GameData.bGameEnd == FALSE && diedNum == 0) {
-				bIsDied = GameData.bGameEnd;
-				diedNum = 1;
-			}
+		}
 
-			if (bIsDied ==  FALSE && GameData.player[myCharacter].uHeart == 0 && GameData.player[myCharacter].charNum != 7) {
-				Gameover.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
-			}
+		if (GameData.bGameEnd == FALSE && diedNum == 0) {
+			bIsDied = GameData.bGameEnd;
+			diedNum = 1;
+		}
 
+		if (bIsPlaying == TRUE && bIsDied == FALSE && GameData.player[myCharacter].uHeart == 0 && GameData.player[myCharacter].charNum != 7) {
+			Gameover.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 		}
 
 
