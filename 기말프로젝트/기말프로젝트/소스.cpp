@@ -28,9 +28,9 @@
 using namespace std;
 //char* SERVERIP = (char*)"192.168.143.53";
 //[이세민] [오후 12:40] 192.168.140.47
-//char* SERVERIP = (char*)"127.0.0.1";
+char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 3:32] 192.168.143.53
-char* SERVERIP = (char*)"192.168.103.181";
+//char* SERVERIP = (char*)"192.168.103.181";
 
 //char* SERVERIP = (char*)"192.168.103.181";
 #define SERVERPORT 9000
@@ -293,6 +293,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	// ID
 	static bool enterID = FALSE;		// ID 입력 후 '게임 시작' 판단용
+	static bool ready = FALSE;
 	static wchar_t wID[21] = { NULL };
 	static bool containID = FALSE;		// ID 에 문자 하나라도 들어갔는지 검사
 
@@ -396,7 +397,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont2, (LPARAM)FALSE);
 		}
 		// W render character selection window
-		else if (enterID == TRUE && bIsPlaying == FALSE) {
+		else if (ready == TRUE && bIsPlaying == FALSE) {
 			// 조건문에 bReady == FALSE 대신 bIsPlaying == FALSE 해두면 3명 접속해야지 실행
 			selectBackground.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 			if (bFirstSelected) {
@@ -691,6 +692,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			ConvertWCtoC(PlayerData.wId);
 
 			enterID = TRUE;
+			ready = TRUE;
 			DestroyWindow(hEdit);
 			SetTimer(hWnd, 1, 16, NULL);
 		}
