@@ -74,6 +74,7 @@ ServerToClient GameData;
 CImage platformImg;
 CImage coinImg;
 CImage monsterImg;
+CImage gameoverImg;
 CImage playersImag[8];
 CImage KeyImg;
 CImage PortalImg;
@@ -87,6 +88,7 @@ void LoadImg()
 	platformImg.Load(L"Image/platform5.png");
 	coinImg.Load(L"Image/coin3.png");
 	monsterImg.Load(L"Image/Monster2.png");
+	gameoverImg.Load(L"Image/GameOver.png");
 
 	playersImag[0].Load(L"Image/Cookies3-2.png");	
 	playersImag[1].Load(L"Image/Cookies2-2.png");
@@ -238,6 +240,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	static Background startBackground;
 	static Background background;
+	static Background Gameover;
+	Gameover.Image = &gameoverImg;
 
 
 	static CImage startbackgroundImg;
@@ -642,6 +646,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
 
+		}
+
+		if (GameData.bGameEnd == FALSE && GameData.player[myCharacter].uHeart == 0 && GameData.player[myCharacter].charNum != 7) {
+			Gameover.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
 		}
 
 		else if (GameData.bGameEnd == TRUE) {
