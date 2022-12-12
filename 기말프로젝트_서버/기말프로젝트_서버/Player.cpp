@@ -195,7 +195,8 @@ void Player::UpdatePlayerLocation()
 	Send.aabb.right = Send.iXpos + (iWidth / 8 * 3);
 	Send.aabb.top = Send.iYpos;
 
-	//printf("player: %d %d %d %d\n", Send.aabb.bottom, Send.aabb.left, Send.aabb.right, Send.aabb.left);
+	//
+	// ("player: %d %d %d %d\n", Send.aabb.bottom, Send.aabb.left, Send.aabb.right, Send.aabb.left);
 	//printf("%d %d \n", Send.iXpos, Send.iYpos);
 }
 
@@ -291,10 +292,13 @@ void Player::CheckLocationCollideMonster(CMonster* monster)
 			Send.timeRecord = TRUE;
 			if (Send.uHeart > 0 )
 				Send.uHeart -= 1;
-			printf("하트 감소 [%d]\n", Send.charNum);
+			//printf("하트 감소 [%d]\n", Send.charNum);
 			if (Send.uHeart == 0) {
-				printf("플레이어 사망 [%d]\n", Send.charNum);
-				switch (Send.charNum)
+
+				Send.iXpos += 3000;
+				Send.iYpos += 3000;
+				//printf("플레이어 사망 [%d]\n", Send.charNum);
+				/*switch (Send.charNum)
 				{
 				case 0:
 					Send.uHeart = 5;
@@ -310,7 +314,7 @@ void Player::CheckLocationCollideMonster(CMonster* monster)
 					break;
 				default:
 					break;
-				}
+				}*/
 			}
 		}
 	}

@@ -31,9 +31,9 @@ using namespace std;
 //char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 3:32] 192.168.143.53
 //char* SERVERIP = (char*)"192.168.43.28";
-//char* SERVERIP = (char*)"127.0.0.1";
+char* SERVERIP = (char*)"127.0.0.1";
 
-char* SERVERIP = (char*)"192.168.43.28";
+//char* SERVERIP = (char*)"192.168.103.181";
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
@@ -74,6 +74,7 @@ ServerToClient GameData;
 CImage platformImg;
 CImage coinImg;
 CImage monsterImg;
+CImage gameoverImg;
 CImage playersImag[8];
 CImage KeyImg;
 CImage PortalImg;
@@ -87,6 +88,7 @@ void LoadImg()
 	platformImg.Load(L"Image/platform5.png");
 	coinImg.Load(L"Image/coin3.png");
 	monsterImg.Load(L"Image/Monster2.png");
+	gameoverImg.Load(L"Image/GameOver.png");
 
 	playersImag[0].Load(L"Image/Cookies3-2.png");	
 	playersImag[1].Load(L"Image/Cookies2-2.png");
@@ -238,6 +240,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	static Background startBackground;
 	static Background background;
+	static Background Gameover;
+	Gameover.Image = &gameoverImg;
 
 
 	static CImage startbackgroundImg;
@@ -302,6 +306,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static bool bReady = FALSE;	// 캐릭터 선택 후 게임 시작 판단용
 	// W
 	static bool bIsPlaying = FALSE;	// 다른 접속자들이 모두 선택을 했는지 확인
+	static bool bIsDied = FALSE;	// 다른 접속자들이 모두 선택을 했는지 확인
+	static int  diedNum = 0;
 	static bool bFirstSelected = FALSE;
 	static bool bSecondSelected = FALSE;
 	static bool bThirdSelected = FALSE;
@@ -642,9 +648,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			SelectObject(mem1dc, OldFont);
 			DeleteObject(hFont);
 
+
 		}
 
-		else if (GameData.bGameEnd == TRUE) {
+		if (GameData.bGameEnd == FALSE && diedNum == 0) {
+			bIsDied = GameData.bGameEnd;
+			diedNum = 1;
+		}
+
+		if (bIsPlaying == TRUE && bIsDied == FALSE && GameData.player[myCharacter].uHeart == 0 && GameData.player[myCharacter].charNum != 7) {
+			Gameover.Image->Draw(mem1dc, 0, 0, rect.right, rect.bottom, 0, 0, 1280, 800);
+		}
+
+
+		if (GameData.bGameEnd == TRUE) {
 			SetTextAlign(mem1dc, TA_CENTER);
 			SetBkMode(mem1dc, TRANSPARENT);
 
