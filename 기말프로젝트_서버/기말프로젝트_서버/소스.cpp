@@ -374,7 +374,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 			SendData.player[CoinCollide.index].uScore= users[CoinCollide.index].Send.uScore;//여기서 코인점수 업테이트 해야할듯
 
 			// W 코인 총 먹은 개수에 따라서 열쇠의 가시성 결정
-			if (SendData.iTotalCoinNum >= 5)
+			if (SendData.iTotalCoinNum >= 30)
 			{
 				key.send.bIsVisible = TRUE;
 			}
