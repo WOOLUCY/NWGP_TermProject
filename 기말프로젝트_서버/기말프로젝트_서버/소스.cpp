@@ -328,19 +328,19 @@ void InitPlayer(int num, Player* p)
 		p->Send.uHeart = 5;
 		p->SetRunSpeed(6.5f);
 
-		//printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1);
+		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1);
 	}
 	else if (num == 1) {
 		p->Send.uHeart = 4;
 		p->SetRunSpeed(7.f);
 
-		//printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1.2);
+		printf("InitPlayer호출됨 %d %f\n", 5, p->GetRunSpeed() * 1.2);
 
 	}
 	else if (num == 2) {
 		p->Send.uHeart = 3;
 		p->SetRunSpeed(7.5f);
-		//printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 1.35);
+		printf("InitPlayer호출됨 %d %f\n", 3, p->GetRunSpeed() * 1.35);
 
 
 	}
@@ -369,7 +369,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		if (CoinCollide.iscrush) {
 
 			++SendData.iTotalCoinNum;
-			//printf("총 먹은 갯수 : [%d]\n",SendData.iTotalCoinNum);
+			printf("총 먹은 갯수 : [%d]\n",SendData.iTotalCoinNum);
 			users[CoinCollide.index].Send.uScore += 1;
 			SendData.player[CoinCollide.index].uScore= users[CoinCollide.index].Send.uScore;//여기서 코인점수 업테이트 해야할듯
 
@@ -387,7 +387,7 @@ DWORD WINAPI Update_Thread(LPVOID arg)
 		if (MonCollide.iscrush) {
 
 			users[MonCollide.index].CheckLocationCollideMonster(&cmonsters[MonCollide.crushnum]);
-			//printf("%d번몬스터충돌함\n", MonCollide.crushnum);
+			printf("%d번몬스터충돌함\n", MonCollide.crushnum);
 			MonCollide.iscrush = false;
 
 			ResetEvent(hWriteEvent);
@@ -517,7 +517,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 				users[index].bHasKey = TRUE;
 				users[index].Send.bHasKey = TRUE;
 				users[index].Send.uScore += 5;
-				//printf("%d번 플레이어가 열쇠를 가짐\n", users[index].Send.charNum);
+				printf("%d번 플레이어가 열쇠를 가짐\n", users[index].Send.charNum);
 			}
 		}
 		SendData.key = key.send;
@@ -551,7 +551,7 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 
 	}
 	SendData.player[index].charNum = 7;
-	printf("\n#No.%d '%s' CLOSE COMPLATE\n", client_sock, "end");
+	printf("\n#No.%d '%s' SENDING COMPLATE\n", client_sock, "end");
 	// 소켓 닫기
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
 
@@ -615,22 +615,14 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 		// W 캐릭터가 모두 선택되었는지 파악
 		if (recvData->uCharNum == 1)
 		{
-			if (bFirstSelected == FALSE)
-				users[index].Send.uHeart = 5;
 			bFirstSelected = TRUE;
 		}
 		if (recvData->uCharNum == 2)
 		{
-			if (bSecondSelected == FALSE)
-				users[index].Send.uHeart = 4;
-
 			bSecondSelected = TRUE;
 		}
 		if (recvData->uCharNum == 3)
 		{
-			if (bThirdSelected == FALSE)
-				users[index].Send.uHeart = 3;
-				
 			bThirdSelected = TRUE;
 		}
 		
