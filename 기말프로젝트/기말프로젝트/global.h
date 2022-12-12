@@ -1,8 +1,8 @@
 #pragma once
 
 #define PLATFORMNUM 10
-#define COINNUM 10
-#define MONSTERNUM 11
+#define COINNUM 50
+#define MONSTERNUM 10
 
 
 struct POS {

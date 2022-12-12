@@ -81,7 +81,6 @@ void InitPlatform()
 	
 	//1Ãþ 
 	platform[0] = Platform(0, floor - height * 2);
-	platform[1] = Platform(0, floor - height*2);
 	platform[2] = Platform(width*3+100, floor - height*2);
 	platform[3] = Platform(width * 5+150, floor - height * 2);
 
@@ -106,21 +105,216 @@ void InitPlatform()
 void InitCoin()
 {
 
+	coins[0].send.iXpos = platform[0].send.iXpos;
+	coins[0].send.iYpos = platform[0].send.iYpos - 30;
+
+	coins[1].send.iXpos = platform[1].send.iXpos;
+	coins[1].send.iYpos = platform[1].send.iYpos - 30;
+
+	coins[2].send.iXpos = platform[2].send.iXpos;
+	coins[2].send.iYpos = platform[2].send.iYpos - 30;
+
+	coins[3].send.iXpos = platform[3].send.iXpos;
+	coins[3].send.iYpos = platform[3].send.iYpos - 30;
+
+	coins[4].send.iXpos = platform[4].send.iXpos;
+	coins[4].send.iYpos = platform[4].send.iYpos - 30;
+
+	coins[5].send.iXpos = platform[5].send.iXpos;
+	coins[5].send.iYpos = platform[5].send.iYpos - 30;
+
+	coins[6].send.iXpos = platform[6].send.iXpos;
+	coins[6].send.iYpos = platform[6].send.iYpos - 30;
+								   
+	coins[7].send.iXpos = platform[7].send.iXpos;
+	coins[7].send.iYpos = platform[7].send.iYpos - 30;
+
+	coins[8].send.iXpos = platform[8].send.iXpos;
+	coins[8].send.iYpos = platform[8].send.iYpos - 30;
+
+	coins[9].send.iXpos = platform[9].send.iXpos;
+	coins[9].send.iYpos = platform[9].send.iYpos - 30;
+
+	//
+	coins[10].send.iXpos = platform[0].send.iXpos + 40;
+	coins[10].send.iYpos = platform[0].send.iYpos - 30;
+	coins[11].send.iXpos = platform[1].send.iXpos + 40;
+	coins[11].send.iYpos = platform[1].send.iYpos - 30;
+	coins[12].send.iXpos = platform[2].send.iXpos + 40;
+	coins[12].send.iYpos = platform[2].send.iYpos - 30;
+	coins[13].send.iXpos = platform[3].send.iXpos + 40;
+	coins[13].send.iYpos = platform[3].send.iYpos - 30;
+	coins[14].send.iXpos = platform[4].send.iXpos + 40;
+	coins[14].send.iYpos = platform[4].send.iYpos - 30;
+	coins[15].send.iXpos = platform[5].send.iXpos + 40;
+	coins[15].send.iYpos = platform[5].send.iYpos - 30;
+	coins[16].send.iXpos = platform[6].send.iXpos + 40;
+	coins[16].send.iYpos = platform[6].send.iYpos - 30;
+	coins[17].send.iXpos = platform[7].send.iXpos + 40;
+	coins[17].send.iYpos = platform[7].send.iYpos - 30;
+	coins[18].send.iXpos = platform[8].send.iXpos + 40;
+	coins[18].send.iYpos = platform[8].send.iYpos - 30;
+	coins[19].send.iXpos = platform[9].send.iXpos + 40;
+	coins[19].send.iYpos = platform[9].send.iYpos - 30;
+
+
+	coins[20].send.iXpos = platform[0].send.iXpos + 40 * 2;
+	coins[20].send.iYpos = platform[0].send.iYpos - 30;
+
+	coins[21].send.iXpos = platform[1].send.iXpos + 40 * 2;
+	coins[21].send.iYpos = platform[1].send.iYpos - 30;
+
+	coins[22].send.iXpos = platform[2].send.iXpos + 40 * 2;
+	coins[22].send.iYpos = platform[2].send.iYpos - 30;
+
+	coins[23].send.iXpos = platform[3].send.iXpos + 40 * 2;
+	coins[23].send.iYpos = platform[3].send.iYpos - 30;
+
+	coins[24].send.iXpos = platform[4].send.iXpos + 40 * 2;
+	coins[24].send.iYpos = platform[4].send.iYpos - 30;
+
+	coins[25].send.iXpos = platform[5].send.iXpos + 40 * 2;
+	coins[25].send.iYpos = platform[5].send.iYpos - 30;
+
+	coins[26].send.iXpos = platform[6].send.iXpos + 40 * 2;
+	coins[26].send.iYpos = platform[6].send.iYpos - 30;
+
+	coins[27].send.iXpos = platform[7].send.iXpos + 40 * 2;
+	coins[27].send.iYpos = platform[7].send.iYpos - 30;
+
+	coins[28].send.iXpos = platform[8].send.iXpos + 40 * 2;
+	coins[28].send.iYpos = platform[8].send.iYpos - 30;
+
+	coins[29].send.iXpos = platform[9].send.iXpos + 40 * 2;
+	coins[29].send.iYpos = platform[9].send.iYpos - 30;
+//
+	coins[30].send.iXpos = platform[0].send.iXpos + 40*3;
+	coins[30].send.iYpos = platform[0].send.iYpos - 30;
+	coins[31].send.iXpos = platform[1].send.iXpos + 40*3;
+	coins[31].send.iYpos = platform[1].send.iYpos - 30;
+	coins[32].send.iXpos = platform[2].send.iXpos + 40*3;
+	coins[32].send.iYpos = platform[2].send.iYpos - 30;
+	coins[33].send.iXpos = platform[3].send.iXpos + 40*3;
+	coins[33].send.iYpos = platform[3].send.iYpos - 30;
+	coins[34].send.iXpos = platform[4].send.iXpos + 40*3;
+	coins[34].send.iYpos = platform[4].send.iYpos - 30;
+	coins[35].send.iXpos = platform[5].send.iXpos + 40*3;
+	coins[35].send.iYpos = platform[5].send.iYpos - 30;
+	coins[36].send.iXpos = platform[6].send.iXpos + 40*3;
+	coins[36].send.iYpos = platform[6].send.iYpos - 30;
+	coins[37].send.iXpos = platform[7].send.iXpos + 40*3;
+	coins[37].send.iYpos = platform[7].send.iYpos - 30;
+	coins[38].send.iXpos = platform[8].send.iXpos + 40*3;
+	coins[38].send.iYpos = platform[8].send.iYpos - 30;
+	coins[39].send.iXpos = platform[9].send.iXpos + 40*3;
+	coins[39].send.iYpos = platform[9].send.iYpos - 30;
+
+	//
+	coins[40].send.iXpos = platform[0].send.iXpos + 40 * 4;
+	coins[40].send.iYpos = platform[0].send.iYpos - 30;
+	coins[41].send.iXpos = platform[1].send.iXpos + 40 * 4;
+	coins[41].send.iYpos = platform[1].send.iYpos - 30;
+	coins[42].send.iXpos = platform[2].send.iXpos + 40 * 4;
+	coins[42].send.iYpos = platform[2].send.iYpos - 30;
+	coins[43].send.iXpos = platform[3].send.iXpos + 40 * 4;
+	coins[43].send.iYpos = platform[3].send.iYpos - 30;
+	coins[44].send.iXpos = platform[4].send.iXpos + 40 * 4;
+	coins[44].send.iYpos = platform[4].send.iYpos - 30;
+	coins[45].send.iXpos = platform[5].send.iXpos + 40 * 4;
+	coins[45].send.iYpos = platform[5].send.iYpos - 30;
+	coins[46].send.iXpos = platform[6].send.iXpos + 40 * 4;
+	coins[46].send.iYpos = platform[6].send.iYpos - 30;
+	coins[47].send.iXpos = platform[7].send.iXpos + 40 * 4;
+	coins[47].send.iYpos = platform[7].send.iYpos - 30;
+	coins[48].send.iXpos = platform[8].send.iXpos + 40 * 4;
+	coins[48].send.iYpos = platform[8].send.iYpos - 30;
+	coins[49].send.iXpos = platform[9].send.iXpos + 40 * 4;
+	coins[49].send.iYpos = platform[9].send.iYpos - 30;
+
+
+
 	for (int i = 0; i < COINNUM; ++i) {
-		coins[i].send.iXpos = i * 100 - 400;
-		coins[i].send.iYpos = 650;
 		coins[i].CoinUpdate();
 	}
 }
 void InitMonster()
 {
+	//coins[42].send.iXpos = platform[2].send.iXpos + 40 * 4;
+	//coins[42].send.iYpos = platform[2].send.iYpos - 30;
+	//coins[43].send.iXpos = platform[3].send.iXpos + 40 * 4;
+	//coins[43].send.iYpos = platform[3].send.iYpos - 30;
+	//coins[44].send.iXpos = platform[4].send.iXpos + 40 * 4;
+	//coins[44].send.iYpos = platform[4].send.iYpos - 30;
+	//coins[45].send.iXpos = platform[5].send.iXpos + 40 * 4;
+	//coins[45].send.iYpos = platform[5].send.iYpos - 30;
+	//coins[46].send.iXpos = platform[6].send.iXpos + 40 * 4;
+	//coins[46].send.iYpos = platform[6].send.iYpos - 30;
+	//coins[47].send.iXpos = platform[7].send.iXpos + 40 * 4;
+	//coins[47].send.iYpos = platform[7].send.iYpos - 30;
+	//coins[48].send.iXpos = platform[8].send.iXpos + 40 * 4;
+	//coins[48].send.iYpos = platform[8].send.iYpos - 30;
+	//coins[49].send.iXpos = platform[9].send.iXpos + 40 * 4;
+	//coins[49].send.iYpos = platform[9].send.iYpos - 30;
 
-	for (int i{ 0 }; i < MONSTERNUM; ++i) {
-		cmonsters[i].send.iXpos = i * 150 - 200;
-		cmonsters[i].send.iYpos = 620;
-		cmonsters[i].updateRange();
-		cmonsters[i].SetMonNum(i);
-	}
+	cmonsters[0].send.iXpos = platform[0].send.iXpos + 40 * 4;
+	cmonsters[0].send.iYpos = platform[0].send.iYpos - 50;
+	cmonsters[0].updateRange();
+	cmonsters[0].SetMonNum(0);
+
+	cmonsters[1].send.iXpos = platform[1].send.iXpos + 40 * 4;
+	cmonsters[1].send.iYpos = platform[1].send.iYpos - 50;
+	cmonsters[1].updateRange();
+	cmonsters[1].SetMonNum(1);
+
+
+	cmonsters[2].send.iXpos = platform[2].send.iXpos + 40 * 4;
+	cmonsters[2].send.iYpos = platform[2].send.iYpos - 50;
+	cmonsters[2].updateRange();
+	cmonsters[2].SetMonNum(2);
+
+
+	cmonsters[3].send.iXpos = platform[3].send.iXpos + 40 * 4;
+	cmonsters[3].send.iYpos = platform[3].send.iYpos - 50;
+	cmonsters[3].updateRange();
+	cmonsters[3].SetMonNum(3);
+
+
+	cmonsters[4].send.iXpos = platform[4].send.iXpos + 40 * 4;
+	cmonsters[4].send.iYpos = platform[4].send.iYpos - 50;
+	cmonsters[4].updateRange();
+	cmonsters[4].SetMonNum(4);
+
+
+	cmonsters[5].send.iXpos = platform[5].send.iXpos + 40 * 4;
+	cmonsters[5].send.iYpos = platform[5].send.iYpos - 50;
+	cmonsters[5].updateRange();
+	cmonsters[5].SetMonNum(5);
+
+	cmonsters[6].send.iXpos = platform[6].send.iXpos + 40 * 4;
+	cmonsters[6].send.iYpos = platform[6].send.iYpos - 50;
+	cmonsters[6].updateRange();
+	cmonsters[6].SetMonNum(6);
+
+
+	cmonsters[7].send.iXpos = platform[7].send.iXpos + 40 * 4;
+	cmonsters[7].send.iYpos = platform[7].send.iYpos - 50;
+	cmonsters[7].updateRange();
+	cmonsters[7].SetMonNum(7);
+
+
+	cmonsters[8].send.iXpos = platform[8].send.iXpos + 40 * 4;
+	cmonsters[8].send.iYpos = platform[8].send.iYpos - 50;
+	cmonsters[8].updateRange();
+	cmonsters[8].SetMonNum(8);
+
+
+	cmonsters[9].send.iXpos = platform[9].send.iXpos + 40 * 4;
+	cmonsters[9].send.iYpos = platform[9].send.iYpos - 50;
+	cmonsters[9].updateRange();
+	cmonsters[9].SetMonNum(9);
+
+
+
 }
 void InitPlayer(int num, Player* p)
 {

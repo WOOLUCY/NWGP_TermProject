@@ -290,7 +290,7 @@ void Player::CheckLocationCollideMonster(CMonster* monster)
 			iTimeStart = clock();	// 시간 기록 시작
 			Send.timeRecord = TRUE;
 			//여기 막아놈~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~***
-			//--Send.uHeart;
+			Send.uHeart -= 1;
 			printf("한대 맞았다\n");
 		}
 	}

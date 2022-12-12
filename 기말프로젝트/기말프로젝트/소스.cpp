@@ -25,11 +25,12 @@
 #include "Coin.h"
 #include <time.h>
 
+#define COINNUM 50
 
 using namespace std;
-//char* SERVERIP = (char*)"127.0.0.1";
+char* SERVERIP = (char*)"127.0.0.1";
 //[이세민] [오후 12:40] 192.168.140.47
-char* SERVERIP = (char*)"192.168.0.213";
+//char* SERVERIP = (char*)"192.168.0.213";
 
 
 #define SERVERPORT 9000
@@ -255,8 +256,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	// W 몬스터 생성
 	static CMonster monster;
-	monster.SetMonNum(1);
-	monster.myImage= &monsterImg;
 
 	Coin coin;
 

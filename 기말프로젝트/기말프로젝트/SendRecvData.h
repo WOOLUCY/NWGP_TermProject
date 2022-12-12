@@ -1,4 +1,5 @@
 #pragma once
+#include "global.h"
 #include <ctime>
 #include <vector>
 #include "Player.h"
