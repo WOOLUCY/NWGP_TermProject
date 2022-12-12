@@ -25,16 +25,15 @@
 #include "Coin.h"
 #include <time.h>
 
-#define COINNUM 50
 
 using namespace std;
-char* SERVERIP = (char*)"127.0.0.1";
+//char* SERVERIP = (char*)"192.168.143.53";
 //[이세민] [오후 12:40] 192.168.140.47
-//char* SERVERIP = (char*)"192.168.0.213";
-
+char* SERVERIP = (char*)"127.0.0.1";
+//[이세민] [오후 3:32] 192.168.143.53
 
 #define SERVERPORT 9000
-#define BUFSIZE    128
+#define BUFSIZE    256
 
 #define	CHILD_ID_EDIT	112
 
@@ -59,6 +58,8 @@ SOCKET sock;		// 소켓
 
 
 vector<Platform> Platforms;
+Coin coins[COINNUM];
+
 Key key;
 Portal portal;
 
@@ -131,6 +132,16 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
 		Platforms.push_back(Platform(temp[0], temp[1], &platformImg));
 	}
+
+
+	for (int i{ 0 }; i <COINNUM; ++i) {
+		retval = recv(sock, (char*)temp, sizeof(int) * 2, 0);
+		coins[i].iXpos = temp[0];
+		coins[i].iYpos = temp[1];
+
+		//Platforms.push_back(coins(temp[0], temp[1], &platformImg));
+	}
+
 
 	int keyTemp[2];
 	retval = recv(sock, (char*)keyTemp, sizeof(int) * 2, 0);
@@ -463,7 +474,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			// 코인
 			for (int i{ 0 }; i < COINNUM; ++i) {
 				if (GameData.coins[i].bIsCrush == FALSE)
-					coinImg.TransparentBlt(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, coin.GetWidth() / 1.5, coin.GetHeight() / 1.5,
+					coinImg.TransparentBlt(mem1dc, coins[i].iXpos - bgMove / 2, coins[i].iYpos, coin.GetWidth() / 1.5, coin.GetHeight() / 1.5,
 						0 + coin.GetWidth() * GameData.coins[i].uSpriteX, 0 + coin.GetHeight() * GameData.coins[i].uSpriteY, coin.GetWidth(), coin.GetHeight(), RGB(255, 255, 0));
 			}
 
@@ -471,7 +482,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			for (int i = 0; i < COINNUM; i++) {
 				// 코인 위치에 출력
 				if (GameData.coins[i].bIsCrush == TRUE && ce[i].GetDone() == FALSE) {
-				ce[i].myImage->TransparentBlt(mem1dc, GameData.coins[i].iXpos - bgMove / 2, GameData.coins[i].iYpos, ce[i].GetWidth(), ce[i].GetHeight(),
+				ce[i].myImage->TransparentBlt(mem1dc, coins[i].iXpos - bgMove / 2, coins[i].iYpos, ce[i].GetWidth(), ce[i].GetHeight(),
 					0 + ce[i].GetWidth() * ce[i].GetSpriteX(), 0 + ce[i].GetHeight() * ce[i].GetSpriteY(), ce[i].GetWidth(), ce[i].GetHeight(), RGB(255, 0, 0));
 
 			}

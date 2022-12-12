@@ -21,8 +21,6 @@ private:
 
 public:
 	struct SendData {
-		int		iXpos;
-		int		iYpos;
 		bool	bIsCrush;
 		USHORT	uSpriteX = 0;
 		USHORT	uSpriteY = 0;
