@@ -105,131 +105,153 @@ void InitPlatform()
 void InitCoin()
 {
 
-	coins[0].send.iXpos = platform[0].send.iXpos;
-	coins[0].send.iYpos = platform[0].send.iYpos - 30;
+	coins[0].iXpos = platform[0].send.iXpos;
+	coins[0].iYpos = platform[0].send.iYpos - 30;
 
-	coins[1].send.iXpos = platform[1].send.iXpos;
-	coins[1].send.iYpos = platform[1].send.iYpos - 30;
+	coins[1].iXpos = platform[1].send.iXpos;
+	coins[1].iYpos = platform[1].send.iYpos - 30;
 
-	coins[2].send.iXpos = platform[2].send.iXpos;
-	coins[2].send.iYpos = platform[2].send.iYpos - 30;
+	coins[2].iXpos = platform[2].send.iXpos;
+	coins[2].iYpos = platform[2].send.iYpos - 30;
 
-	coins[3].send.iXpos = platform[3].send.iXpos;
-	coins[3].send.iYpos = platform[3].send.iYpos - 30;
+	coins[3].iXpos = platform[3].send.iXpos;
+	coins[3].iYpos = platform[3].send.iYpos - 30;
 
-	coins[4].send.iXpos = platform[4].send.iXpos;
-	coins[4].send.iYpos = platform[4].send.iYpos - 30;
+	coins[4].iXpos = platform[4].send.iXpos;
+	coins[4].iYpos = platform[4].send.iYpos - 30;
 
-	coins[5].send.iXpos = platform[5].send.iXpos;
-	coins[5].send.iYpos = platform[5].send.iYpos - 30;
+	coins[5].iXpos = platform[5].send.iXpos;
+	coins[5].iYpos = platform[5].send.iYpos - 30;
 
-	coins[6].send.iXpos = platform[6].send.iXpos;
-	coins[6].send.iYpos = platform[6].send.iYpos - 30;
-								   
-	coins[7].send.iXpos = platform[7].send.iXpos;
-	coins[7].send.iYpos = platform[7].send.iYpos - 30;
+	coins[6].iXpos = platform[6].send.iXpos;
+	coins[6].iYpos = platform[6].send.iYpos - 30;
+						   
+	coins[7].iXpos = platform[7].send.iXpos;
+	coins[7].iYpos = platform[7].send.iYpos - 30;
 
-	coins[8].send.iXpos = platform[8].send.iXpos;
-	coins[8].send.iYpos = platform[8].send.iYpos - 30;
+	coins[8].iXpos = platform[8].send.iXpos;
+	coins[8].iYpos = platform[8].send.iYpos - 30;
 
-	coins[9].send.iXpos = platform[9].send.iXpos;
-	coins[9].send.iYpos = platform[9].send.iYpos - 30;
+	coins[9].iXpos = platform[9].send.iXpos;
+	coins[9].iYpos = platform[9].send.iYpos - 30;
 
 	//
-	coins[10].send.iXpos = platform[0].send.iXpos + 40;
-	coins[10].send.iYpos = platform[0].send.iYpos - 30;
-	coins[11].send.iXpos = platform[1].send.iXpos + 40;
-	coins[11].send.iYpos = platform[1].send.iYpos - 30;
-	coins[12].send.iXpos = platform[2].send.iXpos + 40;
-	coins[12].send.iYpos = platform[2].send.iYpos - 30;
-	coins[13].send.iXpos = platform[3].send.iXpos + 40;
-	coins[13].send.iYpos = platform[3].send.iYpos - 30;
-	coins[14].send.iXpos = platform[4].send.iXpos + 40;
-	coins[14].send.iYpos = platform[4].send.iYpos - 30;
-	coins[15].send.iXpos = platform[5].send.iXpos + 40;
-	coins[15].send.iYpos = platform[5].send.iYpos - 30;
-	coins[16].send.iXpos = platform[6].send.iXpos + 40;
-	coins[16].send.iYpos = platform[6].send.iYpos - 30;
-	coins[17].send.iXpos = platform[7].send.iXpos + 40;
-	coins[17].send.iYpos = platform[7].send.iYpos - 30;
-	coins[18].send.iXpos = platform[8].send.iXpos + 40;
-	coins[18].send.iYpos = platform[8].send.iYpos - 30;
-	coins[19].send.iXpos = platform[9].send.iXpos + 40;
-	coins[19].send.iYpos = platform[9].send.iYpos - 30;
+	coins[10].iXpos = platform[0].send.iXpos + 40;
+	coins[10].iYpos = platform[0].send.iYpos - 30;
+	coins[11].iXpos = platform[1].send.iXpos + 40;
+	coins[11].iYpos = platform[1].send.iYpos - 30;
+	coins[12].iXpos = platform[2].send.iXpos + 40;
+	coins[12].iYpos = platform[2].send.iYpos - 30;
+	coins[13].iXpos = platform[3].send.iXpos + 40;
+	coins[13].iYpos = platform[3].send.iYpos - 30;
+	coins[14].iXpos = platform[4].send.iXpos + 40;
+	coins[14].iYpos = platform[4].send.iYpos - 30;
+	coins[15].iXpos = platform[5].send.iXpos + 40;
+	coins[15].iYpos = platform[5].send.iYpos - 30;
+	coins[16].iXpos = platform[6].send.iXpos + 40;
+	coins[16].iYpos = platform[6].send.iYpos - 30;
+	coins[17].iXpos = platform[7].send.iXpos + 40;
+	coins[17].iYpos = platform[7].send.iYpos - 30;
+	coins[18].iXpos = platform[8].send.iXpos + 40;
+	coins[18].iYpos = platform[8].send.iYpos - 30;
+	coins[19].iXpos = platform[9].send.iXpos + 40;
+	coins[19].iYpos = platform[9].send.iYpos - 30;
 
 
-	coins[20].send.iXpos = platform[0].send.iXpos + 40 * 2;
-	coins[20].send.iYpos = platform[0].send.iYpos - 30;
+	coins[20].iXpos = platform[0].send.iXpos + 40 * 2;
+	coins[20].iYpos = platform[0].send.iYpos - 30;
 
-	coins[21].send.iXpos = platform[1].send.iXpos + 40 * 2;
-	coins[21].send.iYpos = platform[1].send.iYpos - 30;
+	coins[21].iXpos = platform[1].send.iXpos + 40 * 2;
+	coins[21].iYpos = platform[1].send.iYpos - 30;
 
-	coins[22].send.iXpos = platform[2].send.iXpos + 40 * 2;
-	coins[22].send.iYpos = platform[2].send.iYpos - 30;
+	coins[22].iXpos = platform[2].send.iXpos + 40 * 2;
+	coins[22].iYpos = platform[2].send.iYpos - 30;
 
-	coins[23].send.iXpos = platform[3].send.iXpos + 40 * 2;
-	coins[23].send.iYpos = platform[3].send.iYpos - 30;
+	coins[23].iXpos = platform[3].send.iXpos + 40 * 2;
+	coins[23].iYpos = platform[3].send.iYpos - 30;
 
-	coins[24].send.iXpos = platform[4].send.iXpos + 40 * 2;
-	coins[24].send.iYpos = platform[4].send.iYpos - 30;
+	coins[24].iXpos = platform[4].send.iXpos + 40 * 2;
+	coins[24].iYpos = platform[4].send.iYpos - 30;
 
-	coins[25].send.iXpos = platform[5].send.iXpos + 40 * 2;
-	coins[25].send.iYpos = platform[5].send.iYpos - 30;
+	coins[25].iXpos = platform[5].send.iXpos + 40 * 2;
+	coins[25].iYpos = platform[5].send.iYpos - 30;
 
-	coins[26].send.iXpos = platform[6].send.iXpos + 40 * 2;
-	coins[26].send.iYpos = platform[6].send.iYpos - 30;
+	coins[26].iXpos = platform[6].send.iXpos + 40 * 2;
+	coins[26].iYpos = platform[6].send.iYpos - 30;
 
-	coins[27].send.iXpos = platform[7].send.iXpos + 40 * 2;
-	coins[27].send.iYpos = platform[7].send.iYpos - 30;
+	coins[27].iXpos = platform[7].send.iXpos + 40 * 2;
+	coins[27].iYpos = platform[7].send.iYpos - 30;
 
-	coins[28].send.iXpos = platform[8].send.iXpos + 40 * 2;
-	coins[28].send.iYpos = platform[8].send.iYpos - 30;
+	coins[28].iXpos = platform[8].send.iXpos + 40 * 2;
+	coins[28].iYpos = platform[8].send.iYpos - 30;
 
-	coins[29].send.iXpos = platform[9].send.iXpos + 40 * 2;
-	coins[29].send.iYpos = platform[9].send.iYpos - 30;
+	coins[29].iXpos = platform[9].send.iXpos + 40 * 2;
+	coins[29].iYpos = platform[9].send.iYpos - 30;
 //
-	coins[30].send.iXpos = platform[0].send.iXpos + 40*3;
-	coins[30].send.iYpos = platform[0].send.iYpos - 30;
-	coins[31].send.iXpos = platform[1].send.iXpos + 40*3;
-	coins[31].send.iYpos = platform[1].send.iYpos - 30;
-	coins[32].send.iXpos = platform[2].send.iXpos + 40*3;
-	coins[32].send.iYpos = platform[2].send.iYpos - 30;
-	coins[33].send.iXpos = platform[3].send.iXpos + 40*3;
-	coins[33].send.iYpos = platform[3].send.iYpos - 30;
-	coins[34].send.iXpos = platform[4].send.iXpos + 40*3;
-	coins[34].send.iYpos = platform[4].send.iYpos - 30;
-	coins[35].send.iXpos = platform[5].send.iXpos + 40*3;
-	coins[35].send.iYpos = platform[5].send.iYpos - 30;
-	coins[36].send.iXpos = platform[6].send.iXpos + 40*3;
-	coins[36].send.iYpos = platform[6].send.iYpos - 30;
-	coins[37].send.iXpos = platform[7].send.iXpos + 40*3;
-	coins[37].send.iYpos = platform[7].send.iYpos - 30;
-	coins[38].send.iXpos = platform[8].send.iXpos + 40*3;
-	coins[38].send.iYpos = platform[8].send.iYpos - 30;
-	coins[39].send.iXpos = platform[9].send.iXpos + 40*3;
-	coins[39].send.iYpos = platform[9].send.iYpos - 30;
+	coins[30].iXpos = platform[0].send.iXpos + 40*3;
+	coins[30].iYpos = platform[0].send.iYpos - 30;
+	coins[31].iXpos = platform[1].send.iXpos + 40*3;
+	coins[31].iYpos = platform[1].send.iYpos - 30;
+	coins[32].iXpos = platform[2].send.iXpos + 40*3;
+	coins[32].iYpos = platform[2].send.iYpos - 30;
+	coins[33].iXpos = platform[3].send.iXpos + 40*3;
+	coins[33].iYpos = platform[3].send.iYpos - 30;
+	coins[34].iXpos = platform[4].send.iXpos + 40*3;
+	coins[34].iYpos = platform[4].send.iYpos - 30;
+	coins[35].iXpos = platform[5].send.iXpos + 40*3;
+	coins[35].iYpos = platform[5].send.iYpos - 30;
+	coins[36].iXpos = platform[6].send.iXpos + 40*3;
+	coins[36].iYpos = platform[6].send.iYpos - 30;
+	coins[37].iXpos = platform[7].send.iXpos + 40*3;
+	coins[37].iYpos = platform[7].send.iYpos - 30;
+	coins[38].iXpos = platform[8].send.iXpos + 40*3;
+	coins[38].iYpos = platform[8].send.iYpos - 30;
+	coins[39].iXpos = platform[9].send.iXpos + 40*3;
+	coins[39].iYpos = platform[9].send.iYpos - 30;
 
 	//
-	coins[40].send.iXpos = platform[0].send.iXpos + 40 * 4;
-	coins[40].send.iYpos = platform[0].send.iYpos - 30;
-	coins[41].send.iXpos = platform[1].send.iXpos + 40 * 4;
-	coins[41].send.iYpos = platform[1].send.iYpos - 30;
-	coins[42].send.iXpos = platform[2].send.iXpos + 40 * 4;
-	coins[42].send.iYpos = platform[2].send.iYpos - 30;
-	coins[43].send.iXpos = platform[3].send.iXpos + 40 * 4;
-	coins[43].send.iYpos = platform[3].send.iYpos - 30;
-	coins[44].send.iXpos = platform[4].send.iXpos + 40 * 4;
-	coins[44].send.iYpos = platform[4].send.iYpos - 30;
-	coins[45].send.iXpos = platform[5].send.iXpos + 40 * 4;
-	coins[45].send.iYpos = platform[5].send.iYpos - 30;
-	coins[46].send.iXpos = platform[6].send.iXpos + 40 * 4;
-	coins[46].send.iYpos = platform[6].send.iYpos - 30;
-	coins[47].send.iXpos = platform[7].send.iXpos + 40 * 4;
-	coins[47].send.iYpos = platform[7].send.iYpos - 30;
-	coins[48].send.iXpos = platform[8].send.iXpos + 40 * 4;
-	coins[48].send.iYpos = platform[8].send.iYpos - 30;
-	coins[49].send.iXpos = platform[9].send.iXpos + 40 * 4;
-	coins[49].send.iYpos = platform[9].send.iYpos - 30;
+	coins[40].iXpos = platform[0].send.iXpos + 40 * 4;
+	coins[40].iYpos = platform[0].send.iYpos - 30;
+	coins[41].iXpos = platform[1].send.iXpos + 40 * 4;
+	coins[41].iYpos = platform[1].send.iYpos - 30;
+	coins[42].iXpos = platform[2].send.iXpos + 40 * 4;
+	coins[42].iYpos = platform[2].send.iYpos - 30;
+	coins[43].iXpos = platform[3].send.iXpos + 40 * 4;
+	coins[43].iYpos = platform[3].send.iYpos - 30;
+	coins[44].iXpos = platform[4].send.iXpos + 40 * 4;
+	coins[44].iYpos = platform[4].send.iYpos - 30;
+	coins[45].iXpos = platform[5].send.iXpos + 40 * 4;
+	coins[45].iYpos = platform[5].send.iYpos - 30;
+	coins[46].iXpos = platform[6].send.iXpos + 40 * 4;
+	coins[46].iYpos = platform[6].send.iYpos - 30;
+	coins[47].iXpos = platform[7].send.iXpos + 40 * 4;
+	coins[47].iYpos = platform[7].send.iYpos - 30;
+	coins[48].iXpos = platform[8].send.iXpos + 40 * 4;
+	coins[48].iYpos = platform[8].send.iYpos - 30;
+	coins[49].iXpos = platform[9].send.iXpos + 40 * 4;
+	coins[49].iYpos = platform[9].send.iYpos - 30;
+
+
+	coins[50].iXpos = platform[0].send.iXpos + 40 * 5;
+	coins[50].iYpos = platform[0].send.iYpos - 30;
+	coins[51].iXpos = platform[1].send.iXpos + 40 * 5;
+	coins[51].iYpos = platform[1].send.iYpos - 30;
+	coins[52].iXpos = platform[2].send.iXpos + 40 * 5;
+	coins[52].iYpos = platform[2].send.iYpos - 30;
+	coins[53].iXpos = platform[3].send.iXpos + 40 * 5;
+	coins[53].iYpos = platform[3].send.iYpos - 30;
+	coins[54].iXpos = platform[4].send.iXpos + 40 * 5;
+	coins[54].iYpos = platform[4].send.iYpos - 30;
+	coins[55].iXpos = platform[5].send.iXpos + 40 * 5;
+	coins[55].iYpos = platform[5].send.iYpos - 30;
+	coins[56].iXpos = platform[6].send.iXpos + 40 * 5;
+	coins[56].iYpos = platform[6].send.iYpos - 30;
+	coins[57].iXpos = platform[7].send.iXpos + 40 * 5;
+	coins[57].iYpos = platform[7].send.iYpos - 30;
+	coins[58].iXpos = platform[8].send.iXpos + 40 * 5;
+	coins[58].iYpos = platform[8].send.iYpos - 30;
+	coins[59].iXpos = platform[9].send.iXpos + 40 * 5;
+	coins[59].iYpos = platform[9].send.iYpos - 30;
 
 
 
@@ -434,7 +456,9 @@ DWORD WINAPI Send_Thread(LPVOID arg)
 	while (1) {
 		//printf("[%d]번째 sendThread\n", index);
 
-		if (users[index].GetCharNum() == 10000) break;
+		if (users[index].GetCharNum() == 10000) { 
+			break;
+		};
 		UpdatePlayerLocation(&(users[index]));
 		ChangePlayerSprite(&(users[index]), &playerSpriteCnt);
 
@@ -631,7 +655,7 @@ DWORD WINAPI Recv_Thread(LPVOID arg)
 
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
 	--TotalClient;
-	closesocket(client_sock);
+	//closesocket(client_sock);
 	return 0;
 }
 
@@ -840,6 +864,11 @@ int main(int argc, char* argv[])
 		for (int i{ 0 }; i < PLATFORMNUM; ++i) {
 			retval = send(client_sock, (char*)&platform[i].send.iXpos, sizeof(int)*2, 0);
 		}
+
+		for (int i{ 0 }; i < COINNUM; ++i) {
+			retval = send(client_sock, (char*)&coins[i].iXpos, sizeof(int) * 2, 0);
+		}
+
 
 		retval = send(client_sock, (char*)&key.send.iXpos, sizeof(int) * 2, 0);
 

@@ -7,8 +7,8 @@ class Coin
 public:
 
 	struct SendData {
-		int		iXpos;
-		int		iYpos;
+		//int		iXpos;
+		//int		iYpos;
 		bool	bIsCrush;
 		USHORT	uSpriteX = 0;
 		USHORT	uSpriteY = 0;

@@ -1,7 +1,7 @@
 #pragma once
 
 #define PLATFORMNUM 10
-#define COINNUM 50
+#define COINNUM 60
 #define MONSTERNUM 10
 
 
